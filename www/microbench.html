@@ -1,0 +1,203 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>LiteRT-LM kernel 0112 microbenchmark</title>
+<pre id="log" style="white-space: pre-wrap; font: 12px monospace"></pre>
+
+<!-- Runs the captured 2-bit matrix-vector kernel 0112 in isolation on its real
+     decode shape (1536 -> 12288, 4.5 MB of packed weights) and compares it
+     against minimal text edits of the same source. Two variables are kept
+     separate on purpose, because a variant that changes both cannot say which moved the number:
+       invocations per workgroup (64 as shipped, or 256)
+       total threads dispatched   (12,288 as shipped, or 4x / 8x via a deeper K split)
+     Variants:
+       orig        16x4  wg (64 inv),  12,288 threads, texture weights   <- as shipped
+       wg256-same  64x4  wg (256 inv), 12,288 threads                    <- control: bigger workgroup only
+       split16-64  4x16  wg (64 inv),  49,152 threads                    <- control: more threads only
+       split32-64  2x32  wg (64 inv),  98,304 threads                    <- same wg shape as their kernel 0113
+       split16-256 16x16 wg (256 inv), 49,152 threads                    <- both
+       buf-4       16x4, 12,288 threads, weights from a storage buffer
+     Measurement order: a discarded warm-up variant first (the first timed slot
+     reads slow), then every variant forward and again in reverse order; the
+     cold and hot samples from both positions are pooled before the median.
+     "Cold" rotates through 24 matrices (108 MB) so weights come from DRAM;
+     "hot" reuses one matrix. Every variant is checked against a CPU reference. -->
+<script type="module">
+  const log = (s) => { document.getElementById('log').append(s + '\n'); console.log('[mb] ' + s) }
+  const OUT_SLICES = 3072, IN_SLICES = 384      // U.i0 = [3072, 384]: 12288 outputs, 1536 inputs
+  const WEIGHT_BYTES = OUT_SLICES * IN_SLICES * 4 // one rgba8uint texel per (dst_s, src_s)
+  const NMAT_COLD = 24, ROUNDS = 12
+  // ?f32=1: run an f32 transcription of the kernel (f16 -> f32 throughout, scales
+  // uploaded as f32) for adapters that do not expose shader-f16. Not Google's
+  // kernel verbatim; same structure, so it still tests the K-split lever.
+  const F32 = new URLSearchParams(location.search).get('f32') === '1'
+  const V4 = F32 ? 'vec4<f32>' : 'vec4<f16>'
+  const NEED = F32 ? ['timestamp-query'] : ['shader-f16', 'timestamp-query']
+  const R = (window.__mb = { variants: {}, weightBytes: WEIGHT_BYTES, order: [], f32: F32 })
+
+  const f16 = (x) => { const f = new Float32Array([x]), u = new Uint32Array(f.buffer)[0]; const s = (u >> 16) & 0x8000, e = ((u >> 23) & 0xff) - 112, m = u & 0x7fffff; if (e <= 0) return s; if (e >= 31) return s | 0x7c00; let h = s | (e << 10) | (m >> 13); if ((m & 0x1fff) > 0x1000 || ((m & 0x1fff) === 0x1000 && (h & 1))) h++; return h }
+  const fromF16 = (h) => { const s = h & 0x8000 ? -1 : 1, e = (h >> 10) & 0x1f, m = h & 0x3ff; return e === 0 ? s * m * 2 ** -24 : e === 31 ? (m ? NaN : s * Infinity) : s * (1 + m / 1024) * 2 ** (e - 15) }
+  let seed = 12345
+  const rnd = () => ((seed = (seed * 1664525 + 1013904223) >>> 0) / 2 ** 32)
+  const median = (a) => { const s = [...a].sort((x, y) => x - y); return s[Math.floor(s.length / 2)] }
+  const pct = (a, p) => { const s = [...a].sort((x, y) => x - y); return s[Math.min(s.length - 1, Math.floor(s.length * p))] }
+
+  const mustReplace = (src, from, to) => { if (!src.includes(from)) throw new Error('kernel text changed, anchor not found: ' + from.slice(0, 60)); return src.split(from).join(to) }
+  const variantSource = (base, buf, ks, wgX) => {
+    let s = base
+    if (buf) {
+      s = mustReplace(s, '@group(0) @binding(2) var weights_image2d : texture_2d<u32>;',
+        'struct weights_u32_vector { data: array<u32>, };\n@group(0) @binding(2) var<storage, read> weights_u32 : weights_u32_vector;')
+      s = mustReplace(s, 'var w : vec4<u32>= vec4<u32>(textureLoad(weights_image2d, vec2<i32>((dst_s), (src_s)), 0));',
+        'var wp : u32 = weights_u32.data[src_s * U.i0.x + dst_s];\n    var w : vec4<u32>= vec4<u32>(wp & 0xFFu, (wp >> 8u) & 0xFFu, (wp >> 16u) & 0xFFu, (wp >> 24u) & 0xFFu);')
+    }
+    if (ks !== 4 || wgX !== 16) {
+      s = mustReplace(s, `var<workgroup> temp : array<${V4}, 64>;`, `var<workgroup> temp : array<${V4}, ${wgX * ks}>;`)
+      s = mustReplace(s, 'for (var src_s : i32= tid.y; src_s < U.i0.y; src_s += 4) {', `for (var src_s : i32= tid.y; src_s < U.i0.y; src_s += ${ks}) {`)
+      s = mustReplace(s, 'temp[tid.x * 4 + tid.y]', `temp[tid.x * ${ks} + tid.y]`)
+      s = mustReplace(s, 'for (var ystride : i32= 4 / 2; ystride > 0; ystride /= 2) {', `for (var ystride : i32= ${ks} / 2; ystride > 0; ystride /= 2) {`)
+      s = mustReplace(s, 'r_sp0 += temp[tid.x * 4 + tid.y + ystride];', `r_sp0 += temp[tid.x * ${ks} + tid.y + ystride];`)
+    }
+    return s
+  }
+
+  try {
+    const adapter = (await navigator.gpu.requestAdapter({ powerPreference: 'high-performance' }) ?? await navigator.gpu.requestAdapter())
+    for (const need of NEED) if (!adapter.features.has(need)) throw new Error('adapter lacks ' + need)
+    const device = await adapter.requestDevice({ requiredFeatures: NEED })
+    device.addEventListener('uncapturederror', (e) => { R.gpuError = String(e.error?.message ?? e); log('GPU ERROR: ' + R.gpuError) })
+    R.adapter = { vendor: adapter.info?.vendor, architecture: adapter.info?.architecture }
+
+    let base = await (await fetch('/out/shaders/0112_unlabeled.wgsl')).text()
+    R.baseBytes = base.length
+    if (F32) base = base.replace('enable f16;', '').split('vec4<f16>').join('vec4<f32>').split('f16(').join('f32(')
+
+    // data: random 2-bit weights (unpatterned bytes), per-output-channel scales, input vector
+    const weights = []
+    for (let m = 0; m < NMAT_COLD; m++) { const a = new Uint8Array(WEIGHT_BYTES); for (let i = 0; i < a.length; i++) a[i] = Math.floor(rnd() * 256); weights.push(a) }
+    const scale = new Float32Array(OUT_SLICES * 4); for (let i = 0; i < scale.length; i++) scale[i] = 0.01 + 0.01 * rnd()
+    const input = new Float32Array(IN_SLICES * 4); for (let i = 0; i < input.length; i++) input[i] = rnd() * 2 - 1
+    const scaleF16 = Uint16Array.from(scale, f16), inputF16 = Uint16Array.from(input, f16)
+    const scaleQ = Float32Array.from(scaleF16, fromF16), inputQ = Float32Array.from(inputF16, fromF16)
+
+    // CPU reference for matrix 0: byte k of texel (dst_s, src_s) holds the four
+    // 2-bit weights that input channel k multiplies, one per output channel c.
+    const ref = new Float32Array(OUT_SLICES * 4)
+    const w0 = weights[0]
+    for (let d = 0; d < OUT_SLICES; d++) for (let c = 0; c < 4; c++) {
+      let acc = 0
+      for (let s = 0; s < IN_SLICES; s++) for (let k = 0; k < 4; k++) { const b = w0[(s * OUT_SLICES + d) * 4 + k]; acc += inputQ[s * 4 + k] * (((b >> (2 * c)) & 3) - 2) }
+      ref[d * 4 + c] = acc * (F32 ? scale : scaleQ)[d * 4 + c]
+    }
+
+    // GPU resources
+    const mkTex = (bytes) => { const t = device.createTexture({ size: [OUT_SLICES, IN_SLICES], format: 'rgba8uint', usage: GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST }); device.queue.writeTexture({ texture: t }, bytes, { bytesPerRow: OUT_SLICES * 4 }, [OUT_SLICES, IN_SLICES]); return t }
+    const mkBuf = (bytes) => { const b = device.createBuffer({ size: bytes.byteLength, usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST }); device.queue.writeBuffer(b, 0, bytes); return b }
+    const texW = weights.map((w) => mkTex(w)), bufW = weights.map((w) => mkBuf(w))
+    const scaleBuf = mkBuf(F32 ? scale : scaleF16)
+    const srcTex = device.createTexture({ size: [1, IN_SLICES], format: 'rgba16float', usage: GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST })
+    device.queue.writeTexture({ texture: srcTex }, inputF16, { bytesPerRow: 8 }, [1, IN_SLICES])
+    const dstTex = device.createTexture({ size: [1, OUT_SLICES], format: 'rgba16float', usage: GPUTextureUsage.STORAGE_BINDING | GPUTextureUsage.COPY_SRC })
+    const uni = device.createBuffer({ size: 16, usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST })
+    device.queue.writeBuffer(uni, 0, new Int32Array([OUT_SLICES, IN_SLICES, 0, 0]))
+    const readBuf = device.createBuffer({ size: 256 * OUT_SLICES, usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.MAP_READ })
+    const NQ = 2 * ROUNDS * NMAT_COLD
+    const qs = device.createQuerySet({ type: 'timestamp', count: NQ })
+    const qResolve = device.createBuffer({ size: NQ * 8, usage: GPUBufferUsage.QUERY_RESOLVE | GPUBufferUsage.COPY_SRC })
+    const qRead = device.createBuffer({ size: NQ * 8, usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.MAP_READ })
+
+    const readOutput = async () => {
+      const enc = device.createCommandEncoder()
+      enc.copyTextureToBuffer({ texture: dstTex }, { buffer: readBuf, bytesPerRow: 256 }, [1, OUT_SLICES])
+      device.queue.submit([enc.finish()])
+      await readBuf.mapAsync(GPUMapMode.READ)
+      const u16 = new Uint16Array(readBuf.getMappedRange().slice(0))
+      const out = new Float32Array(OUT_SLICES * 4)
+      for (let d = 0; d < OUT_SLICES; d++) for (let c = 0; c < 4; c++) out[d * 4 + c] = fromF16(u16[d * 128 + c])
+      readBuf.unmap()
+      return out
+    }
+
+    // [name, weights from buffer, K split, workgroup x]
+    const VARIANTS = [
+      ['warmup', false, 4, 16],
+      ['orig', false, 4, 16],
+      ['wg256-same', false, 4, 64],
+      ['split16-64', false, 16, 4],
+      ['split32-64', false, 32, 2],
+      ['split16-256', false, 16, 16],
+      ['buf-4', true, 4, 16],
+    ]
+    const V = {}
+    for (const [name, buf, ks, wgX] of VARIANTS) {
+      const dispatchX = OUT_SLICES / wgX
+      const module = device.createShaderModule({ code: variantSource(base, buf, ks, wgX) })
+      const info = await module.getCompilationInfo()
+      const errs = info.messages.filter((m) => m.type === 'error')
+      if (errs.length) throw new Error(`${name} failed to compile: ${errs.map((m) => `${m.lineNum}: ${m.message}`).join('; ')}`)
+      const pipeline = device.createComputePipeline({ layout: 'auto', compute: { module, entryPoint: 'main', constants: { 0: wgX, 1: ks, 2: 1 } } })
+      const bindGroups = weights.map((_, m) => device.createBindGroup({
+        layout: pipeline.getBindGroupLayout(0),
+        entries: [
+          { binding: 0, resource: dstTex.createView() },
+          { binding: 1, resource: srcTex.createView() },
+          { binding: 2, resource: buf ? { buffer: bufW[m] } : texW[m].createView() },
+          { binding: 3, resource: { buffer: scaleBuf } },
+          { binding: 4, resource: { buffer: uni } },
+        ],
+      }))
+      // correctness on matrix 0
+      { const enc = device.createCommandEncoder(); const p = enc.beginComputePass(); p.setPipeline(pipeline); p.setBindGroup(0, bindGroups[0]); p.dispatchWorkgroups(dispatchX, 1, 1); p.end(); device.queue.submit([enc.finish()]) }
+      const out = await readOutput()
+      let maxAbs = 0, maxRef = 0
+      for (let i = 0; i < out.length; i++) { maxAbs = Math.max(maxAbs, Math.abs(out[i] - ref[i])); maxRef = Math.max(maxRef, Math.abs(ref[i])) }
+      V[name] = { name, buf, ks, wgX, dispatchX, invocations: wgX * ks, threads: dispatchX * wgX * ks, pipeline, bindGroups, maxAbsErr: maxAbs, maxRef, out, cold: [], hot: [] }
+    }
+    for (const v of Object.values(V)) { let d = 0; for (let i = 0; i < v.out.length; i++) d = Math.max(d, Math.abs(v.out[i] - V.orig.out[i])); v.vsOrig = d }
+    for (const v of Object.values(V)) delete v.out
+
+    // one timed block: ROUNDS x nmat single-dispatch passes, each timestamped
+    const time = async (v, nmat) => {
+      { const enc = device.createCommandEncoder(); for (let m = 0; m < nmat; m++) { const p = enc.beginComputePass(); p.setPipeline(v.pipeline); p.setBindGroup(0, v.bindGroups[m]); p.dispatchWorkgroups(v.dispatchX, 1, 1); p.end() } device.queue.submit([enc.finish()]) }
+      await device.queue.onSubmittedWorkDone()
+      const enc = device.createCommandEncoder()
+      let q = 0
+      for (let r = 0; r < ROUNDS; r++) for (let m = 0; m < nmat; m++) {
+        const p = enc.beginComputePass({ timestampWrites: { querySet: qs, beginningOfPassWriteIndex: q, endOfPassWriteIndex: q + 1 } })
+        p.setPipeline(v.pipeline); p.setBindGroup(0, v.bindGroups[m]); p.dispatchWorkgroups(v.dispatchX, 1, 1); p.end(); q += 2
+      }
+      enc.resolveQuerySet(qs, 0, q, qResolve, 0)
+      enc.copyBufferToBuffer(qResolve, 0, qRead, 0, q * 8)
+      device.queue.submit([enc.finish()])
+      await qRead.mapAsync(GPUMapMode.READ)
+      const ts = new BigUint64Array(qRead.getMappedRange().slice(0))
+      qRead.unmap()
+      const us = []
+      for (let i = 0; i < q; i += 2) us.push(Number(ts[i + 1] - ts[i]) / 1e3)
+      return us
+    }
+
+    // warm-up slot (discarded), then forward, then reverse. Ten rounds: a T4
+    // took several hundred ms of load to leave its idle clocks; one round was
+    // enough on the M2 Max but is cheap either way.
+    const timed = VARIANTS.slice(1).map((x) => x[0])
+    for (let i = 0; i < 10; i++) { await time(V.warmup, NMAT_COLD); await time(V.warmup, 1) }
+    for (const name of [...timed, ...[...timed].reverse()]) {
+      const v = V[name]
+      const c = await time(v, NMAT_COLD), h = await time(v, 1)
+      v.cold.push(...c); v.hot.push(...h)
+      R.order.push({ name, coldMedian: median(c), hotMedian: median(h) })
+    }
+    for (const name of timed) {
+      const v = V[name]
+      const stat = (a) => ({ median: median(a), p10: pct(a, 0.1), p90: pct(a, 0.9), n: a.length })
+      R.variants[name] = { buf: v.buf, ks: v.ks, wgX: v.wgX, dispatchX: v.dispatchX, invocations: v.invocations, threads: v.threads, maxAbsErr: v.maxAbsErr, maxRef: v.maxRef, vsOrig: v.vsOrig, cold: stat(v.cold), hot: stat(v.hot) }
+      const r = R.variants[name]
+      log(`${name.padEnd(12)} wg ${String(v.wgX).padStart(2)}x${String(v.ks).padEnd(2)} =${String(v.invocations).padStart(4)} inv  threads ${String(v.threads).padStart(6)}  cold ${r.cold.median.toFixed(1).padStart(6)} µs = ${(WEIGHT_BYTES / (r.cold.median * 1e-6) / 1e9).toFixed(0).padStart(4)} GB/s (p10 ${r.cold.p10.toFixed(1)}, p90 ${r.cold.p90.toFixed(1)})  hot ${r.hot.median.toFixed(1).padStart(6)} µs  max|err| ${v.maxAbsErr.toExponential(2)} vs orig ${v.vsOrig.toExponential(2)}`)
+    }
+    log('per-position cold medians: ' + R.order.map((o) => `${o.name}=${o.coldMedian.toFixed(1)}`).join(' '))
+  } catch (e) {
+    R.error = String(e?.stack ?? e)
+    log('ERROR: ' + R.error)
+  }
+  window.__mbDone = true
+</script>

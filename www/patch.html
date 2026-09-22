@@ -1,0 +1,124 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>LiteRT-LM web in-model kernel patch</title>
+<pre id="log" style="white-space: pre-wrap; font: 12px monospace"></pre>
+
+<!-- Runs the real model with some of its matrix-vector kernels rewritten to a
+     deeper K split as the engine creates them. Query: ?patch=none | 0112 |
+     0112,0105 | all. For each patched pipeline the workgroup constants change
+     and every dispatch of it is scaled by oldWgX / newWgX so the same output
+     slices are covered. Arithmetic is untouched; the output text must match
+     the unpatched run byte for byte. -->
+<script>
+(() => {
+  const params = new URLSearchParams(location.search)
+  const sel = (params.get('patch') ?? 'none').toLowerCase()
+  // target: captured shader id -> new [wgX, ks]
+  const PLAN = { 112: [2, 32], 105: [2, 32], 99: [2, 128], 113: [1, 256] }
+  const WANT = new Set(sel === 'all' ? Object.keys(PLAN).map(Number) : sel === 'none' ? [] : sel.split(',').map(Number))
+  const P = (window.__patch = { sel, want: [...WANT], targets: {}, patched: [], scaledDispatches: 0, unscaledDispatches: 0, gpuErrors: [], marks: [], chunk: 0 })
+  window.__mark = (name) => P.marks.push({ name, t: performance.now(), chunk: P.chunk })
+
+  const moduleCode = new WeakMap()
+  const pipelineScale = new WeakMap()
+  const passScale = new WeakMap()
+
+  const rewrite = (src, ks, newKs, newWgX) => {
+    const must = (from, to) => { if (!src.includes(from)) throw new Error('anchor missing: ' + from); src = src.split(from).join(to) }
+    must('var<workgroup> temp : array<vec4<f16>, 64>;', `var<workgroup> temp : array<vec4<f16>, ${newWgX * newKs}>;`)
+    must(`for (var src_s : i32= tid.y; src_s < U.i0.y; src_s += ${ks}) {`, `for (var src_s : i32= tid.y; src_s < U.i0.y; src_s += ${newKs}) {`)
+    must(`for (var ystride : i32= ${ks} / 2; ystride > 0; ystride /= 2) {`, `for (var ystride : i32= ${newKs} / 2; ystride > 0; ystride /= 2) {`)
+    must(`r_sp0 += temp[tid.x * ${ks} + tid.y + ystride];`, `r_sp0 += temp[tid.x * ${newKs} + tid.y + ystride];`)
+    must(`temp[tid.x * ${ks} + tid.y]`, `temp[tid.x * ${newKs} + tid.y]`)
+    return src
+  }
+
+  const origCreateShader = GPUDevice.prototype.createShaderModule
+  GPUDevice.prototype.createShaderModule = function (desc) {
+    const m = origCreateShader.call(this, desc)
+    moduleCode.set(m, desc?.code ?? '')
+    return m
+  }
+  const origCreatePipeline = GPUDevice.prototype.createComputePipeline
+  GPUDevice.prototype.createComputePipeline = function (desc) {
+    const code = moduleCode.get(desc?.compute?.module)
+    const target = code && P.targets[code]
+    if (target && WANT.has(target.id)) {
+      const c = desc.compute.constants ?? {}
+      const oldWgX = c[0], oldKs = c[1]
+      const [newWgX, newKs] = PLAN[target.id]
+      if (oldKs !== target.ks || oldWgX % newWgX !== 0) throw new Error(`unexpected constants for ${target.id}: ${JSON.stringify(c)}`)
+      const module = origCreateShader.call(this, { code: rewrite(code, oldKs, newKs, newWgX) })
+      const pipeline = origCreatePipeline.call(this, { ...desc, compute: { ...desc.compute, module, constants: { ...c, 0: newWgX, 1: newKs } } })
+      pipelineScale.set(pipeline, oldWgX / newWgX)
+      P.patched.push({ id: target.id, from: `${oldWgX}x${oldKs}`, to: `${newWgX}x${newKs}`, scale: oldWgX / newWgX })
+      return pipeline
+    }
+    return origCreatePipeline.call(this, desc)
+  }
+  const origSetPipeline = GPUComputePassEncoder.prototype.setPipeline
+  GPUComputePassEncoder.prototype.setPipeline = function (p) {
+    passScale.set(this, pipelineScale.get(p) ?? 1)
+    return origSetPipeline.call(this, p)
+  }
+  const origDispatch = GPUComputePassEncoder.prototype.dispatchWorkgroups
+  GPUComputePassEncoder.prototype.dispatchWorkgroups = function (x, y, z) {
+    const s = passScale.get(this) ?? 1
+    if (s !== 1) { P.scaledDispatches++; return origDispatch.call(this, x * s, y, z) }
+    P.unscaledDispatches++
+    return origDispatch.call(this, x, y, z)
+  }
+  const origRequestDevice = GPUAdapter.prototype.requestDevice
+  GPUAdapter.prototype.requestDevice = async function (...a) {
+    const d = await origRequestDevice.apply(this, a)
+    d.addEventListener('uncapturederror', (e) => { if (P.gpuErrors.length < 10) P.gpuErrors.push(String(e.error?.message ?? e).slice(0, 300)) })
+    return d
+  }
+})()
+</script>
+
+<script type="module">
+  const log = (s) => { document.getElementById('log').append(s + '\n'); console.log('[patch] ' + s) }
+  const P = window.__patch
+  try {
+    // load the captured sources so pipelines can be matched by exact text
+    for (const id of [99, 105, 112, 113]) {
+      const code = await (await fetch(`/out/shaders/${String(id).padStart(4, '0')}_unlabeled.wgsl`)).text()
+      const ks = Number(code.match(/src_s \+= (\d+)\)/)[1])
+      P.targets[code] = { id, ks }
+    }
+    const adapter = await navigator.gpu?.requestAdapter({ powerPreference: 'high-performance' })
+    P.adapter = adapter ? { vendor: adapter.info?.vendor, architecture: adapter.info?.architecture } : null
+    log(`patch=${P.sel} want=[${P.want.join(',')}] adapter=${JSON.stringify(P.adapter)}`)
+
+    const { Engine } = await import('https://cdn.jsdelivr.net/npm/@litert-lm/core@0.17.1/+esm')
+    __mark('import-done')
+    const engine = await Engine.create({ model: '/gemma-4-E2B-it-web.litertlm' })
+    __mark('engine-created')
+    log(`patched pipelines: ${JSON.stringify(P.patched)}`)
+
+    const run = async (label, prompt) => {
+      const chat = await engine.createConversation()
+      let text = '', n = 0
+      P.chunk = 0
+      __mark(`${label}:send`)
+      for await (const chunk of chat.sendMessageStreaming(prompt)) {
+        text += chunk?.content?.[0]?.text ?? ''
+        P.chunk++
+        __mark(`${label}:chunk-${n}`)
+        if (++n >= 200) break
+      }
+      __mark(`${label}:done`)
+      await chat.delete()
+      log(`${label}: ${n} chunks: ${text.slice(0, 120)}`)
+      return { text, chunks: n }
+    }
+    P.cold = await run('cold', 'Count from one to thirty in English words, separated by commas.')
+    P.warm = await run('warm', 'Count down from thirty to one in English words, separated by commas.')
+    log(`dispatches: scaled ${P.scaledDispatches}, unscaled ${P.unscaledDispatches}; GPU errors: ${P.gpuErrors.length}`)
+  } catch (e) {
+    P.error = String(e?.stack ?? e)
+    log('ERROR: ' + P.error)
+  }
+  window.__patchDone = true
+</script>

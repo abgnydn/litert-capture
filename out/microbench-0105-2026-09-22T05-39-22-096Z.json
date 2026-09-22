@@ -1,0 +1,104 @@
+{
+  "kernel": "0105",
+  "variants": {
+    "orig": {
+      "ks": 4,
+      "wgX": 16,
+      "dispatchX": 96,
+      "invocations": 64,
+      "threads": 6144,
+      "maxAbsErr": 0.010693639516830444,
+      "maxRef": 2.6354727745056152,
+      "vsOrig": 0,
+      "cold": {
+        "median": 58.997,
+        "p10": 56.747,
+        "p90": 63.289,
+        "n": 576
+      },
+      "hot": {
+        "median": 35.665,
+        "p10": 35.331,
+        "p90": 36.289,
+        "n": 24
+      }
+    },
+    "split32-64": {
+      "ks": 32,
+      "wgX": 2,
+      "dispatchX": 768,
+      "invocations": 64,
+      "threads": 49152,
+      "maxAbsErr": 0.003983616828918457,
+      "maxRef": 2.6354727745056152,
+      "vsOrig": 0.01171875,
+      "cold": {
+        "median": 28.082,
+        "p10": 26.623,
+        "p90": 30.291,
+        "n": 576
+      },
+      "hot": {
+        "median": 21.582,
+        "p10": 21.249,
+        "p90": 22.457,
+        "n": 24
+      }
+    },
+    "split16-256": {
+      "ks": 16,
+      "wgX": 16,
+      "dispatchX": 96,
+      "invocations": 256,
+      "threads": 24576,
+      "maxAbsErr": 0.004467904567718506,
+      "maxRef": 2.6354727745056152,
+      "vsOrig": 0.01025390625,
+      "cold": {
+        "median": 28.831,
+        "p10": 27.581,
+        "p90": 31.373,
+        "n": 576
+      },
+      "hot": {
+        "median": 23.874,
+        "p10": 23.665,
+        "p90": 25.498,
+        "n": 24
+      }
+    }
+  },
+  "weightBytes": 4718592,
+  "order": [
+    {
+      "name": "orig",
+      "coldMedian": 58.746
+    },
+    {
+      "name": "split32-64",
+      "coldMedian": 28.166
+    },
+    {
+      "name": "split16-256",
+      "coldMedian": 28.832
+    },
+    {
+      "name": "split16-256",
+      "coldMedian": 28.831
+    },
+    {
+      "name": "split32-64",
+      "coldMedian": 28.041
+    },
+    {
+      "name": "orig",
+      "coldMedian": 59.205
+    }
+  ],
+  "adapter": {
+    "vendor": "apple",
+    "architecture": "metal-3"
+  },
+  "baseBytes": 3347,
+  "date": "2026-09-22T05:39:22.096Z"
+}

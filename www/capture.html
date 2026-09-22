@@ -1,0 +1,141 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>LiteRT-LM web shader capture</title>
+<pre id="log" style="white-space: pre-wrap; font: 12px monospace"></pre>
+
+<!-- Classic script: runs before the module below, so every WebGPU call the
+     LiteRT-LM wasm makes goes through these wrappers. Prototype-level, so it
+     covers any GPUDevice, however it is created. -->
+<script>
+(() => {
+  const cap = (window.__capture = {
+    shaders: [],      // { id, label, code }
+    pipelines: [],    // { id, shaderId, entryPoint, label, async }
+    dispatchByPipeline: {}, // pipelineId -> count
+    counters: { dispatch: 0, dispatchIndirect: 0, passes: 0, submits: 0, writeBuffer: 0, mapAsync: 0 },
+    marks: [],        // { name, t, counters, dispatchByPipeline }
+  })
+  window.__mark = (name) =>
+    cap.marks.push({
+      name,
+      t: performance.now(),
+      counters: { ...cap.counters },
+      dispatchByPipeline: { ...cap.dispatchByPipeline },
+    })
+
+  const shaderIds = new WeakMap()
+  const pipelineIds = new WeakMap()
+  const passPipeline = new WeakMap()
+
+  const wrap = (proto, name, fn) => {
+    const orig = proto[name]
+    proto[name] = function (...args) { return fn.call(this, orig, args) }
+  }
+
+  wrap(GPUDevice.prototype, 'createShaderModule', function (orig, args) {
+    const mod = orig.apply(this, args)
+    const id = cap.shaders.length
+    cap.shaders.push({ id, label: args[0]?.label ?? '', code: args[0]?.code ?? '' })
+    shaderIds.set(mod, id)
+    return mod
+  })
+
+  const recordPipeline = (pipeline, desc, isAsync) => {
+    const id = cap.pipelines.length
+    cap.pipelines.push({
+      id,
+      shaderId: shaderIds.get(desc?.compute?.module) ?? -1,
+      entryPoint: desc?.compute?.entryPoint ?? '',
+      label: desc?.label ?? '',
+      constants: desc?.compute?.constants ?? null,
+      async: isAsync,
+    })
+    pipelineIds.set(pipeline, id)
+  }
+  wrap(GPUDevice.prototype, 'createComputePipeline', function (orig, args) {
+    const p = orig.apply(this, args)
+    recordPipeline(p, args[0], false)
+    return p
+  })
+  wrap(GPUDevice.prototype, 'createComputePipelineAsync', function (orig, args) {
+    return orig.apply(this, args).then((p) => { recordPipeline(p, args[0], true); return p })
+  })
+
+  wrap(GPUCommandEncoder.prototype, 'beginComputePass', function (orig, args) {
+    cap.counters.passes++
+    return orig.apply(this, args)
+  })
+  wrap(GPUComputePassEncoder.prototype, 'setPipeline', function (orig, args) {
+    passPipeline.set(this, pipelineIds.get(args[0]) ?? -1)
+    return orig.apply(this, args)
+  })
+  const countDispatch = (pass, key) => {
+    cap.counters[key]++
+    const pid = passPipeline.get(pass) ?? -1
+    cap.dispatchByPipeline[pid] = (cap.dispatchByPipeline[pid] ?? 0) + 1
+  }
+  wrap(GPUComputePassEncoder.prototype, 'dispatchWorkgroups', function (orig, args) {
+    countDispatch(this, 'dispatch')
+    return orig.apply(this, args)
+  })
+  wrap(GPUComputePassEncoder.prototype, 'dispatchWorkgroupsIndirect', function (orig, args) {
+    countDispatch(this, 'dispatchIndirect')
+    return orig.apply(this, args)
+  })
+  wrap(GPUQueue.prototype, 'submit', function (orig, args) {
+    cap.counters.submits++
+    return orig.apply(this, args)
+  })
+  wrap(GPUQueue.prototype, 'writeBuffer', function (orig, args) {
+    cap.counters.writeBuffer++
+    return orig.apply(this, args)
+  })
+  wrap(GPUBuffer.prototype, 'mapAsync', function (orig, args) {
+    cap.counters.mapAsync++
+    return orig.apply(this, args)
+  })
+})()
+</script>
+
+<script type="module">
+  const log = (s) => { document.getElementById('log').append(s + '\n'); console.log('[capture] ' + s) }
+  const params = new URLSearchParams(location.search)
+  const VERSION = params.get('v') ?? '0.17.1'
+  const MAX_CHUNKS = Number(params.get('chunks') ?? 48)
+  try {
+    const adapter = await navigator.gpu?.requestAdapter()
+    window.__capture.adapter = adapter
+      ? { vendor: adapter.info?.vendor, architecture: adapter.info?.architecture, device: adapter.info?.device, description: adapter.info?.description, features: [...adapter.features] }
+      : null
+    log('adapter: ' + JSON.stringify(window.__capture.adapter))
+    log('crossOriginIsolated: ' + self.crossOriginIsolated)
+
+    const { Engine } = await import(`https://cdn.jsdelivr.net/npm/@litert-lm/core@${VERSION}/+esm`)
+    window.__capture.version = VERSION
+    __mark('import-done')
+
+    const engine = await Engine.create({ model: '/gemma-4-E2B-it-web.litertlm' })
+    __mark('engine-created')
+    log(`engine created: ${window.__capture.shaders.length} shaders, ${window.__capture.pipelines.length} pipelines so far`)
+
+    const chat = await engine.createConversation()
+    __mark('conversation-created')
+
+    let text = ''
+    let chunks = 0
+    for await (const chunk of chat.sendMessageStreaming('Count from one to thirty in English words, separated by commas.')) {
+      const piece = chunk?.content?.[0]?.text ?? ''
+      text += piece
+      __mark(`chunk-${chunks}`)
+      if (++chunks >= MAX_CHUNKS) break
+    }
+    __mark('generation-done')
+    window.__capture.output = text
+    log(`output (${chunks} chunks): ${text}`)
+    log(`total: ${window.__capture.shaders.length} shaders, ${window.__capture.pipelines.length} pipelines, ${window.__capture.counters.dispatch} dispatches`)
+  } catch (e) {
+    window.__capture.error = String(e?.stack ?? e)
+    log('ERROR: ' + window.__capture.error)
+  }
+  window.__captureDone = true
+</script>

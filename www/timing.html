@@ -1,0 +1,258 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>LiteRT-LM web decode timing</title>
+<pre id="log" style="white-space: pre-wrap; font: 12px monospace"></pre>
+
+<!-- Where does a decoded token's time go?
+     mode=bare   : only mapAsync is wrapped (two timestamps per token), so the
+                   measured rate is as close to unhooked as this method allows.
+     mode=gpu    : enables timestamp-query on the device LiteRT-LM requests and
+                   injects timestampWrites into its compute passes: GPU
+                   execution time per pass.
+     mode=kernel : for a few tokens, additionally splits every dispatch into
+                   its own timestamped pass (replaying pipeline and bind
+                   groups): GPU execution time per kernel. Heavily perturbs
+                   the run, so only the per-kernel attribution is meaningful.
+     CPU-side numbers come from mode=bare only. -->
+<script>
+(() => {
+  const params = new URLSearchParams(location.search)
+  const MODE = params.get('mode') ?? 'bare'
+  const T = (window.__timing = {
+    mode: MODE, marks: [], maps: [], passes: [], pipelines: [], gpuErrors: [],
+    chunk: 0, armed: false, gpuNote: '', debugGroupCalls: 0,
+  })
+  window.__mark = (name) => T.marks.push({ name, t: performance.now() })
+
+  const origMapAsync = GPUBuffer.prototype.mapAsync
+  GPUBuffer.prototype.mapAsync = function (...args) {
+    const rec = { call: performance.now(), resolve: 0, chunk: T.chunk }
+    T.maps.push(rec)
+    const p = origMapAsync.apply(this, args)
+    p.then(() => { rec.resolve = performance.now() }, () => { rec.resolve = -1 })
+    return p
+  }
+
+  if (MODE === 'bare') return
+
+  const SPLIT = MODE === 'kernel'
+  const MAXQ = 4096
+  const MAX_SETS = SPLIT ? 10 : 1
+  let device = null
+  const sets = []
+  let nextQuery = 0
+  const allocQuery = () => {
+    const si = Math.floor(nextQuery / MAXQ)
+    if (!device || si >= MAX_SETS) return null
+    if (!sets[si]) sets[si] = device.createQuerySet({ type: 'timestamp', count: MAXQ })
+    const q = nextQuery % MAXQ
+    nextQuery += 2
+    return { si, q }
+  }
+
+  const origRequestDevice = GPUAdapter.prototype.requestDevice
+  GPUAdapter.prototype.requestDevice = async function (desc = {}) {
+    const feats = new Set(desc.requiredFeatures ?? [])
+    if (this.features.has('timestamp-query')) feats.add('timestamp-query')
+    const dev = await origRequestDevice.call(this, { ...desc, requiredFeatures: [...feats] })
+    if (!device && dev.features.has('timestamp-query')) {
+      device = dev
+      // Splitting passes must not go unnoticed if it produces invalid commands.
+      dev.addEventListener('uncapturederror', (e) => {
+        if (T.gpuErrors.length < 20) T.gpuErrors.push(String(e.error?.message ?? e).slice(0, 300))
+      })
+    }
+    return dev
+  }
+
+  // Pipeline ids in creation order, with the shader size so the driver can
+  // check they line up with the capture run's manifest.
+  const shaderBytes = new WeakMap()
+  const pipelineIds = new WeakMap()
+  const origCreateShader = GPUDevice.prototype.createShaderModule
+  GPUDevice.prototype.createShaderModule = function (...a) {
+    const m = origCreateShader.apply(this, a)
+    shaderBytes.set(m, a[0]?.code?.length ?? -1)
+    return m
+  }
+  const notePipeline = (p, desc) => {
+    pipelineIds.set(p, T.pipelines.length)
+    T.pipelines.push({ id: T.pipelines.length, shaderBytes: shaderBytes.get(desc?.compute?.module) ?? -1 })
+  }
+  const origCreatePipe = GPUDevice.prototype.createComputePipeline
+  GPUDevice.prototype.createComputePipeline = function (...a) {
+    const p = origCreatePipe.apply(this, a)
+    notePipeline(p, a[0])
+    return p
+  }
+  const origCreatePipeAsync = GPUDevice.prototype.createComputePipelineAsync
+  GPUDevice.prototype.createComputePipelineAsync = function (...a) {
+    return origCreatePipeAsync.apply(this, a).then((p) => { notePipeline(p, a[0]); return p })
+  }
+
+  const encDevice = new WeakMap()
+  const origCreateEnc = GPUDevice.prototype.createCommandEncoder
+  GPUDevice.prototype.createCommandEncoder = function (...a) {
+    const e = origCreateEnc.apply(this, a)
+    encDevice.set(e, this)
+    return e
+  }
+
+  // state per pass object the caller holds. `cur` is the real pass commands
+  // currently go to; in split mode it changes at every dispatch.
+  const st = new WeakMap()
+  const withTs = (desc, a) => ({
+    ...(desc ?? {}),
+    timestampWrites: { querySet: sets[a.si], beginningOfPassWriteIndex: a.q, endOfPassWriteIndex: a.q + 1 },
+  })
+  const newRec = (a, chunk) => {
+    const rec = { si: a.si, q: a.q, chunk, dispatches: 0, pid: -1 }
+    T.passes.push(rec)
+    return rec
+  }
+
+  const origBegin = GPUCommandEncoder.prototype.beginComputePass
+  GPUCommandEncoder.prototype.beginComputePass = function (desc) {
+    if (!T.armed || encDevice.get(this) !== device || desc?.timestampWrites) return origBegin.call(this, desc)
+    const a = allocQuery()
+    if (!a) return origBegin.call(this, desc)
+    const pass = origBegin.call(this, withTs(desc, a))
+    st.set(pass, { enc: this, desc, cur: pass, rec: newRec(a, T.chunk), chunk: T.chunk, pipeline: null, pid: -1, bind: new Map(), used: false })
+    return pass
+  }
+
+  const P = GPUComputePassEncoder.prototype
+  const origSetPipeline = P.setPipeline
+  const origSetBindGroup = P.setBindGroup
+  const origDispatch = P.dispatchWorkgroups
+  const origEnd = P.end
+
+  P.setPipeline = function (p) {
+    const s = st.get(this)
+    if (!s) return origSetPipeline.call(this, p)
+    s.pipeline = p
+    s.pid = pipelineIds.get(p) ?? -1
+    return origSetPipeline.call(s.cur, p)
+  }
+  P.setBindGroup = function (...args) {
+    const s = st.get(this)
+    if (!s) return origSetBindGroup.apply(this, args)
+    s.bind.set(args[0], args)
+    return origSetBindGroup.apply(s.cur, args)
+  }
+  P.dispatchWorkgroups = function (...args) {
+    const s = st.get(this)
+    if (!s) return origDispatch.apply(this, args)
+    if (SPLIT && s.used) {
+      const a = allocQuery()
+      if (a) {
+        origEnd.call(s.cur)
+        s.cur = origBegin.call(s.enc, withTs(s.desc, a))
+        s.rec = newRec(a, s.chunk)
+        if (s.pipeline) origSetPipeline.call(s.cur, s.pipeline)
+        for (const bg of s.bind.values()) origSetBindGroup.apply(s.cur, bg)
+      }
+    }
+    s.used = true
+    s.rec.dispatches++
+    s.rec.pid = s.pid
+    s.rec.wg = args.slice(0, 3)
+    return origDispatch.apply(s.cur, args)
+  }
+  P.end = function () {
+    const s = st.get(this)
+    return origEnd.call(s ? s.cur : this)
+  }
+  for (const name of ['pushDebugGroup', 'popDebugGroup', 'insertDebugMarker']) {
+    const orig = P[name]
+    P[name] = function (...args) {
+      const s = st.get(this)
+      if (s) T.debugGroupCalls++
+      return orig.apply(s ? s.cur : this, args)
+    }
+  }
+
+  // Resolve with the unwrapped methods so this readback is not itself recorded.
+  window.__readGpu = async () => {
+    if (!device) { T.gpuNote = 'timestamp-query unavailable on this device'; return }
+    if (nextQuery === 0) { T.gpuNote = 'no passes were instrumented'; return }
+    const enc = origCreateEnc.call(device)
+    const reads = sets.map((qs, si) => {
+      const n = Math.min(MAXQ, nextQuery - si * MAXQ)
+      const resolveBuf = device.createBuffer({ size: n * 8, usage: GPUBufferUsage.QUERY_RESOLVE | GPUBufferUsage.COPY_SRC })
+      const readBuf = device.createBuffer({ size: n * 8, usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.MAP_READ })
+      enc.resolveQuerySet(qs, 0, n, resolveBuf, 0)
+      enc.copyBufferToBuffer(resolveBuf, 0, readBuf, 0, n * 8)
+      return readBuf
+    })
+    device.queue.submit([enc.finish()])
+    const ts = []
+    for (const readBuf of reads) {
+      await origMapAsync.call(readBuf, GPUMapMode.READ)
+      ts.push(new BigUint64Array(readBuf.getMappedRange().slice(0)))
+      readBuf.unmap()
+    }
+    let base = null
+    for (const arr of ts) for (const v of arr) if (v !== 0n && (base === null || v < base)) base = v
+    for (const p of T.passes) {
+      p.beginNs = Number(ts[p.si][p.q] - base)
+      p.endNs = Number(ts[p.si][p.q + 1] - base)
+    }
+    T.gpuNote = `${T.passes.length} passes instrumented in ${sets.length} query set(s)` +
+      (nextQuery >= MAXQ * MAX_SETS ? ' (query sets full)' : '')
+  }
+})()
+</script>
+
+<script type="module">
+  const log = (s) => { document.getElementById('log').append(s + '\n'); console.log('[timing] ' + s) }
+  const params = new URLSearchParams(location.search)
+  const VERSION = params.get('v') ?? '0.17.1'
+  const MAX_CHUNKS = Number(params.get('chunks') ?? 200)
+  const T = window.__timing
+  // gpu: timestamp the whole warm message after its first tokens.
+  // kernel: split only a short window, it is expensive.
+  const ARM_AT = T.mode === 'kernel' ? 10 : 4
+  const DISARM_AT = T.mode === 'kernel' ? 17 : Infinity
+  try {
+    const adapter = await navigator.gpu?.requestAdapter({ powerPreference: 'high-performance' })
+    T.adapter = adapter ? { vendor: adapter.info?.vendor, architecture: adapter.info?.architecture } : null
+    T.version = VERSION
+    log(`mode=${T.mode} adapter=${JSON.stringify(T.adapter)} isolated=${self.crossOriginIsolated}`)
+
+    const { Engine } = await import(`https://cdn.jsdelivr.net/npm/@litert-lm/core@${VERSION}/+esm`)
+    __mark('import-done')
+    const engine = await Engine.create({ model: '/gemma-4-E2B-it-web.litertlm' })
+    __mark('engine-created')
+
+    const run = async (label, prompt, arm) => {
+      const chat = await engine.createConversation()
+      let text = ''
+      let n = 0
+      __mark(`${label}:send`)
+      for await (const chunk of chat.sendMessageStreaming(prompt)) {
+        text += chunk?.content?.[0]?.text ?? ''
+        T.chunk++
+        __mark(`${label}:chunk-${n}`)
+        if (arm && n === ARM_AT) T.armed = true
+        if (arm && n === DISARM_AT) T.armed = false
+        if (++n >= MAX_CHUNKS) break
+      }
+      T.armed = false
+      __mark(`${label}:done`)
+      await chat.delete()
+      log(`${label}: ${n} chunks: ${text.slice(0, 160)}`)
+      return { text, chunks: n }
+    }
+
+    // Different prompts so the warm run cannot be served from a shared prefix.
+    T.cold = await run('cold', 'Count from one to thirty in English words, separated by commas.', false)
+    T.warm = await run('warm', 'Count down from thirty to one in English words, separated by commas.', true)
+    if (window.__readGpu) await window.__readGpu()
+    log(`gpu: ${T.gpuNote || 'n/a'}; validation errors: ${T.gpuErrors.length}; debug-group calls: ${T.debugGroupCalls}`)
+  } catch (e) {
+    T.error = String(e?.stack ?? e)
+    log('ERROR: ' + T.error)
+  }
+  window.__timingDone = true
+</script>

@@ -1,0 +1,211 @@
+{
+  "variants": {
+    "orig": {
+      "buf": false,
+      "ks": 4,
+      "wgX": 16,
+      "dispatchX": 192,
+      "invocations": 64,
+      "threads": 12288,
+      "maxAbsErr": 0.0062451958656311035,
+      "maxRef": 2.1652982234954834,
+      "vsOrig": 0,
+      "cold": {
+        "median": 60.456,
+        "p10": 58.327,
+        "p90": 64.451,
+        "n": 576
+      },
+      "hot": {
+        "median": 43.29,
+        "p10": 42.538,
+        "p90": 48.078,
+        "n": 24
+      }
+    },
+    "wg256-same": {
+      "buf": false,
+      "ks": 4,
+      "wgX": 64,
+      "dispatchX": 48,
+      "invocations": 256,
+      "threads": 12288,
+      "maxAbsErr": 0.0062451958656311035,
+      "maxRef": 2.1652982234954834,
+      "vsOrig": 0,
+      "cold": {
+        "median": 61.206,
+        "p10": 58.123,
+        "p90": 67.831,
+        "n": 576
+      },
+      "hot": {
+        "median": 48.373,
+        "p10": 45.247,
+        "p90": 49.622,
+        "n": 24
+      }
+    },
+    "split16-64": {
+      "buf": false,
+      "ks": 16,
+      "wgX": 4,
+      "dispatchX": 768,
+      "invocations": 64,
+      "threads": 49152,
+      "maxAbsErr": 0.003444269299507141,
+      "maxRef": 2.1652982234954834,
+      "vsOrig": 0.0068359375,
+      "cold": {
+        "median": 40.122,
+        "p10": 37.498,
+        "p90": 43.123,
+        "n": 576
+      },
+      "hot": {
+        "median": 32.915,
+        "p10": 32.623,
+        "p90": 35.123,
+        "n": 24
+      }
+    },
+    "split32-64": {
+      "buf": false,
+      "ks": 32,
+      "wgX": 2,
+      "dispatchX": 1536,
+      "invocations": 64,
+      "threads": 98304,
+      "maxAbsErr": 0.0020369291305541992,
+      "maxRef": 2.1652982234954834,
+      "vsOrig": 0.00634765625,
+      "cold": {
+        "median": 36.831,
+        "p10": 35.581,
+        "p90": 39.207,
+        "n": 576
+      },
+      "hot": {
+        "median": 34.664,
+        "p10": 33.998,
+        "p90": 37.916,
+        "n": 24
+      }
+    },
+    "split16-256": {
+      "buf": false,
+      "ks": 16,
+      "wgX": 16,
+      "dispatchX": 192,
+      "invocations": 256,
+      "threads": 49152,
+      "maxAbsErr": 0.003444269299507141,
+      "maxRef": 2.1652982234954834,
+      "vsOrig": 0.0068359375,
+      "cold": {
+        "median": 37.79,
+        "p10": 37.039,
+        "p90": 40.539,
+        "n": 576
+      },
+      "hot": {
+        "median": 34.248,
+        "p10": 33.748,
+        "p90": 53.08,
+        "n": 24
+      }
+    },
+    "buf-4": {
+      "buf": true,
+      "ks": 4,
+      "wgX": 16,
+      "dispatchX": 192,
+      "invocations": 64,
+      "threads": 12288,
+      "maxAbsErr": 0.0062451958656311035,
+      "maxRef": 2.1652982234954834,
+      "vsOrig": 0,
+      "cold": {
+        "median": 55.414,
+        "p10": 53.871,
+        "p90": 58.954,
+        "n": 576
+      },
+      "hot": {
+        "median": 42.039,
+        "p10": 41.414,
+        "p90": 45.455,
+        "n": 24
+      }
+    }
+  },
+  "weightBytes": 4718592,
+  "order": [
+    {
+      "name": "orig",
+      "coldMedian": 60.826,
+      "hotMedian": 43.537
+    },
+    {
+      "name": "wg256-same",
+      "coldMedian": 60.369,
+      "hotMedian": 48.08
+    },
+    {
+      "name": "split16-64",
+      "coldMedian": 40.082,
+      "hotMedian": 32.831
+    },
+    {
+      "name": "split32-64",
+      "coldMedian": 36.831,
+      "hotMedian": 34.664
+    },
+    {
+      "name": "split16-256",
+      "coldMedian": 37.748,
+      "hotMedian": 34.248
+    },
+    {
+      "name": "buf-4",
+      "coldMedian": 56.331,
+      "hotMedian": 42.623
+    },
+    {
+      "name": "buf-4",
+      "coldMedian": 55.038,
+      "hotMedian": 41.706
+    },
+    {
+      "name": "split16-256",
+      "coldMedian": 37.831,
+      "hotMedian": 36.081
+    },
+    {
+      "name": "split32-64",
+      "coldMedian": 36.791,
+      "hotMedian": 34.665
+    },
+    {
+      "name": "split16-64",
+      "coldMedian": 40.123,
+      "hotMedian": 33.498
+    },
+    {
+      "name": "wg256-same",
+      "coldMedian": 61.872,
+      "hotMedian": 48.414
+    },
+    {
+      "name": "orig",
+      "coldMedian": 60.247,
+      "hotMedian": 43.29
+    }
+  ],
+  "adapter": {
+    "vendor": "apple",
+    "architecture": "metal-3"
+  },
+  "baseBytes": 3525,
+  "date": "2026-09-22T03:06:35.136Z"
+}

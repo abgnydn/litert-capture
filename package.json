@@ -1,0 +1,22 @@
+{
+  "name": "litert-capture",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Captures LiteRT-LM's WebGPU kernels from the shipped npm package, profiles them, and measures a tuning change in isolation and in the running model.",
+  "type": "module",
+  "license": "MIT",
+  "packageManager": "pnpm@11.9.0",
+  "scripts": {
+    "capture": "node capture.mjs",
+    "timing": "node timing.mjs bare",
+    "trace": "node trace.mjs",
+    "analyze": "node analyze.mjs 400",
+    "microbench": "node microbench.mjs",
+    "patch": "node patch.mjs 2",
+    "space": "node space/build.mjs",
+    "notebook": "node colab/build-notebook.mjs"
+  },
+  "dependencies": {
+    "puppeteer": "24.40.0"
+  }
+}

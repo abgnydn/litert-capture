@@ -1,0 +1,162 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>LiteRT-LM web resource trace</title>
+<pre id="log" style="white-space: pre-wrap; font: 12px monospace"></pre>
+
+<!-- What does each dispatch operate on? Records every texture and buffer
+     created (size, format, usage), every bind group's resources, the latest
+     writeBuffer contents per uniform location, and for a window of decode
+     tokens the full dispatch sequence with the resources and uniform values
+     each dispatch saw. Timing is not measured here; join on pipeline id with
+     out/kernel-profile.json. -->
+<script>
+(() => {
+  const R = (window.__trace = {
+    textures: [], buffers: [], pipelines: [], shaders: [],
+    dispatches: [], prefillPipelines: {}, chunk: 0, armed: false, phase: 'load',
+  })
+  window.__mark = () => {}
+
+  const texId = new WeakMap(), bufId = new WeakMap(), viewTex = new WeakMap()
+  const shaderId = new WeakMap(), pipeId = new WeakMap(), bgEntries = new WeakMap()
+  const lastWrite = new WeakMap() // buffer -> Map(offset -> Uint8Array copy)
+
+  const wrap = (proto, name, fn) => {
+    const orig = proto[name]
+    proto[name] = function (...args) { return fn.call(this, orig, args) }
+  }
+
+  wrap(GPUDevice.prototype, 'createTexture', function (orig, args) {
+    const t = orig.apply(this, args)
+    const d = args[0] ?? {}
+    const size = Array.isArray(d.size) ? d.size : [d.size?.width ?? 1, d.size?.height ?? 1, d.size?.depthOrArrayLayers ?? 1]
+    texId.set(t, R.textures.length)
+    R.textures.push({ id: R.textures.length, size, format: d.format, usage: d.usage, phase: R.phase })
+    return t
+  })
+  wrap(GPUTexture.prototype, 'createView', function (orig, args) {
+    const v = orig.apply(this, args)
+    viewTex.set(v, texId.get(this) ?? -1)
+    return v
+  })
+  wrap(GPUDevice.prototype, 'createBuffer', function (orig, args) {
+    const b = orig.apply(this, args)
+    bufId.set(b, R.buffers.length)
+    R.buffers.push({ id: R.buffers.length, size: args[0]?.size ?? 0, usage: args[0]?.usage ?? 0, phase: R.phase })
+    return b
+  })
+  wrap(GPUDevice.prototype, 'createShaderModule', function (orig, args) {
+    const m = orig.apply(this, args)
+    shaderId.set(m, R.shaders.length)
+    R.shaders.push({ id: R.shaders.length, bytes: args[0]?.code?.length ?? -1 })
+    return m
+  })
+  const notePipeline = (p, desc) => {
+    pipeId.set(p, R.pipelines.length)
+    R.pipelines.push({ id: R.pipelines.length, shaderId: shaderId.get(desc?.compute?.module) ?? -1, constants: desc?.compute?.constants ?? null })
+  }
+  wrap(GPUDevice.prototype, 'createComputePipeline', function (orig, args) {
+    const p = orig.apply(this, args); notePipeline(p, args[0]); return p
+  })
+  wrap(GPUDevice.prototype, 'createComputePipelineAsync', function (orig, args) {
+    return orig.apply(this, args).then((p) => { notePipeline(p, args[0]); return p })
+  })
+  wrap(GPUDevice.prototype, 'createBindGroup', function (orig, args) {
+    const bg = orig.apply(this, args)
+    const entries = []
+    for (const e of args[0]?.entries ?? []) {
+      const r = e.resource
+      if (r instanceof GPUTextureView) entries.push({ binding: e.binding, kind: 'texture', tex: viewTex.get(r) ?? -1 })
+      else if (r && r.buffer instanceof GPUBuffer) entries.push({ binding: e.binding, kind: 'buffer', buf: bufId.get(r.buffer) ?? -1, offset: r.offset ?? 0, size: r.size ?? null, _buffer: r.buffer })
+      else entries.push({ binding: e.binding, kind: 'other' })
+    }
+    bgEntries.set(bg, entries)
+    return bg
+  })
+  wrap(GPUQueue.prototype, 'writeBuffer', function (orig, args) {
+    const [buffer, bufferOffset, data, dataOffset = 0, size] = args
+    try {
+      let bytes
+      if (data instanceof ArrayBuffer) bytes = new Uint8Array(data, dataOffset, size ?? data.byteLength - dataOffset)
+      else {
+        const bpe = data.BYTES_PER_ELEMENT ?? 1
+        bytes = new Uint8Array(data.buffer, data.byteOffset + dataOffset * bpe, (size ?? data.length - dataOffset) * bpe)
+      }
+      if (bytes.byteLength <= 256) {
+        if (!lastWrite.has(buffer)) lastWrite.set(buffer, new Map())
+        lastWrite.get(buffer).set(bufferOffset, bytes.slice())
+      }
+    } catch {}
+    return orig.apply(this, args)
+  })
+
+  const passState = new WeakMap()
+  wrap(GPUCommandEncoder.prototype, 'beginComputePass', function (orig, args) {
+    const pass = orig.apply(this, args)
+    passState.set(pass, { pid: -1, groups: new Map() })
+    return pass
+  })
+  wrap(GPUComputePassEncoder.prototype, 'setPipeline', function (orig, args) {
+    passState.get(this).pid = pipeId.get(args[0]) ?? -1
+    return orig.apply(this, args)
+  })
+  wrap(GPUComputePassEncoder.prototype, 'setBindGroup', function (orig, args) {
+    passState.get(this).groups.set(args[0], bgEntries.get(args[1]) ?? [])
+    return orig.apply(this, args)
+  })
+  wrap(GPUComputePassEncoder.prototype, 'dispatchWorkgroups', function (orig, args) {
+    const s = passState.get(this)
+    if (R.phase === 'prefill') R.prefillPipelines[s.pid] = (R.prefillPipelines[s.pid] ?? 0) + 1
+    if (R.armed) {
+      const res = []
+      for (const [, entries] of s.groups) for (const e of entries) {
+        if (e.kind === 'buffer') {
+          const w = lastWrite.get(e._buffer)?.get(e.offset)
+          res.push({ binding: e.binding, kind: 'buffer', buf: e.buf, offset: e.offset, size: e.size, uniform: w ? Array.from(new Int32Array(w.buffer, w.byteOffset, Math.floor(w.byteLength / 4))) : null })
+        } else res.push({ binding: e.binding, kind: e.kind, tex: e.tex })
+      }
+      R.dispatches.push({ chunk: R.chunk, pid: s.pid, wg: args.slice(0, 3), res })
+    }
+    return orig.apply(this, args)
+  })
+})()
+</script>
+
+<script type="module">
+  const log = (s) => { document.getElementById('log').append(s + '\n'); console.log('[trace] ' + s) }
+  const params = new URLSearchParams(location.search)
+  const VERSION = params.get('v') ?? '0.17.1'
+  const R = window.__trace
+  const ARM_AT = 10, DISARM_AT = 13 // three decode tokens of the warm message
+  try {
+    const adapter = await navigator.gpu?.requestAdapter({ powerPreference: 'high-performance' })
+    R.adapter = adapter ? { vendor: adapter.info?.vendor, architecture: adapter.info?.architecture } : null
+    R.version = VERSION
+    const { Engine } = await import(`https://cdn.jsdelivr.net/npm/@litert-lm/core@${VERSION}/+esm`)
+    const engine = await Engine.create({ model: '/gemma-4-E2B-it-web.litertlm' })
+    R.phase = 'run'
+    const run = async (label, prompt, arm) => {
+      const chat = await engine.createConversation()
+      let text = '', n = 0
+      R.phase = label === 'cold' ? 'prefill' : 'run'
+      for await (const chunk of chat.sendMessageStreaming(prompt)) {
+        if (R.phase === 'prefill') R.phase = 'run' // first chunk out: prefill is over
+        text += chunk?.content?.[0]?.text ?? ''
+        R.chunk++
+        if (arm && n === ARM_AT) R.armed = true
+        if (arm && n === DISARM_AT) R.armed = false
+        if (++n >= 40) break
+      }
+      R.armed = false
+      await chat.delete()
+      log(`${label}: ${n} chunks: ${text.slice(0, 100)}`)
+    }
+    await run('cold', 'Count from one to thirty in English words, separated by commas.', false)
+    await run('warm', 'Count down from thirty to one in English words, separated by commas.', true)
+    log(`textures ${R.textures.length}, buffers ${R.buffers.length}, pipelines ${R.pipelines.length}, traced dispatches ${R.dispatches.length}, prefill pipelines ${Object.keys(R.prefillPipelines).length}`)
+  } catch (e) {
+    R.error = String(e?.stack ?? e)
+    log('ERROR: ' + R.error)
+  }
+  window.__traceDone = true
+</script>

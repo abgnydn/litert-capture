@@ -1,0 +1,244 @@
+[
+  {
+    "set": "none",
+    "gpuErrors": [],
+    "patched": [],
+    "scaled": 0,
+    "unscaled": 210392,
+    "cold": {
+      "text": "One, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, twenty-one, twenty-two, twenty-three, twenty-four, twenty-five, twenty-six, twenty-seven, twenty-eight, twenty-nine, thirty.",
+      "chunks": 78
+    },
+    "warm": {
+      "text": "Thirty, twenty-nine, twenty-eight, twenty-seven, twenty-six, twenty-five, twenty-four, twenty-three, twenty-two, twenty-one, nineteen, eighteen, seventeen, sixteen, fifteen, fourteen, thirteen, twelve, eleven, ten, nine, eight, seven, six, five, four, three, two, one.",
+      "chunks": 76
+    },
+    "msPerToken": 18.36499997973442,
+    "n": 67,
+    "firstChunkMs": 86.11500000953674,
+    "engineMs": 3155.1500000059605
+  },
+  {
+    "set": "0112",
+    "gpuErrors": [],
+    "patched": [
+      {
+        "id": 112,
+        "from": "16x4",
+        "to": "2x32",
+        "scale": 8
+      }
+    ],
+    "scaled": 6320,
+    "unscaled": 204072,
+    "cold": {
+      "text": "One, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, twenty-one, twenty-two, twenty-three, twenty-four, twenty-five, twenty-six, twenty-seven, twenty-eight, twenty-nine, thirty.",
+      "chunks": 78
+    },
+    "warm": {
+      "text": "Thirty, twenty-nine, twenty-eight, twenty-seven, twenty-six, twenty-five, twenty-four, twenty-three, twenty-two, twenty-one, nineteen, eighteen, seventeen, sixteen, fifteen, fourteen, thirteen, twelve, eleven, ten, nine, eight, seven, six, five, four, three, two, one.",
+      "chunks": 76
+    },
+    "msPerToken": 17.674999982118607,
+    "n": 67,
+    "firstChunkMs": 80.77000001072884,
+    "engineMs": 3006.889999985695
+  },
+  {
+    "set": "0112,0105",
+    "gpuErrors": [],
+    "patched": [
+      {
+        "id": 105,
+        "from": "16x4",
+        "to": "2x32",
+        "scale": 8
+      },
+      {
+        "id": 112,
+        "from": "16x4",
+        "to": "2x32",
+        "scale": 8
+      }
+    ],
+    "scaled": 12320,
+    "unscaled": 200680,
+    "cold": {
+      "text": "One, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, twenty-one, twenty-two, twenty-three, twenty-four, twenty-five, twenty-six, twenty-seven, twenty-eight, twenty-nine, thirty.",
+      "chunks": 78
+    },
+    "warm": {
+      "text": "Thirty, twenty-nine, twenty-eight, twenty-seven, twenty-six, twenty-five, twenty-four, twenty-three, twenty-two, twenty-one, twenty, nineteen, eighteen, seventeen, sixteen, fifteen, fourteen, thirteen, twelve, eleven, ten, nine, eight, seven, six, five, four, three, two, one.",
+      "chunks": 78
+    },
+    "msPerToken": 16.354999989271164,
+    "n": 69,
+    "firstChunkMs": 77.61999997496605,
+    "engineMs": 2819.264999985695
+  },
+  {
+    "set": "all",
+    "gpuErrors": [],
+    "patched": [
+      {
+        "id": 99,
+        "from": "4x16",
+        "to": "2x128",
+        "scale": 2
+      },
+      {
+        "id": 105,
+        "from": "16x4",
+        "to": "2x32",
+        "scale": 8
+      },
+      {
+        "id": 112,
+        "from": "16x4",
+        "to": "2x32",
+        "scale": 8
+      },
+      {
+        "id": 113,
+        "from": "2x32",
+        "to": "1x256",
+        "scale": 2
+      }
+    ],
+    "scaled": 28960,
+    "unscaled": 184040,
+    "cold": {
+      "text": "One, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, twenty-one, twenty-two, twenty-three, twenty-four, twenty-five, twenty-six, twenty-seven, twenty-eight, twenty-nine, thirty.",
+      "chunks": 78
+    },
+    "warm": {
+      "text": "Thirty, twenty-nine, twenty-eight, twenty-seven, twenty-six, twenty-five, twenty-four, twenty-three, twenty-two, twenty-one, twenty, nineteen, eighteen, seventeen, sixteen, fifteen, fourteen, thirteen, twelve, eleven, ten, nine, eight, seven, six, five, four, three, two, one.",
+      "chunks": 78
+    },
+    "msPerToken": 14.849999994039536,
+    "n": 69,
+    "firstChunkMs": 73.97499999403954,
+    "engineMs": 2988.935000002384
+  },
+  {
+    "set": "none",
+    "gpuErrors": [],
+    "patched": [],
+    "scaled": 0,
+    "unscaled": 210392,
+    "cold": {
+      "text": "One, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, twenty-one, twenty-two, twenty-three, twenty-four, twenty-five, twenty-six, twenty-seven, twenty-eight, twenty-nine, thirty.",
+      "chunks": 78
+    },
+    "warm": {
+      "text": "Thirty, twenty-nine, twenty-eight, twenty-seven, twenty-six, twenty-five, twenty-four, twenty-three, twenty-two, twenty-one, nineteen, eighteen, seventeen, sixteen, fifteen, fourteen, thirteen, twelve, eleven, ten, nine, eight, seven, six, five, four, three, two, one.",
+      "chunks": 76
+    },
+    "msPerToken": 18.899999976158142,
+    "n": 67,
+    "firstChunkMs": 86.64999997615814,
+    "engineMs": 2966.5349999964237
+  },
+  {
+    "set": "0112",
+    "gpuErrors": [],
+    "patched": [
+      {
+        "id": 112,
+        "from": "16x4",
+        "to": "2x32",
+        "scale": 8
+      }
+    ],
+    "scaled": 6320,
+    "unscaled": 204072,
+    "cold": {
+      "text": "One, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, twenty-one, twenty-two, twenty-three, twenty-four, twenty-five, twenty-six, twenty-seven, twenty-eight, twenty-nine, thirty.",
+      "chunks": 78
+    },
+    "warm": {
+      "text": "Thirty, twenty-nine, twenty-eight, twenty-seven, twenty-six, twenty-five, twenty-four, twenty-three, twenty-two, twenty-one, nineteen, eighteen, seventeen, sixteen, fifteen, fourteen, thirteen, twelve, eleven, ten, nine, eight, seven, six, five, four, three, two, one.",
+      "chunks": 76
+    },
+    "msPerToken": 18.015000015497208,
+    "n": 67,
+    "firstChunkMs": 82.50999999046326,
+    "engineMs": 2938.2849999964237
+  },
+  {
+    "set": "0112,0105",
+    "gpuErrors": [],
+    "patched": [
+      {
+        "id": 105,
+        "from": "16x4",
+        "to": "2x32",
+        "scale": 8
+      },
+      {
+        "id": 112,
+        "from": "16x4",
+        "to": "2x32",
+        "scale": 8
+      }
+    ],
+    "scaled": 12320,
+    "unscaled": 200680,
+    "cold": {
+      "text": "One, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, twenty-one, twenty-two, twenty-three, twenty-four, twenty-five, twenty-six, twenty-seven, twenty-eight, twenty-nine, thirty.",
+      "chunks": 78
+    },
+    "warm": {
+      "text": "Thirty, twenty-nine, twenty-eight, twenty-seven, twenty-six, twenty-five, twenty-four, twenty-three, twenty-two, twenty-one, twenty, nineteen, eighteen, seventeen, sixteen, fifteen, fourteen, thirteen, twelve, eleven, ten, nine, eight, seven, six, five, four, three, two, one.",
+      "chunks": 78
+    },
+    "msPerToken": 16.639999985694885,
+    "n": 69,
+    "firstChunkMs": 78.85500001907349,
+    "engineMs": 2916.050000011921
+  },
+  {
+    "set": "all",
+    "gpuErrors": [],
+    "patched": [
+      {
+        "id": 99,
+        "from": "4x16",
+        "to": "2x128",
+        "scale": 2
+      },
+      {
+        "id": 105,
+        "from": "16x4",
+        "to": "2x32",
+        "scale": 8
+      },
+      {
+        "id": 112,
+        "from": "16x4",
+        "to": "2x32",
+        "scale": 8
+      },
+      {
+        "id": 113,
+        "from": "2x32",
+        "to": "1x256",
+        "scale": 2
+      }
+    ],
+    "scaled": 28960,
+    "unscaled": 184040,
+    "cold": {
+      "text": "One, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, twenty-one, twenty-two, twenty-three, twenty-four, twenty-five, twenty-six, twenty-seven, twenty-eight, twenty-nine, thirty.",
+      "chunks": 78
+    },
+    "warm": {
+      "text": "Thirty, twenty-nine, twenty-eight, twenty-seven, twenty-six, twenty-five, twenty-four, twenty-three, twenty-two, twenty-one, twenty, nineteen, eighteen, seventeen, sixteen, fifteen, fourteen, thirteen, twelve, eleven, ten, nine, eight, seven, six, five, four, three, two, one.",
+      "chunks": 78
+    },
+    "msPerToken": 14.675000011920929,
+    "n": 69,
+    "firstChunkMs": 72.1550000011921,
+    "engineMs": 2648.9150000214577
+  }
+]

@@ -1,0 +1,21 @@
+{
+  "note": "Transcribed from the Colab notebook output (printed RECORD/VAR/ORDER lines), 2026-09-22. f32 transcription of kernel 0112 (f16 -> f32 throughout, scales uploaded as f32) because Chrome exposes no shader-f16 on this adapter. Ten warm-up rounds, then every variant forward and in reverse, samples pooled. Vulkan 1.4.312, NVIDIA driver 580.82.7, Colab T4 runtime, headless Chrome for Testing 153.0.8010.36 via puppeteer with --use-angle=vulkan --enable-features=Vulkan --disable-vulkan-surface --enable-unsafe-webgpu --enable-dawn-features=allow_unsafe_apis,disable_adapter_blocklist --disable-dawn-features=timestamp_quantization.",
+  "date": "2026-09-22T06:09:35.372Z",
+  "f32": true,
+  "gpu": "nvidia/turing (Tesla T4)",
+  "chrome": "153.0.8010.36",
+  "chrome131_features_also_lacked_shader_f16": true,
+  "vulkan": { "apiVersion": "1.4.312", "driverVersion": "580.82.7.0", "shaderFloat16": true, "storageBuffer16BitAccess": true, "uniformAndStorageBuffer16BitAccess": true },
+  "features": ["depth32float-stencil8", "chromium-experimental-subgroup-matrix", "rg11b10ufloat-renderable", "texture-formats-tier1", "bgra8unorm-storage", "chromium-experimental-multi-draw-indirect", "texture-compression-bc", "dual-source-blending", "chromium-experimental-sampling-resource-table", "core-features-and-limits", "chromium-experimental-timestamp-query-inside-passes", "float32-filterable", "indirect-first-instance", "float32-blendable", "subgroup-size-control", "texture-compression-unaligned", "depth-clip-control", "texture-compression-bc-sliced-3d", "clip-distances", "timestamp-query", "texture-formats-tier2", "primitive-index", "texture-component-swizzle", "subgroups"],
+  "weightBytes": 4718592,
+  "variants": {
+    "orig":        { "wgX": 16, "ks": 4,  "invocations": 64,  "threads": 12288, "cold": { "median": 71.81, "p10": 61.44, "p90": 74.11, "n": 576 }, "hot": { "median": 71.68, "n": 24 }, "maxAbsErr": 0.0010132789611816406, "maxRef": 2.165, "vsOrig": 0 },
+    "wg256-same":  { "wgX": 64, "ks": 4,  "invocations": 256, "threads": 12288, "cold": { "median": 77.98, "p10": 67.84, "p90": 80.19, "n": 576 }, "hot": { "median": 77.82, "n": 24 }, "maxAbsErr": 0.0010132789611816406, "maxRef": 2.165, "vsOrig": 0 },
+    "split16-64":  { "wgX": 4,  "ks": 16, "invocations": 64,  "threads": 49152, "cold": { "median": 49.54, "p10": 43.46, "p90": 52.42, "n": 576 }, "hot": { "median": 49.38, "n": 24 }, "maxAbsErr": 0.0010132789611816406, "maxRef": 2.165, "vsOrig": 0.000244140625 },
+    "split32-64":  { "wgX": 2,  "ks": 32, "invocations": 64,  "threads": 98304, "cold": { "median": 46.91, "p10": 39.17, "p90": 48.64, "n": 576 }, "hot": { "median": 47.04, "n": 24 }, "maxAbsErr": 0.0010132789611816406, "maxRef": 2.165, "vsOrig": 0.000244140625 },
+    "split16-256": { "wgX": 16, "ks": 16, "invocations": 256, "threads": 49152, "cold": { "median": 46.02, "p10": 42.14, "p90": 53.25, "n": 576 }, "hot": { "median": 43.78, "n": 24 }, "maxAbsErr": 0.0010132789611816406, "maxRef": 2.165, "vsOrig": 0.000244140625 },
+    "buf-4":       { "wgX": 16, "ks": 4,  "invocations": 64,  "threads": 12288, "cold": { "median": 66.34, "p10": 65.15, "p90": 69.54, "n": 576 }, "hot": { "median": 65.09, "n": 24 }, "maxAbsErr": 0.0010132789611816406, "maxRef": 2.165, "vsOrig": 0 }
+  },
+  "order_cold_hot_medians": [["orig", 73.7, 73.5], ["wg256-same", 79.9, 79.7], ["split16-64", 51.3, 51.2], ["split32-64", 48.0, 47.1], ["split16-256", 52.5, 45.1], ["buf-4", 67.1, 65.6], ["buf-4", 65.7, 64.3], ["split16-256", 42.7, 42.0], ["split32-64", 39.8, 38.9], ["split16-64", 44.4, 43.9], ["wg256-same", 69.0, 67.3], ["orig", 61.9, 61.3]],
+  "earlier_run_with_one_warmup_round": "orig cold median 395 µs (p10 61.7), wg256-same forward-position 400 µs then 70 µs in reverse: the T4 had not left its idle clocks; discarded, warm-up raised to ten rounds."
+}

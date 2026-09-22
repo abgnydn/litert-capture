@@ -1,0 +1,5 @@
+# the 2 GB model bundle (see README, "Run")
+www/*.litertlm
+node_modules/
+.DS_Store
+docs/
