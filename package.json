@@ -12,7 +12,7 @@
     "trace": "node trace.mjs",
     "analyze": "node analyze.mjs 400",
     "microbench": "node microbench.mjs",
-    "patch": "node patch.mjs 2",
+    "patch": "node patch.mjs 5",
     "space": "node space/build.mjs",
     "notebook": "node colab/build-notebook.mjs"
   },

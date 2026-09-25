@@ -1,0 +1,3424 @@
+{
+  "date": "2026-09-24T07:46:59.995Z",
+  "repeats": 5,
+  "steadyFrom": 8,
+  "conditions": [
+    {
+      "condition": "baseline",
+      "patch": "none"
+    },
+    {
+      "condition": "all-four",
+      "patch": "all"
+    },
+    {
+      "condition": "no-0099",
+      "patch": "105,112,113"
+    },
+    {
+      "condition": "no-0105",
+      "patch": "99,112,113"
+    },
+    {
+      "condition": "no-0112",
+      "patch": "99,105,113"
+    },
+    {
+      "condition": "no-0113",
+      "patch": "99,105,112"
+    }
+  ],
+  "shuffleSeed": 1381548739,
+  "orders": [
+    {
+      "rep": 1,
+      "order": [
+        "all-four",
+        "no-0099",
+        "no-0113",
+        "baseline",
+        "no-0105",
+        "no-0112"
+      ]
+    },
+    {
+      "rep": 2,
+      "order": [
+        "no-0112",
+        "baseline",
+        "no-0113",
+        "no-0099",
+        "no-0105",
+        "all-four"
+      ]
+    },
+    {
+      "rep": 3,
+      "order": [
+        "no-0112",
+        "no-0099",
+        "no-0113",
+        "no-0105",
+        "all-four",
+        "baseline"
+      ]
+    },
+    {
+      "rep": 4,
+      "order": [
+        "all-four",
+        "no-0105",
+        "baseline",
+        "no-0112",
+        "no-0099",
+        "no-0113"
+      ]
+    },
+    {
+      "rep": 5,
+      "order": [
+        "baseline",
+        "all-four",
+        "no-0113",
+        "no-0105",
+        "no-0112",
+        "no-0099"
+      ]
+    }
+  ],
+  "failure": null,
+  "summary": [
+    {
+      "condition": "baseline",
+      "patch": "none",
+      "n": 5,
+      "msPerToken": {
+        "median": 17.64500004053116,
+        "min": 16.924999952316284,
+        "max": 17.860000014305115
+      },
+      "tokPerSec": {
+        "median": 56.67327841898364,
+        "min": 55.991041388524174,
+        "max": 59.084195144304516
+      },
+      "speedupVsBaseline": 1,
+      "scaledDispatches": [
+        0
+      ],
+      "patchedPipelines": [
+        0
+      ],
+      "coldChunks": [
+        78
+      ],
+      "warmChunks": [
+        76
+      ],
+      "coldTextIdenticalToBaseline": true,
+      "warmTextIdenticalToBaseline": true
+    },
+    {
+      "condition": "all-four",
+      "patch": "all",
+      "n": 5,
+      "msPerToken": {
+        "median": 14.115000009536743,
+        "min": 13.300000011920929,
+        "max": 14.685000002384186
+      },
+      "tokPerSec": {
+        "median": 70.84661702616748,
+        "min": 68.0966972991246,
+        "max": 75.18796985742027
+      },
+      "speedupVsBaseline": 1.2500885602982206,
+      "scaledDispatches": [
+        28960
+      ],
+      "patchedPipelines": [
+        4
+      ],
+      "coldChunks": [
+        78
+      ],
+      "warmChunks": [
+        78
+      ],
+      "coldTextIdenticalToBaseline": true,
+      "warmTextIdenticalToBaseline": false
+    },
+    {
+      "condition": "no-0099",
+      "patch": "105,112,113",
+      "n": 5,
+      "msPerToken": {
+        "median": 15.570000052452087,
+        "min": 14.675000011920929,
+        "max": 15.939999997615814
+      },
+      "tokPerSec": {
+        "median": 64.22607557040516,
+        "min": 62.73525722393805,
+        "max": 68.14310045571864
+      },
+      "speedupVsBaseline": 1.1332691060429563,
+      "scaledDispatches": [
+        15520
+      ],
+      "patchedPipelines": [
+        3
+      ],
+      "coldChunks": [
+        78
+      ],
+      "warmChunks": [
+        78
+      ],
+      "coldTextIdenticalToBaseline": true,
+      "warmTextIdenticalToBaseline": false
+    },
+    {
+      "condition": "no-0105",
+      "patch": "99,112,113",
+      "n": 5,
+      "msPerToken": {
+        "median": 15.3299999833107,
+        "min": 15.069999992847443,
+        "max": 15.884999990463257
+      },
+      "tokPerSec": {
+        "median": 65.23157215190275,
+        "min": 62.95247092227646,
+        "max": 66.35700069506451
+      },
+      "speedupVsBaseline": 1.1510110932642355,
+      "scaledDispatches": [
+        23040
+      ],
+      "patchedPipelines": [
+        3
+      ],
+      "coldChunks": [
+        78
+      ],
+      "warmChunks": [
+        78
+      ],
+      "coldTextIdenticalToBaseline": true,
+      "warmTextIdenticalToBaseline": false
+    },
+    {
+      "condition": "no-0112",
+      "patch": "99,105,113",
+      "n": 5,
+      "msPerToken": {
+        "median": 14.355000019073486,
+        "min": 14.10999995470047,
+        "max": 15.259999990463257
+      },
+      "tokPerSec": {
+        "median": 69.66213853509579,
+        "min": 65.5307995167071,
+        "max": 70.87172241037958
+      },
+      "speedupVsBaseline": 1.2291884372752524,
+      "scaledDispatches": [
+        22560
+      ],
+      "patchedPipelines": [
+        3
+      ],
+      "coldChunks": [
+        78
+      ],
+      "warmChunks": [
+        78
+      ],
+      "coldTextIdenticalToBaseline": true,
+      "warmTextIdenticalToBaseline": false
+    },
+    {
+      "condition": "no-0113",
+      "patch": "99,105,112",
+      "n": 5,
+      "msPerToken": {
+        "median": 14.469999969005585,
+        "min": 14.134999990463257,
+        "max": 15.129999995231628
+      },
+      "tokPerSec": {
+        "median": 69.10850049357136,
+        "min": 66.09385329247588,
+        "max": 70.74637429605164
+      },
+      "speedupVsBaseline": 1.2194194940101142,
+      "scaledDispatches": [
+        25760
+      ],
+      "patchedPipelines": [
+        3
+      ],
+      "coldChunks": [
+        78
+      ],
+      "warmChunks": [
+        78
+      ],
+      "coldTextIdenticalToBaseline": true,
+      "warmTextIdenticalToBaseline": false
+    }
+  ],
+  "runs": [
+    {
+      "rep": 1,
+      "position": 1,
+      "condition": "all-four",
+      "patch": "all",
+      "want": [
+        99,
+        105,
+        112,
+        113
+      ],
+      "gpuErrors": [],
+      "patched": [
+        {
+          "id": 99,
+          "from": "4x16",
+          "to": "2x128",
+          "scale": 2,
+          "bytes": 3352,
+          "shaderSha256": "f31271cb72df74dfb46e55d96b707ffdf8013b568214a242ebcf0682e7d5c491"
+        },
+        {
+          "id": 105,
+          "from": "16x4",
+          "to": "2x32",
+          "scale": 8,
+          "bytes": 3347,
+          "shaderSha256": "53fbfb21eb2212d300ffa5108b6667f9b82460168986164499b60338a7afaeb8"
+        },
+        {
+          "id": 112,
+          "from": "16x4",
+          "to": "2x32",
+          "scale": 8,
+          "bytes": 3525,
+          "shaderSha256": "3abd137006de7b0f350e4c616368e34ab4ae76c7fcbc39fb0ec6379392f862ca"
+        },
+        {
+          "id": 113,
+          "from": "2x32",
+          "to": "1x256",
+          "scale": 2,
+          "bytes": 3530,
+          "shaderSha256": "7ebdaaaf8e99487910bbe6d11ade59990ebfc7094ae307ca47fc3f6b31fa1ab0"
+        }
+      ],
+      "scaled": 28960,
+      "unscaled": 184040,
+      "cold": {
+        "text": "One, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, twenty-one, twenty-two, twenty-three, twenty-four, twenty-five, twenty-six, twenty-seven, twenty-eight, twenty-nine, thirty.",
+        "chunks": 78
+      },
+      "warm": {
+        "text": "Thirty, twenty-nine, twenty-eight, twenty-seven, twenty-six, twenty-five, twenty-four, twenty-three, twenty-two, twenty-one, twenty, nineteen, eighteen, seventeen, sixteen, fifteen, fourteen, thirteen, twelve, eleven, ten, nine, eight, seven, six, five, four, three, two, one.",
+        "chunks": 78
+      },
+      "msPerToken": 14.685000002384186,
+      "tokPerSec": 68.0966972991246,
+      "n": 69,
+      "firstChunkMs": 72.83999997377396,
+      "engineMs": 12934.175000011921,
+      "provenance": {
+        "browser": "Chrome/146.0.7680.153",
+        "adapter": {
+          "vendor": "apple",
+          "architecture": "metal-3",
+          "device": "",
+          "description": ""
+        },
+        "node": "v24.18.0",
+        "os": {
+          "platform": "darwin",
+          "release": "25.5.0",
+          "arch": "arm64"
+        },
+        "package": "0.17.1",
+        "model": {
+          "file": "www/gemma-4-E2B-it-web.litertlm",
+          "bytes": 2008432640,
+          "sha256": "3a08e8d94e23b814ae5414469c370c503813949acb8ceaa17e4ebf8a35af35b5"
+        },
+        "power": {
+          "source": "AC",
+          "percent": 97,
+          "low_power_mode": false
+        },
+        "thermal": [
+          "Note: No thermal warning level has been recorded",
+          "Note: No performance warning level has been recorded",
+          "Note: No CPU power status has been recorded"
+        ],
+        "harness_commit": "c3575e1bc2cdc43d891f08cae3890ded1e2345e1",
+        "timestamp": "2026-09-24T07:37:26.160Z"
+      },
+      "diffVsBaseline": {
+        "cold": {
+          "identical": true,
+          "baselineTokens": 60,
+          "runTokens": 60,
+          "hunks": []
+        },
+        "warm": {
+          "identical": false,
+          "baselineTokens": 58,
+          "runTokens": 60,
+          "hunks": [
+            {
+              "baselineIndex": 20,
+              "runIndex": 20,
+              "removed": [],
+              "added": [
+                "twenty",
+                ","
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "rep": 1,
+      "position": 2,
+      "condition": "no-0099",
+      "patch": "105,112,113",
+      "want": [
+        105,
+        112,
+        113
+      ],
+      "gpuErrors": [],
+      "patched": [
+        {
+          "id": 105,
+          "from": "16x4",
+          "to": "2x32",
+          "scale": 8,
+          "bytes": 3347,
+          "shaderSha256": "53fbfb21eb2212d300ffa5108b6667f9b82460168986164499b60338a7afaeb8"
+        },
+        {
+          "id": 112,
+          "from": "16x4",
+          "to": "2x32",
+          "scale": 8,
+          "bytes": 3525,
+          "shaderSha256": "3abd137006de7b0f350e4c616368e34ab4ae76c7fcbc39fb0ec6379392f862ca"
+        },
+        {
+          "id": 113,
+          "from": "2x32",
+          "to": "1x256",
+          "scale": 2,
+          "bytes": 3530,
+          "shaderSha256": "7ebdaaaf8e99487910bbe6d11ade59990ebfc7094ae307ca47fc3f6b31fa1ab0"
+        }
+      ],
+      "scaled": 15520,
+      "unscaled": 197480,
+      "cold": {
+        "text": "One, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, twenty-one, twenty-two, twenty-three, twenty-four, twenty-five, twenty-six, twenty-seven, twenty-eight, twenty-nine, thirty.",
+        "chunks": 78
+      },
+      "warm": {
+        "text": "Thirty, twenty-nine, twenty-eight, twenty-seven, twenty-six, twenty-five, twenty-four, twenty-three, twenty-two, twenty-one, twenty, nineteen, eighteen, seventeen, sixteen, fifteen, fourteen, thirteen, twelve, eleven, ten, nine, eight, seven, six, five, four, three, two, one.",
+        "chunks": 78
+      },
+      "msPerToken": 15.939999997615814,
+      "tokPerSec": 62.73525722393805,
+      "n": 69,
+      "firstChunkMs": 76.2150000333786,
+      "engineMs": 10803.314999997616,
+      "provenance": {
+        "browser": "Chrome/146.0.7680.153",
+        "adapter": {
+          "vendor": "apple",
+          "architecture": "metal-3",
+          "device": "",
+          "description": ""
+        },
+        "node": "v24.18.0",
+        "os": {
+          "platform": "darwin",
+          "release": "25.5.0",
+          "arch": "arm64"
+        },
+        "package": "0.17.1",
+        "model": {
+          "file": "www/gemma-4-E2B-it-web.litertlm",
+          "bytes": 2008432640,
+          "sha256": "3a08e8d94e23b814ae5414469c370c503813949acb8ceaa17e4ebf8a35af35b5"
+        },
+        "power": {
+          "source": "AC",
+          "percent": 97,
+          "low_power_mode": false
+        },
+        "thermal": [
+          "Note: No thermal warning level has been recorded",
+          "Note: No performance warning level has been recorded",
+          "Note: No CPU power status has been recorded"
+        ],
+        "harness_commit": "c3575e1bc2cdc43d891f08cae3890ded1e2345e1",
+        "timestamp": "2026-09-24T07:37:41.114Z"
+      },
+      "diffVsBaseline": {
+        "cold": {
+          "identical": true,
+          "baselineTokens": 60,
+          "runTokens": 60,
+          "hunks": []
+        },
+        "warm": {
+          "identical": false,
+          "baselineTokens": 58,
+          "runTokens": 60,
+          "hunks": [
+            {
+              "baselineIndex": 20,
+              "runIndex": 20,
+              "removed": [],
+              "added": [
+                "twenty",
+                ","
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "rep": 1,
+      "position": 3,
+      "condition": "no-0113",
+      "patch": "99,105,112",
+      "want": [
+        99,
+        105,
+        112
+      ],
+      "gpuErrors": [],
+      "patched": [
+        {
+          "id": 99,
+          "from": "4x16",
+          "to": "2x128",
+          "scale": 2,
+          "bytes": 3352,
+          "shaderSha256": "f31271cb72df74dfb46e55d96b707ffdf8013b568214a242ebcf0682e7d5c491"
+        },
+        {
+          "id": 105,
+          "from": "16x4",
+          "to": "2x32",
+          "scale": 8,
+          "bytes": 3347,
+          "shaderSha256": "53fbfb21eb2212d300ffa5108b6667f9b82460168986164499b60338a7afaeb8"
+        },
+        {
+          "id": 112,
+          "from": "16x4",
+          "to": "2x32",
+          "scale": 8,
+          "bytes": 3525,
+          "shaderSha256": "3abd137006de7b0f350e4c616368e34ab4ae76c7fcbc39fb0ec6379392f862ca"
+        }
+      ],
+      "scaled": 25760,
+      "unscaled": 187240,
+      "cold": {
+        "text": "One, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, twenty-one, twenty-two, twenty-three, twenty-four, twenty-five, twenty-six, twenty-seven, twenty-eight, twenty-nine, thirty.",
+        "chunks": 78
+      },
+      "warm": {
+        "text": "Thirty, twenty-nine, twenty-eight, twenty-seven, twenty-six, twenty-five, twenty-four, twenty-three, twenty-two, twenty-one, twenty, nineteen, eighteen, seventeen, sixteen, fifteen, fourteen, thirteen, twelve, eleven, ten, nine, eight, seven, six, five, four, three, two, one.",
+        "chunks": 78
+      },
+      "msPerToken": 15.129999995231628,
+      "tokPerSec": 66.09385329247588,
+      "n": 69,
+      "firstChunkMs": 71.43500000238419,
+      "engineMs": 16261.504999995232,
+      "provenance": {
+        "browser": "Chrome/146.0.7680.153",
+        "adapter": {
+          "vendor": "apple",
+          "architecture": "metal-3",
+          "device": "",
+          "description": ""
+        },
+        "node": "v24.18.0",
+        "os": {
+          "platform": "darwin",
+          "release": "25.5.0",
+          "arch": "arm64"
+        },
+        "package": "0.17.1",
+        "model": {
+          "file": "www/gemma-4-E2B-it-web.litertlm",
+          "bytes": 2008432640,
+          "sha256": "3a08e8d94e23b814ae5414469c370c503813949acb8ceaa17e4ebf8a35af35b5"
+        },
+        "power": {
+          "source": "AC",
+          "percent": 97,
+          "low_power_mode": false
+        },
+        "thermal": [
+          "Note: No thermal warning level has been recorded",
+          "Note: No performance warning level has been recorded",
+          "Note: No CPU power status has been recorded"
+        ],
+        "harness_commit": "c3575e1bc2cdc43d891f08cae3890ded1e2345e1",
+        "timestamp": "2026-09-24T07:38:01.847Z"
+      },
+      "diffVsBaseline": {
+        "cold": {
+          "identical": true,
+          "baselineTokens": 60,
+          "runTokens": 60,
+          "hunks": []
+        },
+        "warm": {
+          "identical": false,
+          "baselineTokens": 58,
+          "runTokens": 60,
+          "hunks": [
+            {
+              "baselineIndex": 20,
+              "runIndex": 20,
+              "removed": [],
+              "added": [
+                "twenty",
+                ","
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "rep": 1,
+      "position": 4,
+      "condition": "baseline",
+      "patch": "none",
+      "want": [],
+      "gpuErrors": [],
+      "patched": [],
+      "scaled": 0,
+      "unscaled": 210392,
+      "cold": {
+        "text": "One, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, twenty-one, twenty-two, twenty-three, twenty-four, twenty-five, twenty-six, twenty-seven, twenty-eight, twenty-nine, thirty.",
+        "chunks": 78
+      },
+      "warm": {
+        "text": "Thirty, twenty-nine, twenty-eight, twenty-seven, twenty-six, twenty-five, twenty-four, twenty-three, twenty-two, twenty-one, nineteen, eighteen, seventeen, sixteen, fifteen, fourteen, thirteen, twelve, eleven, ten, nine, eight, seven, six, five, four, three, two, one.",
+        "chunks": 76
+      },
+      "msPerToken": 17.64500004053116,
+      "tokPerSec": 56.67327841898364,
+      "n": 67,
+      "firstChunkMs": 80.50500005483627,
+      "engineMs": 12298.120000004768,
+      "provenance": {
+        "browser": "Chrome/146.0.7680.153",
+        "adapter": {
+          "vendor": "apple",
+          "architecture": "metal-3",
+          "device": "",
+          "description": ""
+        },
+        "node": "v24.18.0",
+        "os": {
+          "platform": "darwin",
+          "release": "25.5.0",
+          "arch": "arm64"
+        },
+        "package": "0.17.1",
+        "model": {
+          "file": "www/gemma-4-E2B-it-web.litertlm",
+          "bytes": 2008432640,
+          "sha256": "3a08e8d94e23b814ae5414469c370c503813949acb8ceaa17e4ebf8a35af35b5"
+        },
+        "power": {
+          "source": "AC",
+          "percent": 97,
+          "low_power_mode": false
+        },
+        "thermal": [
+          "Note: No thermal warning level has been recorded",
+          "Note: No performance warning level has been recorded",
+          "Note: No CPU power status has been recorded"
+        ],
+        "harness_commit": "c3575e1bc2cdc43d891f08cae3890ded1e2345e1",
+        "timestamp": "2026-09-24T07:38:18.791Z"
+      },
+      "diffVsBaseline": {
+        "cold": {
+          "identical": true,
+          "baselineTokens": 60,
+          "runTokens": 60,
+          "hunks": []
+        },
+        "warm": {
+          "identical": true,
+          "baselineTokens": 58,
+          "runTokens": 58,
+          "hunks": []
+        }
+      }
+    },
+    {
+      "rep": 1,
+      "position": 5,
+      "condition": "no-0105",
+      "patch": "99,112,113",
+      "want": [
+        99,
+        112,
+        113
+      ],
+      "gpuErrors": [],
+      "patched": [
+        {
+          "id": 99,
+          "from": "4x16",
+          "to": "2x128",
+          "scale": 2,
+          "bytes": 3352,
+          "shaderSha256": "f31271cb72df74dfb46e55d96b707ffdf8013b568214a242ebcf0682e7d5c491"
+        },
+        {
+          "id": 112,
+          "from": "16x4",
+          "to": "2x32",
+          "scale": 8,
+          "bytes": 3525,
+          "shaderSha256": "3abd137006de7b0f350e4c616368e34ab4ae76c7fcbc39fb0ec6379392f862ca"
+        },
+        {
+          "id": 113,
+          "from": "2x32",
+          "to": "1x256",
+          "scale": 2,
+          "bytes": 3530,
+          "shaderSha256": "7ebdaaaf8e99487910bbe6d11ade59990ebfc7094ae307ca47fc3f6b31fa1ab0"
+        }
+      ],
+      "scaled": 23040,
+      "unscaled": 189960,
+      "cold": {
+        "text": "One, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, twenty-one, twenty-two, twenty-three, twenty-four, twenty-five, twenty-six, twenty-seven, twenty-eight, twenty-nine, thirty.",
+        "chunks": 78
+      },
+      "warm": {
+        "text": "Thirty, twenty-nine, twenty-eight, twenty-seven, twenty-six, twenty-five, twenty-four, twenty-three, twenty-two, twenty-one, twenty, nineteen, eighteen, seventeen, sixteen, fifteen, fourteen, thirteen, twelve, eleven, ten, nine, eight, seven, six, five, four, three, two, one.",
+        "chunks": 78
+      },
+      "msPerToken": 15.884999990463257,
+      "tokPerSec": 62.95247092227646,
+      "n": 69,
+      "firstChunkMs": 72.70999997854233,
+      "engineMs": 9819.664999961853,
+      "provenance": {
+        "browser": "Chrome/146.0.7680.153",
+        "adapter": {
+          "vendor": "apple",
+          "architecture": "metal-3",
+          "device": "",
+          "description": ""
+        },
+        "node": "v24.18.0",
+        "os": {
+          "platform": "darwin",
+          "release": "25.5.0",
+          "arch": "arm64"
+        },
+        "package": "0.17.1",
+        "model": {
+          "file": "www/gemma-4-E2B-it-web.litertlm",
+          "bytes": 2008432640,
+          "sha256": "3a08e8d94e23b814ae5414469c370c503813949acb8ceaa17e4ebf8a35af35b5"
+        },
+        "power": {
+          "source": "AC",
+          "percent": 97,
+          "low_power_mode": false
+        },
+        "thermal": [
+          "Note: No thermal warning level has been recorded",
+          "Note: No performance warning level has been recorded",
+          "Note: No CPU power status has been recorded"
+        ],
+        "harness_commit": "c3575e1bc2cdc43d891f08cae3890ded1e2345e1",
+        "timestamp": "2026-09-24T07:38:33.571Z"
+      },
+      "diffVsBaseline": {
+        "cold": {
+          "identical": true,
+          "baselineTokens": 60,
+          "runTokens": 60,
+          "hunks": []
+        },
+        "warm": {
+          "identical": false,
+          "baselineTokens": 58,
+          "runTokens": 60,
+          "hunks": [
+            {
+              "baselineIndex": 20,
+              "runIndex": 20,
+              "removed": [],
+              "added": [
+                "twenty",
+                ","
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "rep": 1,
+      "position": 6,
+      "condition": "no-0112",
+      "patch": "99,105,113",
+      "want": [
+        99,
+        105,
+        113
+      ],
+      "gpuErrors": [],
+      "patched": [
+        {
+          "id": 99,
+          "from": "4x16",
+          "to": "2x128",
+          "scale": 2,
+          "bytes": 3352,
+          "shaderSha256": "f31271cb72df74dfb46e55d96b707ffdf8013b568214a242ebcf0682e7d5c491"
+        },
+        {
+          "id": 105,
+          "from": "16x4",
+          "to": "2x32",
+          "scale": 8,
+          "bytes": 3347,
+          "shaderSha256": "53fbfb21eb2212d300ffa5108b6667f9b82460168986164499b60338a7afaeb8"
+        },
+        {
+          "id": 113,
+          "from": "2x32",
+          "to": "1x256",
+          "scale": 2,
+          "bytes": 3530,
+          "shaderSha256": "7ebdaaaf8e99487910bbe6d11ade59990ebfc7094ae307ca47fc3f6b31fa1ab0"
+        }
+      ],
+      "scaled": 22560,
+      "unscaled": 190440,
+      "cold": {
+        "text": "One, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, twenty-one, twenty-two, twenty-three, twenty-four, twenty-five, twenty-six, twenty-seven, twenty-eight, twenty-nine, thirty.",
+        "chunks": 78
+      },
+      "warm": {
+        "text": "Thirty, twenty-nine, twenty-eight, twenty-seven, twenty-six, twenty-five, twenty-four, twenty-three, twenty-two, twenty-one, twenty, nineteen, eighteen, seventeen, sixteen, fifteen, fourteen, thirteen, twelve, eleven, ten, nine, eight, seven, six, five, four, three, two, one.",
+        "chunks": 78
+      },
+      "msPerToken": 14.769999980926514,
+      "tokPerSec": 67.70480712873167,
+      "n": 69,
+      "firstChunkMs": 73.5799999833107,
+      "engineMs": 10067.975000023842,
+      "provenance": {
+        "browser": "Chrome/146.0.7680.153",
+        "adapter": {
+          "vendor": "apple",
+          "architecture": "metal-3",
+          "device": "",
+          "description": ""
+        },
+        "node": "v24.18.0",
+        "os": {
+          "platform": "darwin",
+          "release": "25.5.0",
+          "arch": "arm64"
+        },
+        "package": "0.17.1",
+        "model": {
+          "file": "www/gemma-4-E2B-it-web.litertlm",
+          "bytes": 2008432640,
+          "sha256": "3a08e8d94e23b814ae5414469c370c503813949acb8ceaa17e4ebf8a35af35b5"
+        },
+        "power": {
+          "source": "AC",
+          "percent": 97,
+          "low_power_mode": false
+        },
+        "thermal": [
+          "Note: No thermal warning level has been recorded",
+          "Note: No performance warning level has been recorded",
+          "Note: No CPU power status has been recorded"
+        ],
+        "harness_commit": "c3575e1bc2cdc43d891f08cae3890ded1e2345e1",
+        "timestamp": "2026-09-24T07:38:47.352Z"
+      },
+      "diffVsBaseline": {
+        "cold": {
+          "identical": true,
+          "baselineTokens": 60,
+          "runTokens": 60,
+          "hunks": []
+        },
+        "warm": {
+          "identical": false,
+          "baselineTokens": 58,
+          "runTokens": 60,
+          "hunks": [
+            {
+              "baselineIndex": 20,
+              "runIndex": 20,
+              "removed": [],
+              "added": [
+                "twenty",
+                ","
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "rep": 2,
+      "position": 1,
+      "condition": "no-0112",
+      "patch": "99,105,113",
+      "want": [
+        99,
+        105,
+        113
+      ],
+      "gpuErrors": [],
+      "patched": [
+        {
+          "id": 99,
+          "from": "4x16",
+          "to": "2x128",
+          "scale": 2,
+          "bytes": 3352,
+          "shaderSha256": "f31271cb72df74dfb46e55d96b707ffdf8013b568214a242ebcf0682e7d5c491"
+        },
+        {
+          "id": 105,
+          "from": "16x4",
+          "to": "2x32",
+          "scale": 8,
+          "bytes": 3347,
+          "shaderSha256": "53fbfb21eb2212d300ffa5108b6667f9b82460168986164499b60338a7afaeb8"
+        },
+        {
+          "id": 113,
+          "from": "2x32",
+          "to": "1x256",
+          "scale": 2,
+          "bytes": 3530,
+          "shaderSha256": "7ebdaaaf8e99487910bbe6d11ade59990ebfc7094ae307ca47fc3f6b31fa1ab0"
+        }
+      ],
+      "scaled": 22560,
+      "unscaled": 190440,
+      "cold": {
+        "text": "One, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, twenty-one, twenty-two, twenty-three, twenty-four, twenty-five, twenty-six, twenty-seven, twenty-eight, twenty-nine, thirty.",
+        "chunks": 78
+      },
+      "warm": {
+        "text": "Thirty, twenty-nine, twenty-eight, twenty-seven, twenty-six, twenty-five, twenty-four, twenty-three, twenty-two, twenty-one, twenty, nineteen, eighteen, seventeen, sixteen, fifteen, fourteen, thirteen, twelve, eleven, ten, nine, eight, seven, six, five, four, three, two, one.",
+        "chunks": 78
+      },
+      "msPerToken": 14.300000011920929,
+      "tokPerSec": 69.93006987177402,
+      "n": 69,
+      "firstChunkMs": 70.36500000953674,
+      "engineMs": 11698.974999964237,
+      "provenance": {
+        "browser": "Chrome/146.0.7680.153",
+        "adapter": {
+          "vendor": "apple",
+          "architecture": "metal-3",
+          "device": "",
+          "description": ""
+        },
+        "node": "v24.18.0",
+        "os": {
+          "platform": "darwin",
+          "release": "25.5.0",
+          "arch": "arm64"
+        },
+        "package": "0.17.1",
+        "model": {
+          "file": "www/gemma-4-E2B-it-web.litertlm",
+          "bytes": 2008432640,
+          "sha256": "3a08e8d94e23b814ae5414469c370c503813949acb8ceaa17e4ebf8a35af35b5"
+        },
+        "power": {
+          "source": "AC",
+          "percent": 97,
+          "low_power_mode": false
+        },
+        "thermal": [
+          "Note: No thermal warning level has been recorded",
+          "Note: No performance warning level has been recorded",
+          "Note: No CPU power status has been recorded"
+        ],
+        "harness_commit": "c3575e1bc2cdc43d891f08cae3890ded1e2345e1",
+        "timestamp": "2026-09-24T07:39:03.124Z"
+      },
+      "diffVsBaseline": {
+        "cold": {
+          "identical": true,
+          "baselineTokens": 60,
+          "runTokens": 60,
+          "hunks": []
+        },
+        "warm": {
+          "identical": false,
+          "baselineTokens": 58,
+          "runTokens": 60,
+          "hunks": [
+            {
+              "baselineIndex": 20,
+              "runIndex": 20,
+              "removed": [],
+              "added": [
+                "twenty",
+                ","
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "rep": 2,
+      "position": 2,
+      "condition": "baseline",
+      "patch": "none",
+      "want": [],
+      "gpuErrors": [],
+      "patched": [],
+      "scaled": 0,
+      "unscaled": 210392,
+      "cold": {
+        "text": "One, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, twenty-one, twenty-two, twenty-three, twenty-four, twenty-five, twenty-six, twenty-seven, twenty-eight, twenty-nine, thirty.",
+        "chunks": 78
+      },
+      "warm": {
+        "text": "Thirty, twenty-nine, twenty-eight, twenty-seven, twenty-six, twenty-five, twenty-four, twenty-three, twenty-two, twenty-one, nineteen, eighteen, seventeen, sixteen, fifteen, fourteen, thirteen, twelve, eleven, ten, nine, eight, seven, six, five, four, three, two, one.",
+        "chunks": 76
+      },
+      "msPerToken": 16.924999952316284,
+      "tokPerSec": 59.084195144304516,
+      "n": 67,
+      "firstChunkMs": 79.3299999833107,
+      "engineMs": 14760.514999985695,
+      "provenance": {
+        "browser": "Chrome/146.0.7680.153",
+        "adapter": {
+          "vendor": "apple",
+          "architecture": "metal-3",
+          "device": "",
+          "description": ""
+        },
+        "node": "v24.18.0",
+        "os": {
+          "platform": "darwin",
+          "release": "25.5.0",
+          "arch": "arm64"
+        },
+        "package": "0.17.1",
+        "model": {
+          "file": "www/gemma-4-E2B-it-web.litertlm",
+          "bytes": 2008432640,
+          "sha256": "3a08e8d94e23b814ae5414469c370c503813949acb8ceaa17e4ebf8a35af35b5"
+        },
+        "power": {
+          "source": "AC",
+          "percent": 97,
+          "low_power_mode": false
+        },
+        "thermal": [
+          "Note: No thermal warning level has been recorded",
+          "Note: No performance warning level has been recorded",
+          "Note: No CPU power status has been recorded"
+        ],
+        "harness_commit": "c3575e1bc2cdc43d891f08cae3890ded1e2345e1",
+        "timestamp": "2026-09-24T07:39:21.962Z"
+      },
+      "diffVsBaseline": {
+        "cold": {
+          "identical": true,
+          "baselineTokens": 60,
+          "runTokens": 60,
+          "hunks": []
+        },
+        "warm": {
+          "identical": true,
+          "baselineTokens": 58,
+          "runTokens": 58,
+          "hunks": []
+        }
+      }
+    },
+    {
+      "rep": 2,
+      "position": 3,
+      "condition": "no-0113",
+      "patch": "99,105,112",
+      "want": [
+        99,
+        105,
+        112
+      ],
+      "gpuErrors": [],
+      "patched": [
+        {
+          "id": 99,
+          "from": "4x16",
+          "to": "2x128",
+          "scale": 2,
+          "bytes": 3352,
+          "shaderSha256": "f31271cb72df74dfb46e55d96b707ffdf8013b568214a242ebcf0682e7d5c491"
+        },
+        {
+          "id": 105,
+          "from": "16x4",
+          "to": "2x32",
+          "scale": 8,
+          "bytes": 3347,
+          "shaderSha256": "53fbfb21eb2212d300ffa5108b6667f9b82460168986164499b60338a7afaeb8"
+        },
+        {
+          "id": 112,
+          "from": "16x4",
+          "to": "2x32",
+          "scale": 8,
+          "bytes": 3525,
+          "shaderSha256": "3abd137006de7b0f350e4c616368e34ab4ae76c7fcbc39fb0ec6379392f862ca"
+        }
+      ],
+      "scaled": 25760,
+      "unscaled": 187240,
+      "cold": {
+        "text": "One, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, twenty-one, twenty-two, twenty-three, twenty-four, twenty-five, twenty-six, twenty-seven, twenty-eight, twenty-nine, thirty.",
+        "chunks": 78
+      },
+      "warm": {
+        "text": "Thirty, twenty-nine, twenty-eight, twenty-seven, twenty-six, twenty-five, twenty-four, twenty-three, twenty-two, twenty-one, twenty, nineteen, eighteen, seventeen, sixteen, fifteen, fourteen, thirteen, twelve, eleven, ten, nine, eight, seven, six, five, four, three, two, one.",
+        "chunks": 78
+      },
+      "msPerToken": 14.134999990463257,
+      "tokPerSec": 70.74637429605164,
+      "n": 69,
+      "firstChunkMs": 70.4549999833107,
+      "engineMs": 18237.339999973774,
+      "provenance": {
+        "browser": "Chrome/146.0.7680.153",
+        "adapter": {
+          "vendor": "apple",
+          "architecture": "metal-3",
+          "device": "",
+          "description": ""
+        },
+        "node": "v24.18.0",
+        "os": {
+          "platform": "darwin",
+          "release": "25.5.0",
+          "arch": "arm64"
+        },
+        "package": "0.17.1",
+        "model": {
+          "file": "www/gemma-4-E2B-it-web.litertlm",
+          "bytes": 2008432640,
+          "sha256": "3a08e8d94e23b814ae5414469c370c503813949acb8ceaa17e4ebf8a35af35b5"
+        },
+        "power": {
+          "source": "AC",
+          "percent": 97,
+          "low_power_mode": false
+        },
+        "thermal": [
+          "Note: No thermal warning level has been recorded",
+          "Note: No performance warning level has been recorded",
+          "Note: No CPU power status has been recorded"
+        ],
+        "harness_commit": "c3575e1bc2cdc43d891f08cae3890ded1e2345e1",
+        "timestamp": "2026-09-24T07:39:44.168Z"
+      },
+      "diffVsBaseline": {
+        "cold": {
+          "identical": true,
+          "baselineTokens": 60,
+          "runTokens": 60,
+          "hunks": []
+        },
+        "warm": {
+          "identical": false,
+          "baselineTokens": 58,
+          "runTokens": 60,
+          "hunks": [
+            {
+              "baselineIndex": 20,
+              "runIndex": 20,
+              "removed": [],
+              "added": [
+                "twenty",
+                ","
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "rep": 2,
+      "position": 4,
+      "condition": "no-0099",
+      "patch": "105,112,113",
+      "want": [
+        105,
+        112,
+        113
+      ],
+      "gpuErrors": [],
+      "patched": [
+        {
+          "id": 105,
+          "from": "16x4",
+          "to": "2x32",
+          "scale": 8,
+          "bytes": 3347,
+          "shaderSha256": "53fbfb21eb2212d300ffa5108b6667f9b82460168986164499b60338a7afaeb8"
+        },
+        {
+          "id": 112,
+          "from": "16x4",
+          "to": "2x32",
+          "scale": 8,
+          "bytes": 3525,
+          "shaderSha256": "3abd137006de7b0f350e4c616368e34ab4ae76c7fcbc39fb0ec6379392f862ca"
+        },
+        {
+          "id": 113,
+          "from": "2x32",
+          "to": "1x256",
+          "scale": 2,
+          "bytes": 3530,
+          "shaderSha256": "7ebdaaaf8e99487910bbe6d11ade59990ebfc7094ae307ca47fc3f6b31fa1ab0"
+        }
+      ],
+      "scaled": 15520,
+      "unscaled": 197480,
+      "cold": {
+        "text": "One, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, twenty-one, twenty-two, twenty-three, twenty-four, twenty-five, twenty-six, twenty-seven, twenty-eight, twenty-nine, thirty.",
+        "chunks": 78
+      },
+      "warm": {
+        "text": "Thirty, twenty-nine, twenty-eight, twenty-seven, twenty-six, twenty-five, twenty-four, twenty-three, twenty-two, twenty-one, twenty, nineteen, eighteen, seventeen, sixteen, fifteen, fourteen, thirteen, twelve, eleven, ten, nine, eight, seven, six, five, four, three, two, one.",
+        "chunks": 78
+      },
+      "msPerToken": 15.519999980926514,
+      "tokPerSec": 64.43298976990732,
+      "n": 69,
+      "firstChunkMs": 74.56999999284744,
+      "engineMs": 22350.980000019073,
+      "provenance": {
+        "browser": "Chrome/146.0.7680.153",
+        "adapter": {
+          "vendor": "apple",
+          "architecture": "metal-3",
+          "device": "",
+          "description": ""
+        },
+        "node": "v24.18.0",
+        "os": {
+          "platform": "darwin",
+          "release": "25.5.0",
+          "arch": "arm64"
+        },
+        "package": "0.17.1",
+        "model": {
+          "file": "www/gemma-4-E2B-it-web.litertlm",
+          "bytes": 2008432640,
+          "sha256": "3a08e8d94e23b814ae5414469c370c503813949acb8ceaa17e4ebf8a35af35b5"
+        },
+        "power": {
+          "source": "AC",
+          "percent": 97,
+          "low_power_mode": false
+        },
+        "thermal": [
+          "Note: No thermal warning level has been recorded",
+          "Note: No performance warning level has been recorded",
+          "Note: No CPU power status has been recorded"
+        ],
+        "harness_commit": "c3575e1bc2cdc43d891f08cae3890ded1e2345e1",
+        "timestamp": "2026-09-24T07:40:11.415Z"
+      },
+      "diffVsBaseline": {
+        "cold": {
+          "identical": true,
+          "baselineTokens": 60,
+          "runTokens": 60,
+          "hunks": []
+        },
+        "warm": {
+          "identical": false,
+          "baselineTokens": 58,
+          "runTokens": 60,
+          "hunks": [
+            {
+              "baselineIndex": 20,
+              "runIndex": 20,
+              "removed": [],
+              "added": [
+                "twenty",
+                ","
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "rep": 2,
+      "position": 5,
+      "condition": "no-0105",
+      "patch": "99,112,113",
+      "want": [
+        99,
+        112,
+        113
+      ],
+      "gpuErrors": [],
+      "patched": [
+        {
+          "id": 99,
+          "from": "4x16",
+          "to": "2x128",
+          "scale": 2,
+          "bytes": 3352,
+          "shaderSha256": "f31271cb72df74dfb46e55d96b707ffdf8013b568214a242ebcf0682e7d5c491"
+        },
+        {
+          "id": 112,
+          "from": "16x4",
+          "to": "2x32",
+          "scale": 8,
+          "bytes": 3525,
+          "shaderSha256": "3abd137006de7b0f350e4c616368e34ab4ae76c7fcbc39fb0ec6379392f862ca"
+        },
+        {
+          "id": 113,
+          "from": "2x32",
+          "to": "1x256",
+          "scale": 2,
+          "bytes": 3530,
+          "shaderSha256": "7ebdaaaf8e99487910bbe6d11ade59990ebfc7094ae307ca47fc3f6b31fa1ab0"
+        }
+      ],
+      "scaled": 23040,
+      "unscaled": 189960,
+      "cold": {
+        "text": "One, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, twenty-one, twenty-two, twenty-three, twenty-four, twenty-five, twenty-six, twenty-seven, twenty-eight, twenty-nine, thirty.",
+        "chunks": 78
+      },
+      "warm": {
+        "text": "Thirty, twenty-nine, twenty-eight, twenty-seven, twenty-six, twenty-five, twenty-four, twenty-three, twenty-two, twenty-one, twenty, nineteen, eighteen, seventeen, sixteen, fifteen, fourteen, thirteen, twelve, eleven, ten, nine, eight, seven, six, five, four, three, two, one.",
+        "chunks": 78
+      },
+      "msPerToken": 15.310000002384186,
+      "tokPerSec": 65.31678640393682,
+      "n": 69,
+      "firstChunkMs": 71.82499998807907,
+      "engineMs": 17230.524999976158,
+      "provenance": {
+        "browser": "Chrome/146.0.7680.153",
+        "adapter": {
+          "vendor": "apple",
+          "architecture": "metal-3",
+          "device": "",
+          "description": ""
+        },
+        "node": "v24.18.0",
+        "os": {
+          "platform": "darwin",
+          "release": "25.5.0",
+          "arch": "arm64"
+        },
+        "package": "0.17.1",
+        "model": {
+          "file": "www/gemma-4-E2B-it-web.litertlm",
+          "bytes": 2008432640,
+          "sha256": "3a08e8d94e23b814ae5414469c370c503813949acb8ceaa17e4ebf8a35af35b5"
+        },
+        "power": {
+          "source": "AC",
+          "percent": 97,
+          "low_power_mode": false
+        },
+        "thermal": [
+          "Note: No thermal warning level has been recorded",
+          "Note: No performance warning level has been recorded",
+          "Note: No CPU power status has been recorded"
+        ],
+        "harness_commit": "c3575e1bc2cdc43d891f08cae3890ded1e2345e1",
+        "timestamp": "2026-09-24T07:40:35.489Z"
+      },
+      "diffVsBaseline": {
+        "cold": {
+          "identical": true,
+          "baselineTokens": 60,
+          "runTokens": 60,
+          "hunks": []
+        },
+        "warm": {
+          "identical": false,
+          "baselineTokens": 58,
+          "runTokens": 60,
+          "hunks": [
+            {
+              "baselineIndex": 20,
+              "runIndex": 20,
+              "removed": [],
+              "added": [
+                "twenty",
+                ","
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "rep": 2,
+      "position": 6,
+      "condition": "all-four",
+      "patch": "all",
+      "want": [
+        99,
+        105,
+        112,
+        113
+      ],
+      "gpuErrors": [],
+      "patched": [
+        {
+          "id": 99,
+          "from": "4x16",
+          "to": "2x128",
+          "scale": 2,
+          "bytes": 3352,
+          "shaderSha256": "f31271cb72df74dfb46e55d96b707ffdf8013b568214a242ebcf0682e7d5c491"
+        },
+        {
+          "id": 105,
+          "from": "16x4",
+          "to": "2x32",
+          "scale": 8,
+          "bytes": 3347,
+          "shaderSha256": "53fbfb21eb2212d300ffa5108b6667f9b82460168986164499b60338a7afaeb8"
+        },
+        {
+          "id": 112,
+          "from": "16x4",
+          "to": "2x32",
+          "scale": 8,
+          "bytes": 3525,
+          "shaderSha256": "3abd137006de7b0f350e4c616368e34ab4ae76c7fcbc39fb0ec6379392f862ca"
+        },
+        {
+          "id": 113,
+          "from": "2x32",
+          "to": "1x256",
+          "scale": 2,
+          "bytes": 3530,
+          "shaderSha256": "7ebdaaaf8e99487910bbe6d11ade59990ebfc7094ae307ca47fc3f6b31fa1ab0"
+        }
+      ],
+      "scaled": 28960,
+      "unscaled": 184040,
+      "cold": {
+        "text": "One, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, twenty-one, twenty-two, twenty-three, twenty-four, twenty-five, twenty-six, twenty-seven, twenty-eight, twenty-nine, thirty.",
+        "chunks": 78
+      },
+      "warm": {
+        "text": "Thirty, twenty-nine, twenty-eight, twenty-seven, twenty-six, twenty-five, twenty-four, twenty-three, twenty-two, twenty-one, twenty, nineteen, eighteen, seventeen, sixteen, fifteen, fourteen, thirteen, twelve, eleven, ten, nine, eight, seven, six, five, four, three, two, one.",
+        "chunks": 78
+      },
+      "msPerToken": 14.115000009536743,
+      "tokPerSec": 70.84661702616748,
+      "n": 69,
+      "firstChunkMs": 69.68999999761581,
+      "engineMs": 19228.914999961853,
+      "provenance": {
+        "browser": "Chrome/146.0.7680.153",
+        "adapter": {
+          "vendor": "apple",
+          "architecture": "metal-3",
+          "device": "",
+          "description": ""
+        },
+        "node": "v24.18.0",
+        "os": {
+          "platform": "darwin",
+          "release": "25.5.0",
+          "arch": "arm64"
+        },
+        "package": "0.17.1",
+        "model": {
+          "file": "www/gemma-4-E2B-it-web.litertlm",
+          "bytes": 2008432640,
+          "sha256": "3a08e8d94e23b814ae5414469c370c503813949acb8ceaa17e4ebf8a35af35b5"
+        },
+        "power": {
+          "source": "AC",
+          "percent": 97,
+          "low_power_mode": false
+        },
+        "thermal": [
+          "Note: No thermal warning level has been recorded",
+          "Note: No performance warning level has been recorded",
+          "Note: No CPU power status has been recorded"
+        ],
+        "harness_commit": "c3575e1bc2cdc43d891f08cae3890ded1e2345e1",
+        "timestamp": "2026-09-24T07:40:59.282Z"
+      },
+      "diffVsBaseline": {
+        "cold": {
+          "identical": true,
+          "baselineTokens": 60,
+          "runTokens": 60,
+          "hunks": []
+        },
+        "warm": {
+          "identical": false,
+          "baselineTokens": 58,
+          "runTokens": 60,
+          "hunks": [
+            {
+              "baselineIndex": 20,
+              "runIndex": 20,
+              "removed": [],
+              "added": [
+                "twenty",
+                ","
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "rep": 3,
+      "position": 1,
+      "condition": "no-0112",
+      "patch": "99,105,113",
+      "want": [
+        99,
+        105,
+        113
+      ],
+      "gpuErrors": [],
+      "patched": [
+        {
+          "id": 99,
+          "from": "4x16",
+          "to": "2x128",
+          "scale": 2,
+          "bytes": 3352,
+          "shaderSha256": "f31271cb72df74dfb46e55d96b707ffdf8013b568214a242ebcf0682e7d5c491"
+        },
+        {
+          "id": 105,
+          "from": "16x4",
+          "to": "2x32",
+          "scale": 8,
+          "bytes": 3347,
+          "shaderSha256": "53fbfb21eb2212d300ffa5108b6667f9b82460168986164499b60338a7afaeb8"
+        },
+        {
+          "id": 113,
+          "from": "2x32",
+          "to": "1x256",
+          "scale": 2,
+          "bytes": 3530,
+          "shaderSha256": "7ebdaaaf8e99487910bbe6d11ade59990ebfc7094ae307ca47fc3f6b31fa1ab0"
+        }
+      ],
+      "scaled": 22560,
+      "unscaled": 190440,
+      "cold": {
+        "text": "One, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, twenty-one, twenty-two, twenty-three, twenty-four, twenty-five, twenty-six, twenty-seven, twenty-eight, twenty-nine, thirty.",
+        "chunks": 78
+      },
+      "warm": {
+        "text": "Thirty, twenty-nine, twenty-eight, twenty-seven, twenty-six, twenty-five, twenty-four, twenty-three, twenty-two, twenty-one, twenty, nineteen, eighteen, seventeen, sixteen, fifteen, fourteen, thirteen, twelve, eleven, ten, nine, eight, seven, six, five, four, three, two, one.",
+        "chunks": 78
+      },
+      "msPerToken": 14.10999995470047,
+      "tokPerSec": 70.87172241037958,
+      "n": 69,
+      "firstChunkMs": 70.72500002384186,
+      "engineMs": 30052.195000052452,
+      "provenance": {
+        "browser": "Chrome/146.0.7680.153",
+        "adapter": {
+          "vendor": "apple",
+          "architecture": "metal-3",
+          "device": "",
+          "description": ""
+        },
+        "node": "v24.18.0",
+        "os": {
+          "platform": "darwin",
+          "release": "25.5.0",
+          "arch": "arm64"
+        },
+        "package": "0.17.1",
+        "model": {
+          "file": "www/gemma-4-E2B-it-web.litertlm",
+          "bytes": 2008432640,
+          "sha256": "3a08e8d94e23b814ae5414469c370c503813949acb8ceaa17e4ebf8a35af35b5"
+        },
+        "power": {
+          "source": "AC",
+          "percent": 97,
+          "low_power_mode": false
+        },
+        "thermal": [
+          "Note: No thermal warning level has been recorded",
+          "Note: No performance warning level has been recorded",
+          "Note: No CPU power status has been recorded"
+        ],
+        "harness_commit": "c3575e1bc2cdc43d891f08cae3890ded1e2345e1",
+        "timestamp": "2026-09-24T07:41:33.417Z"
+      },
+      "diffVsBaseline": {
+        "cold": {
+          "identical": true,
+          "baselineTokens": 60,
+          "runTokens": 60,
+          "hunks": []
+        },
+        "warm": {
+          "identical": false,
+          "baselineTokens": 58,
+          "runTokens": 60,
+          "hunks": [
+            {
+              "baselineIndex": 20,
+              "runIndex": 20,
+              "removed": [],
+              "added": [
+                "twenty",
+                ","
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "rep": 3,
+      "position": 2,
+      "condition": "no-0099",
+      "patch": "105,112,113",
+      "want": [
+        105,
+        112,
+        113
+      ],
+      "gpuErrors": [],
+      "patched": [
+        {
+          "id": 105,
+          "from": "16x4",
+          "to": "2x32",
+          "scale": 8,
+          "bytes": 3347,
+          "shaderSha256": "53fbfb21eb2212d300ffa5108b6667f9b82460168986164499b60338a7afaeb8"
+        },
+        {
+          "id": 112,
+          "from": "16x4",
+          "to": "2x32",
+          "scale": 8,
+          "bytes": 3525,
+          "shaderSha256": "3abd137006de7b0f350e4c616368e34ab4ae76c7fcbc39fb0ec6379392f862ca"
+        },
+        {
+          "id": 113,
+          "from": "2x32",
+          "to": "1x256",
+          "scale": 2,
+          "bytes": 3530,
+          "shaderSha256": "7ebdaaaf8e99487910bbe6d11ade59990ebfc7094ae307ca47fc3f6b31fa1ab0"
+        }
+      ],
+      "scaled": 15520,
+      "unscaled": 197480,
+      "cold": {
+        "text": "One, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, twenty-one, twenty-two, twenty-three, twenty-four, twenty-five, twenty-six, twenty-seven, twenty-eight, twenty-nine, thirty.",
+        "chunks": 78
+      },
+      "warm": {
+        "text": "Thirty, twenty-nine, twenty-eight, twenty-seven, twenty-six, twenty-five, twenty-four, twenty-three, twenty-two, twenty-one, twenty, nineteen, eighteen, seventeen, sixteen, fifteen, fourteen, thirteen, twelve, eleven, ten, nine, eight, seven, six, five, four, three, two, one.",
+        "chunks": 78
+      },
+      "msPerToken": 15.570000052452087,
+      "tokPerSec": 64.22607557040516,
+      "n": 69,
+      "firstChunkMs": 71.52999997138977,
+      "engineMs": 15644.90499997139,
+      "provenance": {
+        "browser": "Chrome/146.0.7680.153",
+        "adapter": {
+          "vendor": "apple",
+          "architecture": "metal-3",
+          "device": "",
+          "description": ""
+        },
+        "node": "v24.18.0",
+        "os": {
+          "platform": "darwin",
+          "release": "25.5.0",
+          "arch": "arm64"
+        },
+        "package": "0.17.1",
+        "model": {
+          "file": "www/gemma-4-E2B-it-web.litertlm",
+          "bytes": 2008432640,
+          "sha256": "3a08e8d94e23b814ae5414469c370c503813949acb8ceaa17e4ebf8a35af35b5"
+        },
+        "power": {
+          "source": "AC",
+          "percent": 97,
+          "low_power_mode": false
+        },
+        "thermal": [
+          "Note: No thermal warning level has been recorded",
+          "Note: No performance warning level has been recorded",
+          "Note: No CPU power status has been recorded"
+        ],
+        "harness_commit": "c3575e1bc2cdc43d891f08cae3890ded1e2345e1",
+        "timestamp": "2026-09-24T07:41:53.541Z"
+      },
+      "diffVsBaseline": {
+        "cold": {
+          "identical": true,
+          "baselineTokens": 60,
+          "runTokens": 60,
+          "hunks": []
+        },
+        "warm": {
+          "identical": false,
+          "baselineTokens": 58,
+          "runTokens": 60,
+          "hunks": [
+            {
+              "baselineIndex": 20,
+              "runIndex": 20,
+              "removed": [],
+              "added": [
+                "twenty",
+                ","
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "rep": 3,
+      "position": 3,
+      "condition": "no-0113",
+      "patch": "99,105,112",
+      "want": [
+        99,
+        105,
+        112
+      ],
+      "gpuErrors": [],
+      "patched": [
+        {
+          "id": 99,
+          "from": "4x16",
+          "to": "2x128",
+          "scale": 2,
+          "bytes": 3352,
+          "shaderSha256": "f31271cb72df74dfb46e55d96b707ffdf8013b568214a242ebcf0682e7d5c491"
+        },
+        {
+          "id": 105,
+          "from": "16x4",
+          "to": "2x32",
+          "scale": 8,
+          "bytes": 3347,
+          "shaderSha256": "53fbfb21eb2212d300ffa5108b6667f9b82460168986164499b60338a7afaeb8"
+        },
+        {
+          "id": 112,
+          "from": "16x4",
+          "to": "2x32",
+          "scale": 8,
+          "bytes": 3525,
+          "shaderSha256": "3abd137006de7b0f350e4c616368e34ab4ae76c7fcbc39fb0ec6379392f862ca"
+        }
+      ],
+      "scaled": 25760,
+      "unscaled": 187240,
+      "cold": {
+        "text": "One, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, twenty-one, twenty-two, twenty-three, twenty-four, twenty-five, twenty-six, twenty-seven, twenty-eight, twenty-nine, thirty.",
+        "chunks": 78
+      },
+      "warm": {
+        "text": "Thirty, twenty-nine, twenty-eight, twenty-seven, twenty-six, twenty-five, twenty-four, twenty-three, twenty-two, twenty-one, twenty, nineteen, eighteen, seventeen, sixteen, fifteen, fourteen, thirteen, twelve, eleven, ten, nine, eight, seven, six, five, four, three, two, one.",
+        "chunks": 78
+      },
+      "msPerToken": 14.375,
+      "tokPerSec": 69.56521739130434,
+      "n": 69,
+      "firstChunkMs": 70.37000000476837,
+      "engineMs": 18740.009999990463,
+      "provenance": {
+        "browser": "Chrome/146.0.7680.153",
+        "adapter": {
+          "vendor": "apple",
+          "architecture": "metal-3",
+          "device": "",
+          "description": ""
+        },
+        "node": "v24.18.0",
+        "os": {
+          "platform": "darwin",
+          "release": "25.5.0",
+          "arch": "arm64"
+        },
+        "package": "0.17.1",
+        "model": {
+          "file": "www/gemma-4-E2B-it-web.litertlm",
+          "bytes": 2008432640,
+          "sha256": "3a08e8d94e23b814ae5414469c370c503813949acb8ceaa17e4ebf8a35af35b5"
+        },
+        "power": {
+          "source": "AC",
+          "percent": 97,
+          "low_power_mode": false
+        },
+        "thermal": [
+          "Note: No thermal warning level has been recorded",
+          "Note: No performance warning level has been recorded",
+          "Note: No CPU power status has been recorded"
+        ],
+        "harness_commit": "c3575e1bc2cdc43d891f08cae3890ded1e2345e1",
+        "timestamp": "2026-09-24T07:42:16.609Z"
+      },
+      "diffVsBaseline": {
+        "cold": {
+          "identical": true,
+          "baselineTokens": 60,
+          "runTokens": 60,
+          "hunks": []
+        },
+        "warm": {
+          "identical": false,
+          "baselineTokens": 58,
+          "runTokens": 60,
+          "hunks": [
+            {
+              "baselineIndex": 20,
+              "runIndex": 20,
+              "removed": [],
+              "added": [
+                "twenty",
+                ","
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "rep": 3,
+      "position": 4,
+      "condition": "no-0105",
+      "patch": "99,112,113",
+      "want": [
+        99,
+        112,
+        113
+      ],
+      "gpuErrors": [],
+      "patched": [
+        {
+          "id": 99,
+          "from": "4x16",
+          "to": "2x128",
+          "scale": 2,
+          "bytes": 3352,
+          "shaderSha256": "f31271cb72df74dfb46e55d96b707ffdf8013b568214a242ebcf0682e7d5c491"
+        },
+        {
+          "id": 112,
+          "from": "16x4",
+          "to": "2x32",
+          "scale": 8,
+          "bytes": 3525,
+          "shaderSha256": "3abd137006de7b0f350e4c616368e34ab4ae76c7fcbc39fb0ec6379392f862ca"
+        },
+        {
+          "id": 113,
+          "from": "2x32",
+          "to": "1x256",
+          "scale": 2,
+          "bytes": 3530,
+          "shaderSha256": "7ebdaaaf8e99487910bbe6d11ade59990ebfc7094ae307ca47fc3f6b31fa1ab0"
+        }
+      ],
+      "scaled": 23040,
+      "unscaled": 189960,
+      "cold": {
+        "text": "One, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, twenty-one, twenty-two, twenty-three, twenty-four, twenty-five, twenty-six, twenty-seven, twenty-eight, twenty-nine, thirty.",
+        "chunks": 78
+      },
+      "warm": {
+        "text": "Thirty, twenty-nine, twenty-eight, twenty-seven, twenty-six, twenty-five, twenty-four, twenty-three, twenty-two, twenty-one, twenty, nineteen, eighteen, seventeen, sixteen, fifteen, fourteen, thirteen, twelve, eleven, ten, nine, eight, seven, six, five, four, three, two, one.",
+        "chunks": 78
+      },
+      "msPerToken": 15.069999992847443,
+      "tokPerSec": 66.35700069506451,
+      "n": 69,
+      "firstChunkMs": 71.75500005483627,
+      "engineMs": 18046.34000003338,
+      "provenance": {
+        "browser": "Chrome/146.0.7680.153",
+        "adapter": {
+          "vendor": "apple",
+          "architecture": "metal-3",
+          "device": "",
+          "description": ""
+        },
+        "node": "v24.18.0",
+        "os": {
+          "platform": "darwin",
+          "release": "25.5.0",
+          "arch": "arm64"
+        },
+        "package": "0.17.1",
+        "model": {
+          "file": "www/gemma-4-E2B-it-web.litertlm",
+          "bytes": 2008432640,
+          "sha256": "3a08e8d94e23b814ae5414469c370c503813949acb8ceaa17e4ebf8a35af35b5"
+        },
+        "power": {
+          "source": "AC",
+          "percent": 97,
+          "low_power_mode": false
+        },
+        "thermal": [
+          "Note: No thermal warning level has been recorded",
+          "Note: No performance warning level has been recorded",
+          "Note: No CPU power status has been recorded"
+        ],
+        "harness_commit": "c3575e1bc2cdc43d891f08cae3890ded1e2345e1",
+        "timestamp": "2026-09-24T07:42:38.712Z"
+      },
+      "diffVsBaseline": {
+        "cold": {
+          "identical": true,
+          "baselineTokens": 60,
+          "runTokens": 60,
+          "hunks": []
+        },
+        "warm": {
+          "identical": false,
+          "baselineTokens": 58,
+          "runTokens": 60,
+          "hunks": [
+            {
+              "baselineIndex": 20,
+              "runIndex": 20,
+              "removed": [],
+              "added": [
+                "twenty",
+                ","
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "rep": 3,
+      "position": 5,
+      "condition": "all-four",
+      "patch": "all",
+      "want": [
+        99,
+        105,
+        112,
+        113
+      ],
+      "gpuErrors": [],
+      "patched": [
+        {
+          "id": 99,
+          "from": "4x16",
+          "to": "2x128",
+          "scale": 2,
+          "bytes": 3352,
+          "shaderSha256": "f31271cb72df74dfb46e55d96b707ffdf8013b568214a242ebcf0682e7d5c491"
+        },
+        {
+          "id": 105,
+          "from": "16x4",
+          "to": "2x32",
+          "scale": 8,
+          "bytes": 3347,
+          "shaderSha256": "53fbfb21eb2212d300ffa5108b6667f9b82460168986164499b60338a7afaeb8"
+        },
+        {
+          "id": 112,
+          "from": "16x4",
+          "to": "2x32",
+          "scale": 8,
+          "bytes": 3525,
+          "shaderSha256": "3abd137006de7b0f350e4c616368e34ab4ae76c7fcbc39fb0ec6379392f862ca"
+        },
+        {
+          "id": 113,
+          "from": "2x32",
+          "to": "1x256",
+          "scale": 2,
+          "bytes": 3530,
+          "shaderSha256": "7ebdaaaf8e99487910bbe6d11ade59990ebfc7094ae307ca47fc3f6b31fa1ab0"
+        }
+      ],
+      "scaled": 28960,
+      "unscaled": 184040,
+      "cold": {
+        "text": "One, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, twenty-one, twenty-two, twenty-three, twenty-four, twenty-five, twenty-six, twenty-seven, twenty-eight, twenty-nine, thirty.",
+        "chunks": 78
+      },
+      "warm": {
+        "text": "Thirty, twenty-nine, twenty-eight, twenty-seven, twenty-six, twenty-five, twenty-four, twenty-three, twenty-two, twenty-one, twenty, nineteen, eighteen, seventeen, sixteen, fifteen, fourteen, thirteen, twelve, eleven, ten, nine, eight, seven, six, five, four, three, two, one.",
+        "chunks": 78
+      },
+      "msPerToken": 14.34500002861023,
+      "tokPerSec": 69.7107004535072,
+      "n": 69,
+      "firstChunkMs": 68.96499997377396,
+      "engineMs": 19688.64500004053,
+      "provenance": {
+        "browser": "Chrome/146.0.7680.153",
+        "adapter": {
+          "vendor": "apple",
+          "architecture": "metal-3",
+          "device": "",
+          "description": ""
+        },
+        "node": "v24.18.0",
+        "os": {
+          "platform": "darwin",
+          "release": "25.5.0",
+          "arch": "arm64"
+        },
+        "package": "0.17.1",
+        "model": {
+          "file": "www/gemma-4-E2B-it-web.litertlm",
+          "bytes": 2008432640,
+          "sha256": "3a08e8d94e23b814ae5414469c370c503813949acb8ceaa17e4ebf8a35af35b5"
+        },
+        "power": {
+          "source": "AC",
+          "percent": 97,
+          "low_power_mode": false
+        },
+        "thermal": [
+          "Note: No thermal warning level has been recorded",
+          "Note: No performance warning level has been recorded",
+          "Note: No CPU power status has been recorded"
+        ],
+        "harness_commit": "c3575e1bc2cdc43d891f08cae3890ded1e2345e1",
+        "timestamp": "2026-09-24T07:43:02.604Z"
+      },
+      "diffVsBaseline": {
+        "cold": {
+          "identical": true,
+          "baselineTokens": 60,
+          "runTokens": 60,
+          "hunks": []
+        },
+        "warm": {
+          "identical": false,
+          "baselineTokens": 58,
+          "runTokens": 60,
+          "hunks": [
+            {
+              "baselineIndex": 20,
+              "runIndex": 20,
+              "removed": [],
+              "added": [
+                "twenty",
+                ","
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "rep": 3,
+      "position": 6,
+      "condition": "baseline",
+      "patch": "none",
+      "want": [],
+      "gpuErrors": [],
+      "patched": [],
+      "scaled": 0,
+      "unscaled": 210392,
+      "cold": {
+        "text": "One, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, twenty-one, twenty-two, twenty-three, twenty-four, twenty-five, twenty-six, twenty-seven, twenty-eight, twenty-nine, thirty.",
+        "chunks": 78
+      },
+      "warm": {
+        "text": "Thirty, twenty-nine, twenty-eight, twenty-seven, twenty-six, twenty-five, twenty-four, twenty-three, twenty-two, twenty-one, nineteen, eighteen, seventeen, sixteen, fifteen, fourteen, thirteen, twelve, eleven, ten, nine, eight, seven, six, five, four, three, two, one.",
+        "chunks": 76
+      },
+      "msPerToken": 16.959999978542328,
+      "tokPerSec": 58.962264225542036,
+      "n": 67,
+      "firstChunkMs": 79.09500002861023,
+      "engineMs": 17630.389999985695,
+      "provenance": {
+        "browser": "Chrome/146.0.7680.153",
+        "adapter": {
+          "vendor": "apple",
+          "architecture": "metal-3",
+          "device": "",
+          "description": ""
+        },
+        "node": "v24.18.0",
+        "os": {
+          "platform": "darwin",
+          "release": "25.5.0",
+          "arch": "arm64"
+        },
+        "package": "0.17.1",
+        "model": {
+          "file": "www/gemma-4-E2B-it-web.litertlm",
+          "bytes": 2008432640,
+          "sha256": "3a08e8d94e23b814ae5414469c370c503813949acb8ceaa17e4ebf8a35af35b5"
+        },
+        "power": {
+          "source": "AC",
+          "percent": 97,
+          "low_power_mode": false
+        },
+        "thermal": [
+          "Note: No thermal warning level has been recorded",
+          "Note: No performance warning level has been recorded",
+          "Note: No CPU power status has been recorded"
+        ],
+        "harness_commit": "c3575e1bc2cdc43d891f08cae3890ded1e2345e1",
+        "timestamp": "2026-09-24T07:43:24.574Z"
+      },
+      "diffVsBaseline": {
+        "cold": {
+          "identical": true,
+          "baselineTokens": 60,
+          "runTokens": 60,
+          "hunks": []
+        },
+        "warm": {
+          "identical": true,
+          "baselineTokens": 58,
+          "runTokens": 58,
+          "hunks": []
+        }
+      }
+    },
+    {
+      "rep": 4,
+      "position": 1,
+      "condition": "all-four",
+      "patch": "all",
+      "want": [
+        99,
+        105,
+        112,
+        113
+      ],
+      "gpuErrors": [],
+      "patched": [
+        {
+          "id": 99,
+          "from": "4x16",
+          "to": "2x128",
+          "scale": 2,
+          "bytes": 3352,
+          "shaderSha256": "f31271cb72df74dfb46e55d96b707ffdf8013b568214a242ebcf0682e7d5c491"
+        },
+        {
+          "id": 105,
+          "from": "16x4",
+          "to": "2x32",
+          "scale": 8,
+          "bytes": 3347,
+          "shaderSha256": "53fbfb21eb2212d300ffa5108b6667f9b82460168986164499b60338a7afaeb8"
+        },
+        {
+          "id": 112,
+          "from": "16x4",
+          "to": "2x32",
+          "scale": 8,
+          "bytes": 3525,
+          "shaderSha256": "3abd137006de7b0f350e4c616368e34ab4ae76c7fcbc39fb0ec6379392f862ca"
+        },
+        {
+          "id": 113,
+          "from": "2x32",
+          "to": "1x256",
+          "scale": 2,
+          "bytes": 3530,
+          "shaderSha256": "7ebdaaaf8e99487910bbe6d11ade59990ebfc7094ae307ca47fc3f6b31fa1ab0"
+        }
+      ],
+      "scaled": 28960,
+      "unscaled": 184040,
+      "cold": {
+        "text": "One, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, twenty-one, twenty-two, twenty-three, twenty-four, twenty-five, twenty-six, twenty-seven, twenty-eight, twenty-nine, thirty.",
+        "chunks": 78
+      },
+      "warm": {
+        "text": "Thirty, twenty-nine, twenty-eight, twenty-seven, twenty-six, twenty-five, twenty-four, twenty-three, twenty-two, twenty-one, twenty, nineteen, eighteen, seventeen, sixteen, fifteen, fourteen, thirteen, twelve, eleven, ten, nine, eight, seven, six, five, four, three, two, one.",
+        "chunks": 78
+      },
+      "msPerToken": 14.060000002384186,
+      "tokPerSec": 71.12375532222103,
+      "n": 69,
+      "firstChunkMs": 68.98000001907349,
+      "engineMs": 18907.884999990463,
+      "provenance": {
+        "browser": "Chrome/146.0.7680.153",
+        "adapter": {
+          "vendor": "apple",
+          "architecture": "metal-3",
+          "device": "",
+          "description": ""
+        },
+        "node": "v24.18.0",
+        "os": {
+          "platform": "darwin",
+          "release": "25.5.0",
+          "arch": "arm64"
+        },
+        "package": "0.17.1",
+        "model": {
+          "file": "www/gemma-4-E2B-it-web.litertlm",
+          "bytes": 2008432640,
+          "sha256": "3a08e8d94e23b814ae5414469c370c503813949acb8ceaa17e4ebf8a35af35b5"
+        },
+        "power": {
+          "source": "AC",
+          "percent": 97,
+          "low_power_mode": false
+        },
+        "thermal": [
+          "Note: No thermal warning level has been recorded",
+          "Note: No performance warning level has been recorded",
+          "Note: No CPU power status has been recorded"
+        ],
+        "harness_commit": "c3575e1bc2cdc43d891f08cae3890ded1e2345e1",
+        "timestamp": "2026-09-24T07:43:48.357Z"
+      },
+      "diffVsBaseline": {
+        "cold": {
+          "identical": true,
+          "baselineTokens": 60,
+          "runTokens": 60,
+          "hunks": []
+        },
+        "warm": {
+          "identical": false,
+          "baselineTokens": 58,
+          "runTokens": 60,
+          "hunks": [
+            {
+              "baselineIndex": 20,
+              "runIndex": 20,
+              "removed": [],
+              "added": [
+                "twenty",
+                ","
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "rep": 4,
+      "position": 2,
+      "condition": "no-0105",
+      "patch": "99,112,113",
+      "want": [
+        99,
+        112,
+        113
+      ],
+      "gpuErrors": [],
+      "patched": [
+        {
+          "id": 99,
+          "from": "4x16",
+          "to": "2x128",
+          "scale": 2,
+          "bytes": 3352,
+          "shaderSha256": "f31271cb72df74dfb46e55d96b707ffdf8013b568214a242ebcf0682e7d5c491"
+        },
+        {
+          "id": 112,
+          "from": "16x4",
+          "to": "2x32",
+          "scale": 8,
+          "bytes": 3525,
+          "shaderSha256": "3abd137006de7b0f350e4c616368e34ab4ae76c7fcbc39fb0ec6379392f862ca"
+        },
+        {
+          "id": 113,
+          "from": "2x32",
+          "to": "1x256",
+          "scale": 2,
+          "bytes": 3530,
+          "shaderSha256": "7ebdaaaf8e99487910bbe6d11ade59990ebfc7094ae307ca47fc3f6b31fa1ab0"
+        }
+      ],
+      "scaled": 23040,
+      "unscaled": 189960,
+      "cold": {
+        "text": "One, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, twenty-one, twenty-two, twenty-three, twenty-four, twenty-five, twenty-six, twenty-seven, twenty-eight, twenty-nine, thirty.",
+        "chunks": 78
+      },
+      "warm": {
+        "text": "Thirty, twenty-nine, twenty-eight, twenty-seven, twenty-six, twenty-five, twenty-four, twenty-three, twenty-two, twenty-one, twenty, nineteen, eighteen, seventeen, sixteen, fifteen, fourteen, thirteen, twelve, eleven, ten, nine, eight, seven, six, five, four, three, two, one.",
+        "chunks": 78
+      },
+      "msPerToken": 15.3299999833107,
+      "tokPerSec": 65.23157215190275,
+      "n": 69,
+      "firstChunkMs": 71.58999997377396,
+      "engineMs": 17483.980000019073,
+      "provenance": {
+        "browser": "Chrome/146.0.7680.153",
+        "adapter": {
+          "vendor": "apple",
+          "architecture": "metal-3",
+          "device": "",
+          "description": ""
+        },
+        "node": "v24.18.0",
+        "os": {
+          "platform": "darwin",
+          "release": "25.5.0",
+          "arch": "arm64"
+        },
+        "package": "0.17.1",
+        "model": {
+          "file": "www/gemma-4-E2B-it-web.litertlm",
+          "bytes": 2008432640,
+          "sha256": "3a08e8d94e23b814ae5414469c370c503813949acb8ceaa17e4ebf8a35af35b5"
+        },
+        "power": {
+          "source": "AC",
+          "percent": 97,
+          "low_power_mode": false
+        },
+        "thermal": [
+          "Note: No thermal warning level has been recorded",
+          "Note: No performance warning level has been recorded",
+          "Note: No CPU power status has been recorded"
+        ],
+        "harness_commit": "c3575e1bc2cdc43d891f08cae3890ded1e2345e1",
+        "timestamp": "2026-09-24T07:44:10.168Z"
+      },
+      "diffVsBaseline": {
+        "cold": {
+          "identical": true,
+          "baselineTokens": 60,
+          "runTokens": 60,
+          "hunks": []
+        },
+        "warm": {
+          "identical": false,
+          "baselineTokens": 58,
+          "runTokens": 60,
+          "hunks": [
+            {
+              "baselineIndex": 20,
+              "runIndex": 20,
+              "removed": [],
+              "added": [
+                "twenty",
+                ","
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "rep": 4,
+      "position": 3,
+      "condition": "baseline",
+      "patch": "none",
+      "want": [],
+      "gpuErrors": [],
+      "patched": [],
+      "scaled": 0,
+      "unscaled": 210392,
+      "cold": {
+        "text": "One, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, twenty-one, twenty-two, twenty-three, twenty-four, twenty-five, twenty-six, twenty-seven, twenty-eight, twenty-nine, thirty.",
+        "chunks": 78
+      },
+      "warm": {
+        "text": "Thirty, twenty-nine, twenty-eight, twenty-seven, twenty-six, twenty-five, twenty-four, twenty-three, twenty-two, twenty-one, nineteen, eighteen, seventeen, sixteen, fifteen, fourteen, thirteen, twelve, eleven, ten, nine, eight, seven, six, five, four, three, two, one.",
+        "chunks": 76
+      },
+      "msPerToken": 17.860000014305115,
+      "tokPerSec": 55.991041388524174,
+      "n": 67,
+      "firstChunkMs": 79.7950000166893,
+      "engineMs": 18948.115000009537,
+      "provenance": {
+        "browser": "Chrome/146.0.7680.153",
+        "adapter": {
+          "vendor": "apple",
+          "architecture": "metal-3",
+          "device": "",
+          "description": ""
+        },
+        "node": "v24.18.0",
+        "os": {
+          "platform": "darwin",
+          "release": "25.5.0",
+          "arch": "arm64"
+        },
+        "package": "0.17.1",
+        "model": {
+          "file": "www/gemma-4-E2B-it-web.litertlm",
+          "bytes": 2008432640,
+          "sha256": "3a08e8d94e23b814ae5414469c370c503813949acb8ceaa17e4ebf8a35af35b5"
+        },
+        "power": {
+          "source": "AC",
+          "percent": 97,
+          "low_power_mode": false
+        },
+        "thermal": [
+          "Note: No thermal warning level has been recorded",
+          "Note: No performance warning level has been recorded",
+          "Note: No CPU power status has been recorded"
+        ],
+        "harness_commit": "c3575e1bc2cdc43d891f08cae3890ded1e2345e1",
+        "timestamp": "2026-09-24T07:44:33.894Z"
+      },
+      "diffVsBaseline": {
+        "cold": {
+          "identical": true,
+          "baselineTokens": 60,
+          "runTokens": 60,
+          "hunks": []
+        },
+        "warm": {
+          "identical": true,
+          "baselineTokens": 58,
+          "runTokens": 58,
+          "hunks": []
+        }
+      }
+    },
+    {
+      "rep": 4,
+      "position": 4,
+      "condition": "no-0112",
+      "patch": "99,105,113",
+      "want": [
+        99,
+        105,
+        113
+      ],
+      "gpuErrors": [],
+      "patched": [
+        {
+          "id": 99,
+          "from": "4x16",
+          "to": "2x128",
+          "scale": 2,
+          "bytes": 3352,
+          "shaderSha256": "f31271cb72df74dfb46e55d96b707ffdf8013b568214a242ebcf0682e7d5c491"
+        },
+        {
+          "id": 105,
+          "from": "16x4",
+          "to": "2x32",
+          "scale": 8,
+          "bytes": 3347,
+          "shaderSha256": "53fbfb21eb2212d300ffa5108b6667f9b82460168986164499b60338a7afaeb8"
+        },
+        {
+          "id": 113,
+          "from": "2x32",
+          "to": "1x256",
+          "scale": 2,
+          "bytes": 3530,
+          "shaderSha256": "7ebdaaaf8e99487910bbe6d11ade59990ebfc7094ae307ca47fc3f6b31fa1ab0"
+        }
+      ],
+      "scaled": 22560,
+      "unscaled": 190440,
+      "cold": {
+        "text": "One, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, twenty-one, twenty-two, twenty-three, twenty-four, twenty-five, twenty-six, twenty-seven, twenty-eight, twenty-nine, thirty.",
+        "chunks": 78
+      },
+      "warm": {
+        "text": "Thirty, twenty-nine, twenty-eight, twenty-seven, twenty-six, twenty-five, twenty-four, twenty-three, twenty-two, twenty-one, twenty, nineteen, eighteen, seventeen, sixteen, fifteen, fourteen, thirteen, twelve, eleven, ten, nine, eight, seven, six, five, four, three, two, one.",
+        "chunks": 78
+      },
+      "msPerToken": 14.355000019073486,
+      "tokPerSec": 69.66213853509579,
+      "n": 69,
+      "firstChunkMs": 70.68000000715256,
+      "engineMs": 16546.230000019073,
+      "provenance": {
+        "browser": "Chrome/146.0.7680.153",
+        "adapter": {
+          "vendor": "apple",
+          "architecture": "metal-3",
+          "device": "",
+          "description": ""
+        },
+        "node": "v24.18.0",
+        "os": {
+          "platform": "darwin",
+          "release": "25.5.0",
+          "arch": "arm64"
+        },
+        "package": "0.17.1",
+        "model": {
+          "file": "www/gemma-4-E2B-it-web.litertlm",
+          "bytes": 2008432640,
+          "sha256": "3a08e8d94e23b814ae5414469c370c503813949acb8ceaa17e4ebf8a35af35b5"
+        },
+        "power": {
+          "source": "AC",
+          "percent": 97,
+          "low_power_mode": false
+        },
+        "thermal": [
+          "Note: No thermal warning level has been recorded",
+          "Note: No performance warning level has been recorded",
+          "Note: No CPU power status has been recorded"
+        ],
+        "harness_commit": "c3575e1bc2cdc43d891f08cae3890ded1e2345e1",
+        "timestamp": "2026-09-24T07:44:54.718Z"
+      },
+      "diffVsBaseline": {
+        "cold": {
+          "identical": true,
+          "baselineTokens": 60,
+          "runTokens": 60,
+          "hunks": []
+        },
+        "warm": {
+          "identical": false,
+          "baselineTokens": 58,
+          "runTokens": 60,
+          "hunks": [
+            {
+              "baselineIndex": 20,
+              "runIndex": 20,
+              "removed": [],
+              "added": [
+                "twenty",
+                ","
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "rep": 4,
+      "position": 5,
+      "condition": "no-0099",
+      "patch": "105,112,113",
+      "want": [
+        105,
+        112,
+        113
+      ],
+      "gpuErrors": [],
+      "patched": [
+        {
+          "id": 105,
+          "from": "16x4",
+          "to": "2x32",
+          "scale": 8,
+          "bytes": 3347,
+          "shaderSha256": "53fbfb21eb2212d300ffa5108b6667f9b82460168986164499b60338a7afaeb8"
+        },
+        {
+          "id": 112,
+          "from": "16x4",
+          "to": "2x32",
+          "scale": 8,
+          "bytes": 3525,
+          "shaderSha256": "3abd137006de7b0f350e4c616368e34ab4ae76c7fcbc39fb0ec6379392f862ca"
+        },
+        {
+          "id": 113,
+          "from": "2x32",
+          "to": "1x256",
+          "scale": 2,
+          "bytes": 3530,
+          "shaderSha256": "7ebdaaaf8e99487910bbe6d11ade59990ebfc7094ae307ca47fc3f6b31fa1ab0"
+        }
+      ],
+      "scaled": 15520,
+      "unscaled": 197480,
+      "cold": {
+        "text": "One, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, twenty-one, twenty-two, twenty-three, twenty-four, twenty-five, twenty-six, twenty-seven, twenty-eight, twenty-nine, thirty.",
+        "chunks": 78
+      },
+      "warm": {
+        "text": "Thirty, twenty-nine, twenty-eight, twenty-seven, twenty-six, twenty-five, twenty-four, twenty-three, twenty-two, twenty-one, twenty, nineteen, eighteen, seventeen, sixteen, fifteen, fourteen, thirteen, twelve, eleven, ten, nine, eight, seven, six, five, four, three, two, one.",
+        "chunks": 78
+      },
+      "msPerToken": 14.675000011920929,
+      "tokPerSec": 68.14310045571864,
+      "n": 69,
+      "firstChunkMs": 71.02500003576279,
+      "engineMs": 15287.089999973774,
+      "provenance": {
+        "browser": "Chrome/146.0.7680.153",
+        "adapter": {
+          "vendor": "apple",
+          "architecture": "metal-3",
+          "device": "",
+          "description": ""
+        },
+        "node": "v24.18.0",
+        "os": {
+          "platform": "darwin",
+          "release": "25.5.0",
+          "arch": "arm64"
+        },
+        "package": "0.17.1",
+        "model": {
+          "file": "www/gemma-4-E2B-it-web.litertlm",
+          "bytes": 2008432640,
+          "sha256": "3a08e8d94e23b814ae5414469c370c503813949acb8ceaa17e4ebf8a35af35b5"
+        },
+        "power": {
+          "source": "AC",
+          "percent": 97,
+          "low_power_mode": false
+        },
+        "thermal": [
+          "Note: No thermal warning level has been recorded",
+          "Note: No performance warning level has been recorded",
+          "Note: No CPU power status has been recorded"
+        ],
+        "harness_commit": "c3575e1bc2cdc43d891f08cae3890ded1e2345e1",
+        "timestamp": "2026-09-24T07:45:13.470Z"
+      },
+      "diffVsBaseline": {
+        "cold": {
+          "identical": true,
+          "baselineTokens": 60,
+          "runTokens": 60,
+          "hunks": []
+        },
+        "warm": {
+          "identical": false,
+          "baselineTokens": 58,
+          "runTokens": 60,
+          "hunks": [
+            {
+              "baselineIndex": 20,
+              "runIndex": 20,
+              "removed": [],
+              "added": [
+                "twenty",
+                ","
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "rep": 4,
+      "position": 6,
+      "condition": "no-0113",
+      "patch": "99,105,112",
+      "want": [
+        99,
+        105,
+        112
+      ],
+      "gpuErrors": [],
+      "patched": [
+        {
+          "id": 99,
+          "from": "4x16",
+          "to": "2x128",
+          "scale": 2,
+          "bytes": 3352,
+          "shaderSha256": "f31271cb72df74dfb46e55d96b707ffdf8013b568214a242ebcf0682e7d5c491"
+        },
+        {
+          "id": 105,
+          "from": "16x4",
+          "to": "2x32",
+          "scale": 8,
+          "bytes": 3347,
+          "shaderSha256": "53fbfb21eb2212d300ffa5108b6667f9b82460168986164499b60338a7afaeb8"
+        },
+        {
+          "id": 112,
+          "from": "16x4",
+          "to": "2x32",
+          "scale": 8,
+          "bytes": 3525,
+          "shaderSha256": "3abd137006de7b0f350e4c616368e34ab4ae76c7fcbc39fb0ec6379392f862ca"
+        }
+      ],
+      "scaled": 25760,
+      "unscaled": 187240,
+      "cold": {
+        "text": "One, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, twenty-one, twenty-two, twenty-three, twenty-four, twenty-five, twenty-six, twenty-seven, twenty-eight, twenty-nine, thirty.",
+        "chunks": 78
+      },
+      "warm": {
+        "text": "Thirty, twenty-nine, twenty-eight, twenty-seven, twenty-six, twenty-five, twenty-four, twenty-three, twenty-two, twenty-one, twenty, nineteen, eighteen, seventeen, sixteen, fifteen, fourteen, thirteen, twelve, eleven, ten, nine, eight, seven, six, five, four, three, two, one.",
+        "chunks": 78
+      },
+      "msPerToken": 14.51500004529953,
+      "tokPerSec": 68.89424711533745,
+      "n": 69,
+      "firstChunkMs": 70.31000000238419,
+      "engineMs": 9664.030000030994,
+      "provenance": {
+        "browser": "Chrome/146.0.7680.153",
+        "adapter": {
+          "vendor": "apple",
+          "architecture": "metal-3",
+          "device": "",
+          "description": ""
+        },
+        "node": "v24.18.0",
+        "os": {
+          "platform": "darwin",
+          "release": "25.5.0",
+          "arch": "arm64"
+        },
+        "package": "0.17.1",
+        "model": {
+          "file": "www/gemma-4-E2B-it-web.litertlm",
+          "bytes": 2008432640,
+          "sha256": "3a08e8d94e23b814ae5414469c370c503813949acb8ceaa17e4ebf8a35af35b5"
+        },
+        "power": {
+          "source": "AC",
+          "percent": 97,
+          "low_power_mode": false
+        },
+        "thermal": [
+          "Note: No thermal warning level has been recorded",
+          "Note: No performance warning level has been recorded",
+          "Note: No CPU power status has been recorded"
+        ],
+        "harness_commit": "c3575e1bc2cdc43d891f08cae3890ded1e2345e1",
+        "timestamp": "2026-09-24T07:45:27.253Z"
+      },
+      "diffVsBaseline": {
+        "cold": {
+          "identical": true,
+          "baselineTokens": 60,
+          "runTokens": 60,
+          "hunks": []
+        },
+        "warm": {
+          "identical": false,
+          "baselineTokens": 58,
+          "runTokens": 60,
+          "hunks": [
+            {
+              "baselineIndex": 20,
+              "runIndex": 20,
+              "removed": [],
+              "added": [
+                "twenty",
+                ","
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "rep": 5,
+      "position": 1,
+      "condition": "baseline",
+      "patch": "none",
+      "want": [],
+      "gpuErrors": [],
+      "patched": [],
+      "scaled": 0,
+      "unscaled": 210392,
+      "cold": {
+        "text": "One, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, twenty-one, twenty-two, twenty-three, twenty-four, twenty-five, twenty-six, twenty-seven, twenty-eight, twenty-nine, thirty.",
+        "chunks": 78
+      },
+      "warm": {
+        "text": "Thirty, twenty-nine, twenty-eight, twenty-seven, twenty-six, twenty-five, twenty-four, twenty-three, twenty-two, twenty-one, nineteen, eighteen, seventeen, sixteen, fifteen, fourteen, thirteen, twelve, eleven, ten, nine, eight, seven, six, five, four, three, two, one.",
+        "chunks": 76
+      },
+      "msPerToken": 17.64500004053116,
+      "tokPerSec": 56.67327841898364,
+      "n": 67,
+      "firstChunkMs": 78.03500002622604,
+      "engineMs": 11186.584999978542,
+      "provenance": {
+        "browser": "Chrome/146.0.7680.153",
+        "adapter": {
+          "vendor": "apple",
+          "architecture": "metal-3",
+          "device": "",
+          "description": ""
+        },
+        "node": "v24.18.0",
+        "os": {
+          "platform": "darwin",
+          "release": "25.5.0",
+          "arch": "arm64"
+        },
+        "package": "0.17.1",
+        "model": {
+          "file": "www/gemma-4-E2B-it-web.litertlm",
+          "bytes": 2008432640,
+          "sha256": "3a08e8d94e23b814ae5414469c370c503813949acb8ceaa17e4ebf8a35af35b5"
+        },
+        "power": {
+          "source": "AC",
+          "percent": 97,
+          "low_power_mode": false
+        },
+        "thermal": [
+          "Note: No thermal warning level has been recorded",
+          "Note: No performance warning level has been recorded",
+          "Note: No CPU power status has been recorded"
+        ],
+        "harness_commit": "c3575e1bc2cdc43d891f08cae3890ded1e2345e1",
+        "timestamp": "2026-09-24T07:45:43.392Z"
+      },
+      "diffVsBaseline": {
+        "cold": {
+          "identical": true,
+          "baselineTokens": 60,
+          "runTokens": 60,
+          "hunks": []
+        },
+        "warm": {
+          "identical": true,
+          "baselineTokens": 58,
+          "runTokens": 58,
+          "hunks": []
+        }
+      }
+    },
+    {
+      "rep": 5,
+      "position": 2,
+      "condition": "all-four",
+      "patch": "all",
+      "want": [
+        99,
+        105,
+        112,
+        113
+      ],
+      "gpuErrors": [],
+      "patched": [
+        {
+          "id": 99,
+          "from": "4x16",
+          "to": "2x128",
+          "scale": 2,
+          "bytes": 3352,
+          "shaderSha256": "f31271cb72df74dfb46e55d96b707ffdf8013b568214a242ebcf0682e7d5c491"
+        },
+        {
+          "id": 105,
+          "from": "16x4",
+          "to": "2x32",
+          "scale": 8,
+          "bytes": 3347,
+          "shaderSha256": "53fbfb21eb2212d300ffa5108b6667f9b82460168986164499b60338a7afaeb8"
+        },
+        {
+          "id": 112,
+          "from": "16x4",
+          "to": "2x32",
+          "scale": 8,
+          "bytes": 3525,
+          "shaderSha256": "3abd137006de7b0f350e4c616368e34ab4ae76c7fcbc39fb0ec6379392f862ca"
+        },
+        {
+          "id": 113,
+          "from": "2x32",
+          "to": "1x256",
+          "scale": 2,
+          "bytes": 3530,
+          "shaderSha256": "7ebdaaaf8e99487910bbe6d11ade59990ebfc7094ae307ca47fc3f6b31fa1ab0"
+        }
+      ],
+      "scaled": 28960,
+      "unscaled": 184040,
+      "cold": {
+        "text": "One, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, twenty-one, twenty-two, twenty-three, twenty-four, twenty-five, twenty-six, twenty-seven, twenty-eight, twenty-nine, thirty.",
+        "chunks": 78
+      },
+      "warm": {
+        "text": "Thirty, twenty-nine, twenty-eight, twenty-seven, twenty-six, twenty-five, twenty-four, twenty-three, twenty-two, twenty-one, twenty, nineteen, eighteen, seventeen, sixteen, fifteen, fourteen, thirteen, twelve, eleven, ten, nine, eight, seven, six, five, four, three, two, one.",
+        "chunks": 78
+      },
+      "msPerToken": 13.300000011920929,
+      "tokPerSec": 75.18796985742027,
+      "n": 69,
+      "firstChunkMs": 67.61000001430511,
+      "engineMs": 11998.4849999547,
+      "provenance": {
+        "browser": "Chrome/146.0.7680.153",
+        "adapter": {
+          "vendor": "apple",
+          "architecture": "metal-3",
+          "device": "",
+          "description": ""
+        },
+        "node": "v24.18.0",
+        "os": {
+          "platform": "darwin",
+          "release": "25.5.0",
+          "arch": "arm64"
+        },
+        "package": "0.17.1",
+        "model": {
+          "file": "www/gemma-4-E2B-it-web.litertlm",
+          "bytes": 2008432640,
+          "sha256": "3a08e8d94e23b814ae5414469c370c503813949acb8ceaa17e4ebf8a35af35b5"
+        },
+        "power": {
+          "source": "AC",
+          "percent": 97,
+          "low_power_mode": false
+        },
+        "thermal": [
+          "Note: No thermal warning level has been recorded",
+          "Note: No performance warning level has been recorded",
+          "Note: No CPU power status has been recorded"
+        ],
+        "harness_commit": "c3575e1bc2cdc43d891f08cae3890ded1e2345e1",
+        "timestamp": "2026-09-24T07:45:59.491Z"
+      },
+      "diffVsBaseline": {
+        "cold": {
+          "identical": true,
+          "baselineTokens": 60,
+          "runTokens": 60,
+          "hunks": []
+        },
+        "warm": {
+          "identical": false,
+          "baselineTokens": 58,
+          "runTokens": 60,
+          "hunks": [
+            {
+              "baselineIndex": 20,
+              "runIndex": 20,
+              "removed": [],
+              "added": [
+                "twenty",
+                ","
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "rep": 5,
+      "position": 3,
+      "condition": "no-0113",
+      "patch": "99,105,112",
+      "want": [
+        99,
+        105,
+        112
+      ],
+      "gpuErrors": [],
+      "patched": [
+        {
+          "id": 99,
+          "from": "4x16",
+          "to": "2x128",
+          "scale": 2,
+          "bytes": 3352,
+          "shaderSha256": "f31271cb72df74dfb46e55d96b707ffdf8013b568214a242ebcf0682e7d5c491"
+        },
+        {
+          "id": 105,
+          "from": "16x4",
+          "to": "2x32",
+          "scale": 8,
+          "bytes": 3347,
+          "shaderSha256": "53fbfb21eb2212d300ffa5108b6667f9b82460168986164499b60338a7afaeb8"
+        },
+        {
+          "id": 112,
+          "from": "16x4",
+          "to": "2x32",
+          "scale": 8,
+          "bytes": 3525,
+          "shaderSha256": "3abd137006de7b0f350e4c616368e34ab4ae76c7fcbc39fb0ec6379392f862ca"
+        }
+      ],
+      "scaled": 25760,
+      "unscaled": 187240,
+      "cold": {
+        "text": "One, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, twenty-one, twenty-two, twenty-three, twenty-four, twenty-five, twenty-six, twenty-seven, twenty-eight, twenty-nine, thirty.",
+        "chunks": 78
+      },
+      "warm": {
+        "text": "Thirty, twenty-nine, twenty-eight, twenty-seven, twenty-six, twenty-five, twenty-four, twenty-three, twenty-two, twenty-one, twenty, nineteen, eighteen, seventeen, sixteen, fifteen, fourteen, thirteen, twelve, eleven, ten, nine, eight, seven, six, five, four, three, two, one.",
+        "chunks": 78
+      },
+      "msPerToken": 14.469999969005585,
+      "tokPerSec": 69.10850049357136,
+      "n": 69,
+      "firstChunkMs": 69.03000003099442,
+      "engineMs": 10740.870000004768,
+      "provenance": {
+        "browser": "Chrome/146.0.7680.153",
+        "adapter": {
+          "vendor": "apple",
+          "architecture": "metal-3",
+          "device": "",
+          "description": ""
+        },
+        "node": "v24.18.0",
+        "os": {
+          "platform": "darwin",
+          "release": "25.5.0",
+          "arch": "arm64"
+        },
+        "package": "0.17.1",
+        "model": {
+          "file": "www/gemma-4-E2B-it-web.litertlm",
+          "bytes": 2008432640,
+          "sha256": "3a08e8d94e23b814ae5414469c370c503813949acb8ceaa17e4ebf8a35af35b5"
+        },
+        "power": {
+          "source": "AC",
+          "percent": 97,
+          "low_power_mode": false
+        },
+        "thermal": [
+          "Note: No thermal warning level has been recorded",
+          "Note: No performance warning level has been recorded",
+          "Note: No CPU power status has been recorded"
+        ],
+        "harness_commit": "c3575e1bc2cdc43d891f08cae3890ded1e2345e1",
+        "timestamp": "2026-09-24T07:46:14.445Z"
+      },
+      "diffVsBaseline": {
+        "cold": {
+          "identical": true,
+          "baselineTokens": 60,
+          "runTokens": 60,
+          "hunks": []
+        },
+        "warm": {
+          "identical": false,
+          "baselineTokens": 58,
+          "runTokens": 60,
+          "hunks": [
+            {
+              "baselineIndex": 20,
+              "runIndex": 20,
+              "removed": [],
+              "added": [
+                "twenty",
+                ","
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "rep": 5,
+      "position": 4,
+      "condition": "no-0105",
+      "patch": "99,112,113",
+      "want": [
+        99,
+        112,
+        113
+      ],
+      "gpuErrors": [],
+      "patched": [
+        {
+          "id": 99,
+          "from": "4x16",
+          "to": "2x128",
+          "scale": 2,
+          "bytes": 3352,
+          "shaderSha256": "f31271cb72df74dfb46e55d96b707ffdf8013b568214a242ebcf0682e7d5c491"
+        },
+        {
+          "id": 112,
+          "from": "16x4",
+          "to": "2x32",
+          "scale": 8,
+          "bytes": 3525,
+          "shaderSha256": "3abd137006de7b0f350e4c616368e34ab4ae76c7fcbc39fb0ec6379392f862ca"
+        },
+        {
+          "id": 113,
+          "from": "2x32",
+          "to": "1x256",
+          "scale": 2,
+          "bytes": 3530,
+          "shaderSha256": "7ebdaaaf8e99487910bbe6d11ade59990ebfc7094ae307ca47fc3f6b31fa1ab0"
+        }
+      ],
+      "scaled": 23040,
+      "unscaled": 189960,
+      "cold": {
+        "text": "One, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, twenty-one, twenty-two, twenty-three, twenty-four, twenty-five, twenty-six, twenty-seven, twenty-eight, twenty-nine, thirty.",
+        "chunks": 78
+      },
+      "warm": {
+        "text": "Thirty, twenty-nine, twenty-eight, twenty-seven, twenty-six, twenty-five, twenty-four, twenty-three, twenty-two, twenty-one, twenty, nineteen, eighteen, seventeen, sixteen, fifteen, fourteen, thirteen, twelve, eleven, ten, nine, eight, seven, six, five, four, three, two, one.",
+        "chunks": 78
+      },
+      "msPerToken": 15.754999995231628,
+      "tokPerSec": 63.47191369740766,
+      "n": 69,
+      "firstChunkMs": 74.14000004529953,
+      "engineMs": 10495.100000023842,
+      "provenance": {
+        "browser": "Chrome/146.0.7680.153",
+        "adapter": {
+          "vendor": "apple",
+          "architecture": "metal-3",
+          "device": "",
+          "description": ""
+        },
+        "node": "v24.18.0",
+        "os": {
+          "platform": "darwin",
+          "release": "25.5.0",
+          "arch": "arm64"
+        },
+        "package": "0.17.1",
+        "model": {
+          "file": "www/gemma-4-E2B-it-web.litertlm",
+          "bytes": 2008432640,
+          "sha256": "3a08e8d94e23b814ae5414469c370c503813949acb8ceaa17e4ebf8a35af35b5"
+        },
+        "power": {
+          "source": "AC",
+          "percent": 97,
+          "low_power_mode": false
+        },
+        "thermal": [
+          "Note: No thermal warning level has been recorded",
+          "Note: No performance warning level has been recorded",
+          "Note: No CPU power status has been recorded"
+        ],
+        "harness_commit": "c3575e1bc2cdc43d891f08cae3890ded1e2345e1",
+        "timestamp": "2026-09-24T07:46:29.560Z"
+      },
+      "diffVsBaseline": {
+        "cold": {
+          "identical": true,
+          "baselineTokens": 60,
+          "runTokens": 60,
+          "hunks": []
+        },
+        "warm": {
+          "identical": false,
+          "baselineTokens": 58,
+          "runTokens": 60,
+          "hunks": [
+            {
+              "baselineIndex": 20,
+              "runIndex": 20,
+              "removed": [],
+              "added": [
+                "twenty",
+                ","
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "rep": 5,
+      "position": 5,
+      "condition": "no-0112",
+      "patch": "99,105,113",
+      "want": [
+        99,
+        105,
+        113
+      ],
+      "gpuErrors": [],
+      "patched": [
+        {
+          "id": 99,
+          "from": "4x16",
+          "to": "2x128",
+          "scale": 2,
+          "bytes": 3352,
+          "shaderSha256": "f31271cb72df74dfb46e55d96b707ffdf8013b568214a242ebcf0682e7d5c491"
+        },
+        {
+          "id": 105,
+          "from": "16x4",
+          "to": "2x32",
+          "scale": 8,
+          "bytes": 3347,
+          "shaderSha256": "53fbfb21eb2212d300ffa5108b6667f9b82460168986164499b60338a7afaeb8"
+        },
+        {
+          "id": 113,
+          "from": "2x32",
+          "to": "1x256",
+          "scale": 2,
+          "bytes": 3530,
+          "shaderSha256": "7ebdaaaf8e99487910bbe6d11ade59990ebfc7094ae307ca47fc3f6b31fa1ab0"
+        }
+      ],
+      "scaled": 22560,
+      "unscaled": 190440,
+      "cold": {
+        "text": "One, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, twenty-one, twenty-two, twenty-three, twenty-four, twenty-five, twenty-six, twenty-seven, twenty-eight, twenty-nine, thirty.",
+        "chunks": 78
+      },
+      "warm": {
+        "text": "Thirty, twenty-nine, twenty-eight, twenty-seven, twenty-six, twenty-five, twenty-four, twenty-three, twenty-two, twenty-one, twenty, nineteen, eighteen, seventeen, sixteen, fifteen, fourteen, thirteen, twelve, eleven, ten, nine, eight, seven, six, five, four, three, two, one.",
+        "chunks": 78
+      },
+      "msPerToken": 15.259999990463257,
+      "tokPerSec": 65.5307995167071,
+      "n": 69,
+      "firstChunkMs": 69.875,
+      "engineMs": 10427.219999969006,
+      "provenance": {
+        "browser": "Chrome/146.0.7680.153",
+        "adapter": {
+          "vendor": "apple",
+          "architecture": "metal-3",
+          "device": "",
+          "description": ""
+        },
+        "node": "v24.18.0",
+        "os": {
+          "platform": "darwin",
+          "release": "25.5.0",
+          "arch": "arm64"
+        },
+        "package": "0.17.1",
+        "model": {
+          "file": "www/gemma-4-E2B-it-web.litertlm",
+          "bytes": 2008432640,
+          "sha256": "3a08e8d94e23b814ae5414469c370c503813949acb8ceaa17e4ebf8a35af35b5"
+        },
+        "power": {
+          "source": "AC",
+          "percent": 97,
+          "low_power_mode": false
+        },
+        "thermal": [
+          "Note: No thermal warning level has been recorded",
+          "Note: No performance warning level has been recorded",
+          "Note: No CPU power status has been recorded"
+        ],
+        "harness_commit": "c3575e1bc2cdc43d891f08cae3890ded1e2345e1",
+        "timestamp": "2026-09-24T07:46:44.621Z"
+      },
+      "diffVsBaseline": {
+        "cold": {
+          "identical": true,
+          "baselineTokens": 60,
+          "runTokens": 60,
+          "hunks": []
+        },
+        "warm": {
+          "identical": false,
+          "baselineTokens": 58,
+          "runTokens": 60,
+          "hunks": [
+            {
+              "baselineIndex": 20,
+              "runIndex": 20,
+              "removed": [],
+              "added": [
+                "twenty",
+                ","
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "rep": 5,
+      "position": 6,
+      "condition": "no-0099",
+      "patch": "105,112,113",
+      "want": [
+        105,
+        112,
+        113
+      ],
+      "gpuErrors": [],
+      "patched": [
+        {
+          "id": 105,
+          "from": "16x4",
+          "to": "2x32",
+          "scale": 8,
+          "bytes": 3347,
+          "shaderSha256": "53fbfb21eb2212d300ffa5108b6667f9b82460168986164499b60338a7afaeb8"
+        },
+        {
+          "id": 112,
+          "from": "16x4",
+          "to": "2x32",
+          "scale": 8,
+          "bytes": 3525,
+          "shaderSha256": "3abd137006de7b0f350e4c616368e34ab4ae76c7fcbc39fb0ec6379392f862ca"
+        },
+        {
+          "id": 113,
+          "from": "2x32",
+          "to": "1x256",
+          "scale": 2,
+          "bytes": 3530,
+          "shaderSha256": "7ebdaaaf8e99487910bbe6d11ade59990ebfc7094ae307ca47fc3f6b31fa1ab0"
+        }
+      ],
+      "scaled": 15520,
+      "unscaled": 197480,
+      "cold": {
+        "text": "One, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, twenty-one, twenty-two, twenty-three, twenty-four, twenty-five, twenty-six, twenty-seven, twenty-eight, twenty-nine, thirty.",
+        "chunks": 78
+      },
+      "warm": {
+        "text": "Thirty, twenty-nine, twenty-eight, twenty-seven, twenty-six, twenty-five, twenty-four, twenty-three, twenty-two, twenty-one, twenty, nineteen, eighteen, seventeen, sixteen, fifteen, fourteen, thirteen, twelve, eleven, ten, nine, eight, seven, six, five, four, three, two, one.",
+        "chunks": 78
+      },
+      "msPerToken": 15.835000038146973,
+      "tokPerSec": 63.15124708499975,
+      "n": 69,
+      "firstChunkMs": 75.90499997138977,
+      "engineMs": 10206.824999988079,
+      "provenance": {
+        "browser": "Chrome/146.0.7680.153",
+        "adapter": {
+          "vendor": "apple",
+          "architecture": "metal-3",
+          "device": "",
+          "description": ""
+        },
+        "node": "v24.18.0",
+        "os": {
+          "platform": "darwin",
+          "release": "25.5.0",
+          "arch": "arm64"
+        },
+        "package": "0.17.1",
+        "model": {
+          "file": "www/gemma-4-E2B-it-web.litertlm",
+          "bytes": 2008432640,
+          "sha256": "3a08e8d94e23b814ae5414469c370c503813949acb8ceaa17e4ebf8a35af35b5"
+        },
+        "power": {
+          "source": "AC",
+          "percent": 97,
+          "low_power_mode": false
+        },
+        "thermal": [
+          "Note: No thermal warning level has been recorded",
+          "Note: No performance warning level has been recorded",
+          "Note: No CPU power status has been recorded"
+        ],
+        "harness_commit": "c3575e1bc2cdc43d891f08cae3890ded1e2345e1",
+        "timestamp": "2026-09-24T07:46:59.607Z"
+      },
+      "diffVsBaseline": {
+        "cold": {
+          "identical": true,
+          "baselineTokens": 60,
+          "runTokens": 60,
+          "hunks": []
+        },
+        "warm": {
+          "identical": false,
+          "baselineTokens": 58,
+          "runTokens": 60,
+          "hunks": [
+            {
+              "baselineIndex": 20,
+              "runIndex": 20,
+              "removed": [],
+              "added": [
+                "twenty",
+                ","
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -4,27 +4,38 @@
 <pre id="log" style="white-space: pre-wrap; font: 12px monospace"></pre>
 
 <!-- Runs the real model with some of its matrix-vector kernels rewritten to a
-     deeper K split as the engine creates them. Query: ?patch=none | 0112 |
-     0112,0105 | all. For each patched pipeline the workgroup constants change
+     deeper K split as the engine creates them. Query: ?patch=none | all | a comma list of
+     shader ids (e.g. 99,105,113 for all but 0112). For each patched pipeline the workgroup constants change
      and every dispatch of it is scaled by oldWgX / newWgX so the same output
-     slices are covered. Arithmetic is untouched; the output text must match
-     the unpatched run byte for byte. -->
+     slices are covered. Arithmetic is untouched; patch.mjs diffs the output text
+     against the unpatched run word by word and records any difference. -->
 <script>
 (() => {
   const params = new URLSearchParams(location.search)
   const sel = (params.get('patch') ?? 'none').toLowerCase()
-  // target: captured shader id -> new [wgX, ks]
+  // target: captured shader id -> new [wgX, ks].
+  // Both the kernel indices and this split plan were read off @litert-lm/core
+  // 0.17.1 with the Gemma 4 E2B web bundle: the ids are positions in that
+  // build's shader creation order and the [wgX, ks] pairs were chosen for the
+  // decode shapes that bundle produces. They will differ for any other package
+  // version or model bundle, and a mismatch fails the run rather than patching
+  // something else.
   const PLAN = { 112: [2, 32], 105: [2, 32], 99: [2, 128], 113: [1, 256] }
   const WANT = new Set(sel === 'all' ? Object.keys(PLAN).map(Number) : sel === 'none' ? [] : sel.split(',').map(Number))
-  const P = (window.__patch = { sel, want: [...WANT], targets: {}, patched: [], scaledDispatches: 0, unscaledDispatches: 0, gpuErrors: [], marks: [], chunk: 0 })
+  const P = (window.__patch = { sel, want: [...WANT], targets: {}, patched: [], scaledDispatches: 0, unscaledDispatches: 0, gpuErrors: [], marks: [], chunk: 0, patchError: null })
   window.__mark = (name) => P.marks.push({ name, t: performance.now(), chunk: P.chunk })
 
   const moduleCode = new WeakMap()
   const pipelineScale = new WeakMap()
   const passScale = new WeakMap()
 
+  // A patch that cannot be applied must stop the run, never leave it half
+  // patched: the failure is recorded on P so the driver sees it even if the
+  // engine swallows the throw somewhere inside its own pipeline creation.
+  const fail = (msg) => { P.patchError ??= msg; throw new Error(msg) }
+
   const rewrite = (src, ks, newKs, newWgX) => {
-    const must = (from, to) => { if (!src.includes(from)) throw new Error('anchor missing: ' + from); src = src.split(from).join(to) }
+    const must = (from, to) => { if (!src.includes(from)) fail('anchor missing: ' + from); src = src.split(from).join(to) }
     must('var<workgroup> temp : array<vec4<f16>, 64>;', `var<workgroup> temp : array<vec4<f16>, ${newWgX * newKs}>;`)
     must(`for (var src_s : i32= tid.y; src_s < U.i0.y; src_s += ${ks}) {`, `for (var src_s : i32= tid.y; src_s < U.i0.y; src_s += ${newKs}) {`)
     must(`for (var ystride : i32= ${ks} / 2; ystride > 0; ystride /= 2) {`, `for (var ystride : i32= ${newKs} / 2; ystride > 0; ystride /= 2) {`)
@@ -39,22 +50,45 @@
     moduleCode.set(m, desc?.code ?? '')
     return m
   }
-  const origCreatePipeline = GPUDevice.prototype.createComputePipeline
-  GPUDevice.prototype.createComputePipeline = function (desc) {
+  // Shared by both pipeline entry points: returns the rewritten descriptor and
+  // the dispatch scale, or null when this pipeline is not a target. A target
+  // whose source or constants do not match fails here.
+  const prepare = (device, desc) => {
     const code = moduleCode.get(desc?.compute?.module)
     const target = code && P.targets[code]
-    if (target && WANT.has(target.id)) {
-      const c = desc.compute.constants ?? {}
-      const oldWgX = c[0], oldKs = c[1]
-      const [newWgX, newKs] = PLAN[target.id]
-      if (oldKs !== target.ks || oldWgX % newWgX !== 0) throw new Error(`unexpected constants for ${target.id}: ${JSON.stringify(c)}`)
-      const module = origCreateShader.call(this, { code: rewrite(code, oldKs, newKs, newWgX) })
-      const pipeline = origCreatePipeline.call(this, { ...desc, compute: { ...desc.compute, module, constants: { ...c, 0: newWgX, 1: newKs } } })
-      pipelineScale.set(pipeline, oldWgX / newWgX)
-      P.patched.push({ id: target.id, from: `${oldWgX}x${oldKs}`, to: `${newWgX}x${newKs}`, scale: oldWgX / newWgX })
-      return pipeline
+    if (!target || !WANT.has(target.id)) return null
+    const c = desc.compute.constants ?? {}
+    const oldWgX = c[0], oldKs = c[1]
+    const [newWgX, newKs] = PLAN[target.id]
+    if (oldKs !== target.ks || oldWgX % newWgX !== 0) fail(`unexpected constants for ${target.id}: ${JSON.stringify(c)}`)
+    const module = origCreateShader.call(device, { code: rewrite(code, oldKs, newKs, newWgX) })
+    return {
+      desc: { ...desc, compute: { ...desc.compute, module, constants: { ...c, 0: newWgX, 1: newKs } } },
+      scale: oldWgX / newWgX,
+      note: { id: target.id, from: `${oldWgX}x${oldKs}`, to: `${newWgX}x${newKs}`, scale: oldWgX / newWgX, bytes: code.length, shaderSha256: target.sha256 },
     }
-    return origCreatePipeline.call(this, desc)
+  }
+  const origCreatePipeline = GPUDevice.prototype.createComputePipeline
+  GPUDevice.prototype.createComputePipeline = function (desc) {
+    const p = prepare(this, desc)
+    if (!p) return origCreatePipeline.call(this, desc)
+    const pipeline = origCreatePipeline.call(this, p.desc)
+    pipelineScale.set(pipeline, p.scale)
+    P.patched.push(p.note)
+    return pipeline
+  }
+  // The engine may build a pipeline through either entry point; an unhooked one
+  // would run the shipped kernel while the run reported itself as patched.
+  const origCreatePipelineAsync = GPUDevice.prototype.createComputePipelineAsync
+  GPUDevice.prototype.createComputePipelineAsync = function (desc) {
+    let p
+    try { p = prepare(this, desc) } catch (e) { return Promise.reject(e) }
+    if (!p) return origCreatePipelineAsync.call(this, desc)
+    return origCreatePipelineAsync.call(this, p.desc).then((pipeline) => {
+      pipelineScale.set(pipeline, p.scale)
+      P.patched.push(p.note)
+      return pipeline
+    })
   }
   const origSetPipeline = GPUComputePassEncoder.prototype.setPipeline
   GPUComputePassEncoder.prototype.setPipeline = function (p) {
@@ -80,21 +114,30 @@
 <script type="module">
   const log = (s) => { document.getElementById('log').append(s + '\n'); console.log('[patch] ' + s) }
   const P = window.__patch
+  // Pinned: the PLAN above is specific to this package version.
+  const VERSION = '0.17.1'
+  const sha256Hex = async (text) => {
+    if (!globalThis.crypto?.subtle) { P.shaderSha256Unavailable = true; return null }
+    const d = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text))
+    return [...new Uint8Array(d)].map((b) => b.toString(16).padStart(2, '0')).join('')
+  }
   try {
     // load the captured sources so pipelines can be matched by exact text
     for (const id of [99, 105, 112, 113]) {
       const code = await (await fetch(`/out/shaders/${String(id).padStart(4, '0')}_unlabeled.wgsl`)).text()
       const ks = Number(code.match(/src_s \+= (\d+)\)/)[1])
-      P.targets[code] = { id, ks }
+      P.targets[code] = { id, ks, bytes: code.length, sha256: await sha256Hex(code) }
     }
     const adapter = await navigator.gpu?.requestAdapter({ powerPreference: 'high-performance' })
-    P.adapter = adapter ? { vendor: adapter.info?.vendor, architecture: adapter.info?.architecture } : null
+    P.adapter = adapter ? { vendor: adapter.info?.vendor, architecture: adapter.info?.architecture, device: adapter.info?.device, description: adapter.info?.description } : null
+    P.version = VERSION
     log(`patch=${P.sel} want=[${P.want.join(',')}] adapter=${JSON.stringify(P.adapter)}`)
 
-    const { Engine } = await import('https://cdn.jsdelivr.net/npm/@litert-lm/core@0.17.1/+esm')
+    const { Engine } = await import(`https://cdn.jsdelivr.net/npm/@litert-lm/core@${VERSION}/+esm`)
     __mark('import-done')
     const engine = await Engine.create({ model: '/gemma-4-E2B-it-web.litertlm' })
     __mark('engine-created')
+    if (P.patchError) throw new Error(P.patchError)
     log(`patched pipelines: ${JSON.stringify(P.patched)}`)
 
     const run = async (label, prompt) => {
@@ -115,6 +158,11 @@
     }
     P.cold = await run('cold', 'Count from one to thirty in English words, separated by commas.')
     P.warm = await run('warm', 'Count down from thirty to one in English words, separated by commas.')
+    // Pipelines can also be built lazily during generation, so both checks run
+    // again here: a target that was never seen must not pass as a patched run.
+    if (P.patchError) throw new Error(P.patchError)
+    const missed = P.want.filter((id) => !P.patched.some((p) => p.id === id))
+    if (missed.length) throw new Error(`selected shaders were never patched: ${missed.map((id) => String(id).padStart(4, '0')).join(', ')}; no pipeline was built from their captured source through either createComputePipeline path`)
     log(`dispatches: scaled ${P.scaledDispatches}, unscaled ${P.unscaledDispatches}; GPU errors: ${P.gpuErrors.length}`)
   } catch (e) {
     P.error = String(e?.stack ?? e)

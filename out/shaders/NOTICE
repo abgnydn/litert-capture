@@ -2,7 +2,7 @@ The 153 .wgsl files in this directory are WebGPU shaders emitted at run time
 by the npm package @litert-lm/core, version 0.17.1, published by Google LLC
 (https://www.npmjs.com/package/@litert-lm/core, repository
 https://github.com/google-ai-edge/LiteRT-LM). They were recorded through the
-WebGPU API (createShaderModule) on 2026-09-21 while the package loaded the
+WebGPU API (createShaderModule) during the capture run described in the README while the package loaded the
 model bundle gemma-4-E2B-it-web.litertlm in Chrome on an Apple M2 Max, by the
 harness in this repository (capture.mjs, www/capture.html). The files are the
 captured text, unmodified. The numbering is creation order; the package
@@ -11,8 +11,8 @@ assigns no labels.
 The package declares the Apache License, Version 2.0 (npm "license" field;
 the repository carries the same license) but ships no LICENSE or NOTICE file
 in its tarball. The license text is reproduced in the LICENSE file next to
-this notice, as section 4 of the license asks. Copyright in the shaders
-belongs to Google LLC. No claim of endorsement by Google is made; this
+this notice, as section 4 of the license asks. Any copyright in the shaders
+is Google LLC's. No claim of endorsement by Google is made; this
 repository is independent work.
 
 These files are treated here as covered by the package's Apache-2.0 license.

@@ -2,11 +2,13 @@
 // hooks recorded to out/. Reuses zero-tvm's puppeteer install and the desktop
 // flag set from zero-tvm/bench/run.mjs.
 
+import { createHash } from 'node:crypto'
 import { createReadStream, mkdirSync, statSync, writeFileSync } from 'node:fs'
 import { createServer } from 'node:http'
 import { dirname, extname, join, normalize } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import puppeteer from 'puppeteer'
+import { provenance } from './provenance.mjs'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const WWW = join(HERE, 'www')
@@ -66,9 +68,19 @@ try {
     const safe = (s.label || 'unlabeled').replace(/[^A-Za-z0-9_.-]+/g, '_').slice(0, 80)
     writeFileSync(join(OUT, 'shaders', `${String(s.id).padStart(4, '0')}_${safe}.wgsl`), s.code)
   }
+  // sha256 is the shader's identity for cross-run joins; bytes is kept because
+  // the committed records join on it. The page hashes the source it saw; if
+  // crypto.subtle was unavailable there the same text is hashed here instead.
   const { shaders, ...manifest } = cap
-  manifest.shaders = shaders.map(({ id, label, code }) => ({ id, label, bytes: code.length }))
+  manifest.shaders = shaders.map(({ id, label, code, shaderSha256 }) => ({
+    id,
+    label,
+    bytes: code.length,
+    sha256: shaderSha256 ?? createHash('sha256').update(code).digest('hex'),
+  }))
+  manifest.provenance = await provenance({ browser, adapter: cap.adapter, pkg: cap.version })
   writeFileSync(join(OUT, 'manifest.json'), JSON.stringify(manifest, null, 2))
+  if (cap.shaderSha256Unavailable) console.log('note: crypto.subtle was unavailable in the page; shader hashes were computed in the driver from the captured source')
 
   console.log(`\nshaders: ${shaders.length}  pipelines: ${cap.pipelines.length}`)
   console.log(`counters: ${JSON.stringify(cap.counters)}`)

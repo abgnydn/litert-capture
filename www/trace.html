@@ -26,6 +26,20 @@
     proto[name] = function (...args) { return fn.call(this, orig, args) }
   }
 
+  // SHA-256 of the WGSL text is the shader's identity across runs; byte length
+  // is not (distinct shaders here do share lengths). digest() is async and
+  // createShaderModule is not, so the hashes are filled in afterwards and the
+  // page waits for them before declaring itself done. If crypto.subtle is
+  // missing the record says so rather than carrying a made-up hash.
+  const hashJobs = []
+  const hashInto = (rec, text) => {
+    if (!globalThis.crypto?.subtle) { R.shaderSha256Unavailable = true; return }
+    hashJobs.push(crypto.subtle.digest('SHA-256', new TextEncoder().encode(text)).then((d) => {
+      rec.sha256 = [...new Uint8Array(d)].map((b) => b.toString(16).padStart(2, '0')).join('')
+    }))
+  }
+  window.__settleHashes = () => Promise.all(hashJobs)
+
   wrap(GPUDevice.prototype, 'createTexture', function (orig, args) {
     const t = orig.apply(this, args)
     const d = args[0] ?? {}
@@ -47,8 +61,11 @@
   })
   wrap(GPUDevice.prototype, 'createShaderModule', function (orig, args) {
     const m = orig.apply(this, args)
+    const code = args[0]?.code ?? ''
     shaderId.set(m, R.shaders.length)
-    R.shaders.push({ id: R.shaders.length, bytes: args[0]?.code?.length ?? -1 })
+    const rec = { id: R.shaders.length, bytes: args[0]?.code?.length ?? -1, sha256: null }
+    R.shaders.push(rec)
+    hashInto(rec, code)
     return m
   })
   const notePipeline = (p, desc) => {
@@ -130,7 +147,7 @@
   const ARM_AT = 10, DISARM_AT = 13 // three decode tokens of the warm message
   try {
     const adapter = await navigator.gpu?.requestAdapter({ powerPreference: 'high-performance' })
-    R.adapter = adapter ? { vendor: adapter.info?.vendor, architecture: adapter.info?.architecture } : null
+    R.adapter = adapter ? { vendor: adapter.info?.vendor, architecture: adapter.info?.architecture, device: adapter.info?.device, description: adapter.info?.description } : null
     R.version = VERSION
     const { Engine } = await import(`https://cdn.jsdelivr.net/npm/@litert-lm/core@${VERSION}/+esm`)
     const engine = await Engine.create({ model: '/gemma-4-E2B-it-web.litertlm' })
@@ -158,5 +175,7 @@
     R.error = String(e?.stack ?? e)
     log('ERROR: ' + R.error)
   }
+  await window.__settleHashes()
+  if (R.shaderSha256Unavailable) log('WARNING: crypto.subtle unavailable, shader hashes not recorded')
   window.__traceDone = true
 </script>

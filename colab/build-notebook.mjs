@@ -65,7 +65,7 @@ const nb = {
 
 **First: Runtime → Change runtime type → T4 GPU.**
 
-Runs the captured LiteRT-LM WebGPU matrix-vector kernel 0112 (Gemma 4 E2B web, @litert-lm/core 0.17.1) verbatim (or, where Chrome offers no shader-f16, an f32 transcription of it, which the driver announces) and with deeper K splits, through headless Chrome on the T4, exactly as \`node microbench.mjs\` does on the Mac. Cell 1 installs the NVIDIA Vulkan userspace Chrome needs (zero-tvm's recipe, after Chrome's colab-headless guide); if it prints \`llvmpipe\` instead of \`Tesla T4\`, stop and report the driver version from \`nvidia-smi\`.
+Runs the captured LiteRT-LM WebGPU matrix-vector kernel 0112 (Gemma 4 E2B web, @litert-lm/core 0.17.1) verbatim (or, where Chrome offers no shader-f16, an f32 transcription of it, which the driver announces) and with deeper K splits, through headless Chrome on the T4, as \`node microbench.mjs\` does on the Mac. Cell 1 installs the NVIDIA Vulkan userspace Chrome needs (zero-tvm's recipe, after Chrome's colab-headless guide); if it prints \`llvmpipe\` instead of \`Tesla T4\`, stop and report the driver version from \`nvidia-smi\`.
 
 Nothing is downloaded from Hugging Face: the page generates its own random weights.
 
@@ -94,7 +94,7 @@ for name, data in files.items():
 print(open('kernel0112/microbench-colab.json').read()[:600])`),
     cell('markdown', `## Reading the result
 
-\`orig\` is Google's kernel as shipped (16 × 4 workgroups, 12,288 threads). \`wg256-same\` changes only the workgroup size (control). \`split16-64\` and \`split32-64\` keep 64-thread workgroups and dispatch 4x and 8x the threads. On the M2 Max: orig 60.9 µs, control 60.6, split32 36.8 (1.65x). Whether the T4 shows the same shape is the question this notebook answers. Download \`kernel0112/microbench-colab.json\` and drop it into \`out/\`.`),
+\`orig\` is Google's kernel as shipped (16 × 4 workgroups, 12,288 threads). \`wg256-same\` changes only the workgroup size (control). \`split16-64\` and \`split32-64\` keep 64-thread workgroups and dispatch 4x and 8x the threads. The GB/s on each printed line is effective weight-streaming bandwidth: the 4.5 MiB (4,718,592 bytes) of weights the kernel reads per unit of kernel time, which is not a measurement of memory traffic, since a byte served from cache counts the same. Byte counts in this notebook are MiB (2^20 bytes) and GB/s is decimal. On the M2 Max: orig 60.9 µs, control 60.6, split32 36.8 (1.65x, in two runs whose browser, Chrome 146, is inferred from the adapter string; the same split reads 0.84x on Chrome 131 on the same machine). Whether the T4 shows the same shape is the question this notebook answers. Download \`kernel0112/microbench-colab.json\` and drop it into \`out/\`.`),
   ],
 }
 writeFileSync(join(HERE, 'kernel-0112-t4.ipynb'), JSON.stringify(nb, null, 1))

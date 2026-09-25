@@ -4,12 +4,30 @@
 // by position after checking that their pipeline sequences are identical.
 import { readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
+import { shaderShaById } from './shader-sha.mjs'
 
 const OUT = new URL('./out/', import.meta.url).pathname
 const R = JSON.parse(readFileSync(join(OUT, 'trace.json'), 'utf8'))
 const K = JSON.parse(readFileSync(join(OUT, 'timing-kernel.json'), 'utf8'))
 const M = JSON.parse(readFileSync(join(OUT, 'manifest.json'), 'utf8'))
+const optional = (name) => { try { return JSON.parse(readFileSync(join(OUT, name), 'utf8')) } catch { return null } }
+const G = optional('timing-gpu.json')
+const B = optional('timing-bare.json')
 const PEAK_GBS = Number(process.argv[2] ?? 400) // rated memory bandwidth of this machine
+
+// What produced each record this join reads. Records written before the field
+// existed say so instead of being passed off as belonging to this machine.
+const READ = [['trace.json', R], ['timing-kernel.json', K], ['manifest.json', M], ['timing-gpu.json', G], ['timing-bare.json', B]].filter(([, rec]) => rec)
+for (const [name, rec] of READ) {
+  const p = rec.provenance
+  if (!p) continue
+  const a = p.adapter ?? {}
+  console.log(`${name} provenance: ${p.browser ?? '?'}, ${a.vendor ?? '?'}/${a.architecture ?? '?'}, @litert-lm/core ${p.package ?? 'n/a'}, node ${p.node ?? '?'} ${p.os?.platform ?? '?'}-${p.os?.arch ?? '?'}, model ${p.model ? `${p.model.sha256.slice(0, 12)}…` : 'none'}, harness ${p.harness_commit ? p.harness_commit.slice(0, 8) : 'unknown'}, ${p.timestamp ?? '?'}`)
+  const pw = p.power
+  console.log(`  power: ${pw ? `${pw.source ?? '?'}${pw.percent == null ? '' : ` ${pw.percent}%`}, low power mode ${pw.low_power_mode == null ? '?' : pw.low_power_mode ? 'on' : 'off'}` : 'not recorded'}; thermal: ${p.thermal?.length ? p.thermal.join(' | ') : 'not recorded'}`)
+}
+const noProv = READ.filter(([, rec]) => !rec.provenance).map(([name]) => name)
+if (noProv.length) console.log(`provenance: not recorded in ${noProv.join(', ')}`)
 
 const BPT = { rgba8uint: 4, rgba16float: 8, rgba16uint: 8, rgba32uint: 16, rgba32float: 16, rgba32sint: 16 }
 const texBytes = (t) => t.size[0] * t.size[1] * (t.size[2] ?? 1) * (BPT[t.format] ?? 0)
@@ -17,6 +35,21 @@ const MB = (b) => (b / 1048576).toFixed(1)
 const f = (x, d = 1) => (Number.isFinite(x) ? x.toFixed(d) : 'n/a')
 const median = (a) => { const s = [...a].sort((x, y) => x - y); return s.length ? s[Math.floor(s.length / 2)] : NaN }
 const sid = (pid) => M.pipelines[pid]?.shaderId ?? -1
+
+// The trace run and the capture run are joined by pipeline id, which is creation
+// order in both. Check the two runs really built the same pipelines by comparing
+// the shader each was built from: by SHA-256 when both records carry it, else by
+// WGSL byte length, which is not an identity (16 pairs of distinct shaders in
+// this capture share a length, 0099/0100 among them) and so is only a weak
+// check. The capture side is hashed from out/shaders/ when the record predates
+// the field; a trace record that predates it has no source to hash.
+const fileSha = shaderShaById(join(OUT, 'shaders'))
+const capSha = (id) => M.shaders[id]?.sha256 ?? fileSha.get(id) ?? null
+const joinByHash = R.shaders.every((s) => typeof s.sha256 === 'string') && M.shaders.every((s) => capSha(s.id))
+const joinOk = M.pipelines.length === R.pipelines.length && R.pipelines.every((p, i) => (joinByHash
+  ? R.shaders[p.shaderId]?.sha256 === capSha(M.pipelines[i]?.shaderId)
+  : R.shaders[p.shaderId]?.bytes === M.shaders[M.pipelines[i]?.shaderId]?.bytes))
+console.log(`trace/capture pipeline join: ${R.pipelines.length} pipelines, shaders agree: ${joinOk} (by ${joinByHash ? 'SHA-256' : 'WGSL byte length: out/trace.json carries no shader hash, and byte length is not an identity'})`)
 
 // static: which binding holds weights, and which the uniform block, in each shader.
 // Shaders 0101, 0103, 0108 and 0110 are attention kernels reading the 8-bit KV
@@ -65,6 +98,9 @@ const totalUs = rows.reduce((a, r) => a + r.us, 0)
 // 0123 (per-layer gathers), and the attention kernels 0101/0103 (local, over a
 // 131 KB 8-bit KV window) and 0108/0110 (global, loop bound from params_buffer)
 // whose binding is also called weights_buffer but holds the KV cache.
+// These kernel indices were read off @litert-lm/core 0.17.1 with the Gemma 4
+// E2B web bundle; they are positions in that build's shader creation order and
+// will differ for any other package version or model bundle.
 const MATVEC = new Set([98, 99, 100, 105, 106, 107, 112, 113, 134])
 const weightRows = rows.filter((r) => r.bytes > 0 && MATVEC.has(r.s))
 console.log(`weight kernels counted: ${[...MATVEC].map((s) => String(s).padStart(4, '0')).join(' ')}; attention kernels seen (params_buffer bound): ${[...ATTENTION].filter((s) => [101, 103, 108, 110].includes(s)).map((s) => String(s).padStart(4, '0')).join(' ')} plus 0101 0103 by structure`)
@@ -74,7 +110,7 @@ console.log(`weight kernels counted: ${[...MATVEC].map((s) => String(s).padStart
 // figures alongside the raw ones.
 let overheadUs = 0
 try {
-  const G = JSON.parse(readFileSync(join(OUT, 'timing-gpu.json'), 'utf8'))
+  if (!G) throw new Error('out/timing-gpu.json not readable')
   const gTokens = byChunk(G.passes.filter((p) => p.beginNs != null)).filter((t) => t.length === 23)
   const unsplit = median(gTokens.map((t) => t.reduce((a, p) => a + (p.endNs - p.beginNs), 0) / 1e3))
   const split = median(aligned.map((t) => t.reduce((a, p) => a + (p.endNs - p.beginNs), 0) / 1e3))
@@ -86,7 +122,7 @@ try {
 // wall-clock ms per token: median warm steady-state chunk gap, as timing.mjs computes it
 let tokenMs = NaN
 try {
-  const B = JSON.parse(readFileSync(join(OUT, 'timing-bare.json'), 'utf8'))
+  if (!B) throw new Error('out/timing-bare.json not readable')
   const chunkT = B.marks.filter((m) => m.name.startsWith('warm:chunk-')).map((m) => m.t)
   const STEADY_FROM = 8
   tokenMs = median(chunkT.slice(STEADY_FROM).map((t, i) => t - chunkT[STEADY_FROM + i - 1]).slice(1))

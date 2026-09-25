@@ -65,19 +65,39 @@
     return dev
   }
 
-  // Pipeline ids in creation order, with the shader size so the driver can
-  // check they line up with the capture run's manifest.
-  const shaderBytes = new WeakMap()
+  // Pipeline ids in creation order, with the shader's SHA-256 and size so the
+  // driver can check they line up with the capture run's manifest. The hash is
+  // the identity; the size is kept because the committed records join on it.
+  // digest() is async and createShaderModule is not, so the hashes are filled
+  // into the pipeline records afterwards, before the page declares itself done.
+  // If crypto.subtle is missing the record says so rather than carrying a
+  // made-up hash.
+  const shaderInfo = new WeakMap()
   const pipelineIds = new WeakMap()
+  const pipelineShader = [] // pipeline id -> its shader's info record
+  const hashJobs = []
   const origCreateShader = GPUDevice.prototype.createShaderModule
   GPUDevice.prototype.createShaderModule = function (...a) {
     const m = origCreateShader.apply(this, a)
-    shaderBytes.set(m, a[0]?.code?.length ?? -1)
+    const code = a[0]?.code ?? ''
+    const info = { bytes: a[0]?.code?.length ?? -1, sha256: null }
+    shaderInfo.set(m, info)
+    if (globalThis.crypto?.subtle) {
+      hashJobs.push(crypto.subtle.digest('SHA-256', new TextEncoder().encode(code)).then((d) => {
+        info.sha256 = [...new Uint8Array(d)].map((b) => b.toString(16).padStart(2, '0')).join('')
+      }))
+    } else T.shaderSha256Unavailable = true
     return m
   }
   const notePipeline = (p, desc) => {
+    const info = shaderInfo.get(desc?.compute?.module) ?? { bytes: -1, sha256: null }
     pipelineIds.set(p, T.pipelines.length)
-    T.pipelines.push({ id: T.pipelines.length, shaderBytes: shaderBytes.get(desc?.compute?.module) ?? -1 })
+    pipelineShader.push(info)
+    T.pipelines.push({ id: T.pipelines.length, shaderBytes: info.bytes, shaderSha256: null })
+  }
+  window.__settleHashes = async () => {
+    await Promise.all(hashJobs)
+    T.pipelines.forEach((p, i) => { p.shaderSha256 = pipelineShader[i].sha256 })
   }
   const origCreatePipe = GPUDevice.prototype.createComputePipeline
   GPUDevice.prototype.createComputePipeline = function (...a) {
@@ -216,7 +236,7 @@
   const DISARM_AT = T.mode === 'kernel' ? 17 : Infinity
   try {
     const adapter = await navigator.gpu?.requestAdapter({ powerPreference: 'high-performance' })
-    T.adapter = adapter ? { vendor: adapter.info?.vendor, architecture: adapter.info?.architecture } : null
+    T.adapter = adapter ? { vendor: adapter.info?.vendor, architecture: adapter.info?.architecture, device: adapter.info?.device, description: adapter.info?.description } : null
     T.version = VERSION
     log(`mode=${T.mode} adapter=${JSON.stringify(T.adapter)} isolated=${self.crossOriginIsolated}`)
 
@@ -254,5 +274,7 @@
     T.error = String(e?.stack ?? e)
     log('ERROR: ' + T.error)
   }
+  await window.__settleHashes?.() // absent in mode=bare, which hooks nothing but mapAsync
+  if (T.shaderSha256Unavailable) log('WARNING: crypto.subtle unavailable, shader hashes not recorded')
   window.__timingDone = true
 </script>

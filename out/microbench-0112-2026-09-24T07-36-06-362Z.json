@@ -1,0 +1,269 @@
+{
+  "kernel": "0112",
+  "variants": {
+    "orig": {
+      "buf": false,
+      "ks": 4,
+      "wgX": 16,
+      "dispatchX": 192,
+      "invocations": 64,
+      "threads": 12288,
+      "maxAbsErr": 0.0062451958656311035,
+      "maxRelErr": 0.04946574568748474,
+      "mismatches": 0,
+      "outputs": 12288,
+      "maxRef": 2.1652982234954834,
+      "vsOrig": 0,
+      "cold": {
+        "median": 78.122,
+        "p10": 76.04,
+        "p90": 81.999,
+        "n": 576
+      },
+      "hot": {
+        "median": 62.623,
+        "p10": 58.956,
+        "p90": 76.915,
+        "n": 24
+      }
+    },
+    "wg256-same": {
+      "buf": false,
+      "ks": 4,
+      "wgX": 64,
+      "dispatchX": 48,
+      "invocations": 256,
+      "threads": 12288,
+      "maxAbsErr": 0.0062451958656311035,
+      "maxRelErr": 0.04946574568748474,
+      "mismatches": 0,
+      "outputs": 12288,
+      "maxRef": 2.1652982234954834,
+      "vsOrig": 0,
+      "cold": {
+        "median": 80.624,
+        "p10": 78.413,
+        "p90": 84.124,
+        "n": 576
+      },
+      "hot": {
+        "median": 66.957,
+        "p10": 61.166,
+        "p90": 86.788,
+        "n": 24
+      }
+    },
+    "split16-64": {
+      "buf": false,
+      "ks": 16,
+      "wgX": 4,
+      "dispatchX": 768,
+      "invocations": 64,
+      "threads": 49152,
+      "maxAbsErr": 0.003444269299507141,
+      "maxRelErr": 0.025989636778831482,
+      "mismatches": 0,
+      "outputs": 12288,
+      "maxRef": 2.1652982234954834,
+      "vsOrig": 0.0068359375,
+      "cold": {
+        "median": 87.331,
+        "p10": 85.583,
+        "p90": 94.457,
+        "n": 576
+      },
+      "hot": {
+        "median": 90.622,
+        "p10": 81.788,
+        "p90": 95.249,
+        "n": 24
+      }
+    },
+    "split32-64": {
+      "buf": false,
+      "ks": 32,
+      "wgX": 2,
+      "dispatchX": 1536,
+      "invocations": 64,
+      "threads": 98304,
+      "maxAbsErr": 0.0020369291305541992,
+      "maxRelErr": 0.017779171466827393,
+      "mismatches": 0,
+      "outputs": 12288,
+      "maxRef": 2.1652982234954834,
+      "vsOrig": 0.00634765625,
+      "cold": {
+        "median": 93.122,
+        "p10": 90.331,
+        "p90": 98.331,
+        "n": 576
+      },
+      "hot": {
+        "median": 91.624,
+        "p10": 88.583,
+        "p90": 95.082,
+        "n": 24
+      }
+    },
+    "split16-256": {
+      "buf": false,
+      "ks": 16,
+      "wgX": 16,
+      "dispatchX": 192,
+      "invocations": 256,
+      "threads": 49152,
+      "maxAbsErr": 0.003444269299507141,
+      "maxRelErr": 0.025989636778831482,
+      "mismatches": 0,
+      "outputs": 12288,
+      "maxRef": 2.1652982234954834,
+      "vsOrig": 0.0068359375,
+      "cold": {
+        "median": 92.498,
+        "p10": 89.916,
+        "p90": 99.541,
+        "n": 576
+      },
+      "hot": {
+        "median": 91.582,
+        "p10": 85.082,
+        "p90": 99.123,
+        "n": 24
+      }
+    },
+    "buf-4": {
+      "buf": true,
+      "ks": 4,
+      "wgX": 16,
+      "dispatchX": 192,
+      "invocations": 64,
+      "threads": 12288,
+      "maxAbsErr": 0.0062451958656311035,
+      "maxRelErr": 0.04946574568748474,
+      "mismatches": 0,
+      "outputs": 12288,
+      "maxRef": 2.1652982234954834,
+      "vsOrig": 0,
+      "cold": {
+        "median": 70.999,
+        "p10": 70.166,
+        "p90": 73.915,
+        "n": 576
+      },
+      "hot": {
+        "median": 60.666,
+        "p10": 56.791,
+        "p90": 70.165,
+        "n": 24
+      }
+    }
+  },
+  "weightBytes": 4718592,
+  "order": [
+    {
+      "name": "orig",
+      "coldMedian": 77.415,
+      "hotMedian": 62.623
+    },
+    {
+      "name": "wg256-same",
+      "coldMedian": 80.705,
+      "hotMedian": 69.832
+    },
+    {
+      "name": "split16-64",
+      "coldMedian": 87.08,
+      "hotMedian": 84.331
+    },
+    {
+      "name": "split32-64",
+      "coldMedian": 94.247,
+      "hotMedian": 91.624
+    },
+    {
+      "name": "split16-256",
+      "coldMedian": 91.248,
+      "hotMedian": 87.791
+    },
+    {
+      "name": "buf-4",
+      "coldMedian": 71.124,
+      "hotMedian": 57.665
+    },
+    {
+      "name": "buf-4",
+      "coldMedian": 70.915,
+      "hotMedian": 60.749
+    },
+    {
+      "name": "split16-256",
+      "coldMedian": 93.415,
+      "hotMedian": 98.458
+    },
+    {
+      "name": "split32-64",
+      "coldMedian": 92.291,
+      "hotMedian": 91.707
+    },
+    {
+      "name": "split16-64",
+      "coldMedian": 88.248,
+      "hotMedian": 94.916
+    },
+    {
+      "name": "wg256-same",
+      "coldMedian": 80.582,
+      "hotMedian": 66.666
+    },
+    {
+      "name": "orig",
+      "coldMedian": 78.958,
+      "hotMedian": 62.666
+    }
+  ],
+  "f32": false,
+  "errorTolerance": 0.05,
+  "relFloor": 0.1,
+  "adapter": {
+    "vendor": "apple",
+    "architecture": "common-3",
+    "device": "",
+    "description": ""
+  },
+  "baseBytes": 3525,
+  "baseSha256": "3abd137006de7b0f350e4c616368e34ab4ae76c7fcbc39fb0ec6379392f862ca",
+  "provenance": {
+    "browser": "Chrome/131.0.6778.204",
+    "adapter": {
+      "vendor": "apple",
+      "architecture": "common-3",
+      "device": "",
+      "description": ""
+    },
+    "node": "v24.18.0",
+    "os": {
+      "platform": "darwin",
+      "release": "25.5.0",
+      "arch": "arm64"
+    },
+    "package": null,
+    "model": {
+      "file": "www/gemma-4-E2B-it-web.litertlm",
+      "bytes": 2008432640,
+      "sha256": "3a08e8d94e23b814ae5414469c370c503813949acb8ceaa17e4ebf8a35af35b5"
+    },
+    "power": {
+      "source": "AC",
+      "percent": 97,
+      "low_power_mode": false
+    },
+    "thermal": [
+      "Note: No thermal warning level has been recorded",
+      "Note: No performance warning level has been recorded",
+      "Note: No CPU power status has been recorded"
+    ],
+    "harness_commit": "c3575e1bc2cdc43d891f08cae3890ded1e2345e1",
+    "timestamp": "2026-09-24T07:36:06.362Z"
+  },
+  "date": "2026-09-24T07:36:06.362Z"
+}

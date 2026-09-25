@@ -27,6 +27,20 @@
   const pipelineIds = new WeakMap()
   const passPipeline = new WeakMap()
 
+  // SHA-256 of the WGSL text is the shader's identity across runs; byte length
+  // is not (distinct shaders here do share lengths). digest() is async and
+  // createShaderModule is not, so the hashes are filled in afterwards and the
+  // page waits for them before declaring itself done. If crypto.subtle is
+  // missing the record says so rather than carrying a made-up hash.
+  const hashJobs = []
+  const hashInto = (rec, text) => {
+    if (!globalThis.crypto?.subtle) { cap.shaderSha256Unavailable = true; return }
+    hashJobs.push(crypto.subtle.digest('SHA-256', new TextEncoder().encode(text)).then((d) => {
+      rec.shaderSha256 = [...new Uint8Array(d)].map((b) => b.toString(16).padStart(2, '0')).join('')
+    }))
+  }
+  window.__settleHashes = () => Promise.all(hashJobs)
+
   const wrap = (proto, name, fn) => {
     const orig = proto[name]
     proto[name] = function (...args) { return fn.call(this, orig, args) }
@@ -35,7 +49,9 @@
   wrap(GPUDevice.prototype, 'createShaderModule', function (orig, args) {
     const mod = orig.apply(this, args)
     const id = cap.shaders.length
-    cap.shaders.push({ id, label: args[0]?.label ?? '', code: args[0]?.code ?? '' })
+    const rec = { id, label: args[0]?.label ?? '', code: args[0]?.code ?? '', shaderSha256: null }
+    cap.shaders.push(rec)
+    hashInto(rec, rec.code)
     shaderIds.set(mod, id)
     return mod
   })
@@ -137,5 +153,7 @@
     window.__capture.error = String(e?.stack ?? e)
     log('ERROR: ' + window.__capture.error)
   }
+  await window.__settleHashes()
+  if (window.__capture.shaderSha256Unavailable) log('WARNING: crypto.subtle unavailable, shader hashes not recorded in the page')
   window.__captureDone = true
 </script>

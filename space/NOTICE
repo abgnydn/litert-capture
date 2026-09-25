@@ -1,0 +1,27 @@
+The WGSL source embedded in index.html (the KERNEL constant, shown on the page
+as "Kernel 0112 source") is a WebGPU shader emitted at run time by the npm
+package @litert-lm/core, version 0.17.1, published by Google LLC
+(https://www.npmjs.com/package/@litert-lm/core, repository
+https://github.com/google-ai-edge/LiteRT-LM). It was recorded through the
+WebGPU API (createShaderModule) during the capture run described in the repository README while the package loaded the
+model bundle gemma-4-E2B-it-web.litertlm in Chrome on an Apple M2 Max, by the
+harness in https://github.com/abgnydn/litert-capture (capture.mjs,
+www/capture.html), where it is out/shaders/0112_unlabeled.wgsl. The text in
+index.html is the captured text with trailing spaces removed from three lines
+and is otherwise unmodified. The number 0112 is its creation order; the
+package assigns no labels. The page derives its variants from this text at
+run time.
+
+The package declares the Apache License, Version 2.0 (npm "license" field;
+the repository carries the same license) but ships no LICENSE or NOTICE file
+in its tarball. The license text is reproduced in the LICENSE-Apache-2.0 file next to
+this notice, as section 4 of the license asks. Any copyright in the shader
+is Google LLC's. No claim of endorsement by Google is made; this Space
+is independent work.
+
+This shader is treated here as covered by the package's Apache-2.0 license.
+The package hands it to the browser's createShaderModule as plain text
+whenever it runs, so this Space republishes nothing that a user of the
+package cannot already read. If Google considers this redistribution outside
+that license, open an issue at https://github.com/abgnydn/litert-capture/issues
+and the shader will be removed.

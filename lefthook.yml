@@ -1,6 +1,6 @@
-# lefthook.yml — polyglot git hooks (TS/JS · Python · Rust) + secret scanning
-# Copy into any repo root, then run:  lefthook install
-# Tools used are already installed globally: biome, ruff, cargo/rustfmt/clippy, gitleaks.
+# lefthook.yml — git hooks for this JS-only repo: biome + secret scanning
+# Run once after cloning:  lefthook install
+# Tools used are already installed globally: biome, gitleaks.
 #
 # Hooks only touch STAGED files (fast), and auto-restage what they fix.
 
@@ -12,21 +12,6 @@ pre-commit:
       run: biome check --write --no-errors-on-unmatched {staged_files}
       stage_fixed: true
 
-    ruff-lint:
-      glob: "*.py"
-      run: ruff check --fix {staged_files}
-      stage_fixed: true
-
-    ruff-format:
-      glob: "*.py"
-      run: ruff format {staged_files}
-      stage_fixed: true
-
-    rustfmt:
-      glob: "*.rs"
-      run: rustfmt --edition 2021 {staged_files}
-      stage_fixed: true
-
     gitleaks:
       run: gitleaks git --staged --redact --no-banner
 
@@ -36,12 +21,3 @@ pre-push:
     # Full secret scan over history before anything leaves the machine
     gitleaks-history:
       run: gitleaks git --redact --no-banner
-
-    # Strict lint gate for Rust crates (slower — runs on push, not commit)
-    clippy:
-      glob: "*.rs"
-      run: cargo clippy --all-targets --all-features -- -D warnings
-
-    # Uncomment to gate pushes on tests:
-    # tests:
-    #   run: cargo nextest run    # or: pnpm test / uv run pytest

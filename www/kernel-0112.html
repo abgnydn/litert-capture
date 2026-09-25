@@ -122,31 +122,32 @@
 <section class="wide" id="results">
   <div class="panel" id="mine" hidden>
     <div class="panel-head"><span class="title">Your GPU</span><span class="meta" id="mine-meta"></span></div>
-    <div class="headline"><span class="big" id="mine-speedup">–</span><span class="what">faster when each dot product is split 32 ways instead of 4, same 64-thread workgroups, and the same answer to within 16-bit float rounding</span></div>
+    <div class="headline"><span class="big" id="mine-speedup">–</span><span class="what" id="mine-what">faster when each dot product is split 32 ways instead of 4, same 64-thread workgroups, and the same answer to within 16-bit float rounding</span></div>
     <div class="rows" id="mine-rows"></div>
     <div class="legend"><span class="o">original kernel</span><span>changed kernel</span><span class="h">same, weights already in cache (hot)</span></div>
     <div class="controls" style="margin-top:16px"><button class="quiet" id="copy" type="button">Copy results as JSON</button><span class="status" id="copy-status" style="margin:0"></span></div>
+    <p class="note">The copied JSON includes your browser's user-agent string and GPU name.</p>
   </div>
   <div class="panel" id="ref">
-    <div class="panel-head"><span class="title">Reference run</span><span class="meta">Apple M2 Max (30-core GPU) · Chrome 146 · 2026-09-22 · node harness · one timestamp per run · 576 cold and 24 hot samples · 24 matrices</span></div>
-    <div class="headline"><span class="big">1.65×</span><span class="what">faster when each dot product is split 32 ways instead of 4, same 64-thread workgroups, and the same answer to within 16-bit float rounding</span></div>
+    <div class="panel-head"><span class="title">Reference run</span><span class="meta">Apple M2 Max (30-core GPU) · Chrome 146 (inferred) · 2026-09-22 · node harness · one timestamp per run · 576 cold and 24 hot samples · 24 matrices</span></div>
+    <div class="headline"><span class="big">1.65×</span><span class="what">faster when each dot product is split 32 ways instead of 4, same 64-thread workgroups, and the same answer to within 16-bit float rounding; the same harness reads 0.84× on Chrome 131</span></div>
     <div class="rows" id="ref-rows"></div>
     <div class="legend"><span class="o">original kernel</span><span>changed kernel</span><span class="h">same, weights already in cache (hot)</span></div>
-    <p class="note">Mean of two harness runs' medians, each variant timed forward and again in reverse order after a discarded warm-up, with the browser's timestamp rounding switched off. The control at the same thread count shows workgroup size is not what moves the number. The node harness behind these numbers times one dispatch at a time; on Chrome for Testing 131 on the same machine it reports the reverse, while this page's batched method still favours the split, as a console observation with no committed record. On the reference machine this page's own method lands above or below the harness figure from session to session, and on a contended or battery-powered GPU it reads lower, sometimes close to 1.0×, with every variant still matching the reference; the repository README records the range.</p>
+    <p class="note">Mean of two harness runs' medians, each variant timed forward and again in reverse order after a discarded warm-up, with the browser's timestamp rounding switched off. At the original's thread count the bigger-workgroup control reads the same as the original (60.6 against 60.9 µs), so workgroup size alone does not move the original's number; at 49,152 threads the repository README records a small secondary workgroup-size effect. Chrome 146 is inferred for these two records, which carry only the adapter string <code>apple</code>/<code>metal-3</code> and no browser field; a later single-dispatch record of the same kernel on the same machine, <code>out/microbench-0112-2026-09-24T07-36-19-655Z.json</code>, gives 1.638× with its browser recorded as <code>Chrome/146.0.7680.153</code>. The node harness behind these numbers times one dispatch at a time; on Chrome for Testing 131 on the same machine it reports the reverse in a committed record, 78.1 µs for the original against 93.1 µs for the 32-way split, while this page's batched method still favours the split there, which is a console observation with no committed record. On the reference machine this page's own method lands above or below the harness figure from session to session, and on a contended or battery-powered GPU it reads lower, below 1.0× in one reading on a throttled machine on battery, also a console observation with no committed record, with every variant still matching the reference; the repository README records the range.</p>
   </div>
 </section>
 
 <main class="wrap">
   <h2>What is being measured</h2>
-  <p>Generating one token with a language model means multiplying the model's stored numbers, its <em>weights</em>, by the current input, layer after layer. This kernel does one such multiplication: a matrix of 12,288 × 1,536 weights, each stored in 2 bits, times a vector of 1,536 inputs. That is 4.5 MB of weights that must be read from memory every time it runs, and it runs 40 times per token.</p>
-  <p>Because the work is dominated by reading those 4.5 MB, the fair yardstick is <strong>bandwidth</strong>: megabytes read per microsecond, shown as GB/s. The ceiling is the chip's memory speed; the Apple M2 Max is <a href="https://www.apple.com/newsroom/2023/01/apple-unveils-m2-pro-and-m2-max-next-generation-chips-for-next-level-workflows/" target="_blank" rel="noopener noreferrer">rated at 400 GB/s</a>. The fastest kernel measured in this project, a 4-bit one in a single run, reaches 195 GB/s, about half of that. The original kernel reaches about 77 GB/s here (60.9 µs, the two-run mean cold median), and 80 GB/s inside the running model (one 7-token profile run).</p>
-  <p>To read 4.5 MB the kernel launches 12,288 threads: one per four outputs, each thread walking a quarter of the 1,536 inputs. That is few threads for a chip with thousands of execution lanes that hides memory latency by keeping many reads in flight. The variants below change one thing at a time: the size of the thread teams (workgroups) the tuner chose, and how many threads share each dot product.</p>
+  <p>Generating one token with a language model means multiplying the model's stored numbers, its <em>weights</em>, by the current input, layer after layer. This kernel does one such multiplication: a matrix of 12,288 × 1,536 weights, each stored in 2 bits, times a vector of 1,536 inputs. That is 4.5 MiB of weights the kernel reads each time it runs, and it runs 40 times per token. Byte counts on this page are MiB (2<sup>20</sup> bytes) and GB/s is decimal; figures quoted from Google's model card are the card's own MB.</p>
+  <p>Because the work is dominated by reading those 4.5 MiB, the yardstick used here is <strong>effective weight-streaming bandwidth</strong>: the bytes of weights the kernel reads per unit of kernel time, shown as GB/s, which is not a measurement of memory traffic, since a byte served from cache counts the same. For scale, the Apple M2 Max is <a href="https://www.apple.com/newsroom/2023/01/apple-unveils-m2-pro-and-m2-max-next-generation-chips-for-next-level-workflows/" target="_blank" rel="noopener noreferrer">rated at 400 GB/s</a>. The fastest kernel measured in this project, a 4-bit one in a single run, reaches 195 GB/s, about half of that. The original kernel reaches about 77 GB/s here (60.9 µs, the two-run mean cold median), and 80 GB/s inside the running model (one 7-token profile run).</p>
+  <p>To read 4.5 MiB the kernel launches 12,288 threads: four for each group of four outputs, each thread computing those four outputs over a quarter of the 1,536 inputs. That is few threads for a chip with thousands of execution lanes, which typically hides memory latency by keeping many reads in flight. The variants below change one thing at a time: the size of the thread teams (workgroups) the engine uses for this shape, and how many threads share each dot product.</p>
 
   <figure>
     <svg id="diagram" viewBox="-48 0 770 390" role="img" aria-labelledby="diagram-title">
       <title id="diagram-title">Matrix of 12,288 by 1,536 two-bit weights multiplied by a 1,536 input vector gives 12,288 outputs; below, the original 16 by 4 workgroup, a 64 by 4 control with the same total threads, and the 2 by 32 workgroup that dispatches eight times as many threads.</title>
     </svg>
-    <figcaption>Top: the multiplication this kernel performs. Bottom: the work is split into <em>workgroups</em>, small teams of GPU threads. Left, the original: teams of 16 × 4, four threads per output slice, 12,288 threads in total. Middle, the control: teams of 64 × 4, four times bigger, still 12,288 threads; it runs no faster. Right, the change: teams of 2 × 32, still 64 threads each, but 32 threads per output slice and 98,304 threads in total; it runs about 1.65× faster on the reference machine. The 2 × 32 shape is the one Google's own kernel 0113 already uses.</figcaption>
+    <figcaption>Top: the multiplication this kernel performs. Bottom: the work is split into <em>workgroups</em>, small teams of GPU threads. Left, the original: teams of 16 × 4, four threads per output slice, 12,288 threads in total. Middle, the control: teams of 64 × 4, four times bigger, still 12,288 threads; it runs no faster. Right, the change: teams of 2 × 32, still 64 threads each, but 32 threads per output slice and 98,304 threads in total; it runs about 1.65× faster on the reference machine in Chrome 146 (inferred from the adapter string), and slower in a single-dispatch run on Chrome 131. The 2 × 32 shape is the one Google's own kernel 0113 already uses on the transposed shape (12,288 → 1,536): the engine uses 16 × 4 for this shape and 2 × 32 for the transposed one, so what separates 0112 from the faster configuration on this adapter in Chrome 146 is the configuration chosen for its shape; how the engine chooses is not established.</figcaption>
   </figure>
 
   <h3>The four variants</h3>
@@ -162,17 +163,17 @@
 
   <h2>How it is measured</h2>
   <ol class="steps">
-    <li><strong>Random weights, made here.</strong> The page generates 24 different 4.5 MB matrices of random bytes in your browser (108 MB; if the GPU cannot hold them it retries with 8 and the results panel says so). No model weights are downloaded and no results leave your browser; the page's fonts are fetched from Google's font servers. The real model's weights are not needed to measure speed: a memory-bound kernel should take the same time whatever the values, and the bytes are unpatterned because some GPUs compress patterned textures.</li>
+    <li><strong>Random weights, made here.</strong> The page generates 24 different 4.5 MiB matrices of random bytes in your browser (108 MiB; if the GPU cannot hold them it retries with 8 and the results panel says so). No model weights are downloaded and no results leave your browser; the page's fonts are fetched from Google's font servers. The real model's weights are not needed to measure speed: a memory-bound kernel should take the same time whatever the values, and the bytes are unpatterned because some GPUs compress patterned textures.</li>
     <li><strong>A reference answer on the CPU.</strong> For the first matrix, plain JavaScript computes the 12,288 outputs. Every GPU variant must match it to within 16-bit float rounding (0.05 on outputs of size about 2) or it is marked wrong, and a wrong variant's speed does not count.</li>
-    <li><strong>Cold and hot.</strong> "Cold" rotates through all 24 matrices (108 MB, larger than the reference chip's on-die cache) so reads come from main memory, as in the real model where 40 different matrices stream past. "Hot" reuses one matrix that stays in the chip's cache. The gap between them shows how much a variant is limited by memory rather than by arithmetic.</li>
+    <li><strong>Cold and hot.</strong> "Cold" rotates through all 24 matrices (108 MiB, far more than the reference chip's caches hold), which makes cache reuse from one run to the next unlikely, as in the real model where 40 different matrices stream past. "Hot" reuses one matrix, small enough to stay in the chip's cache. The gap between them shows how much a variant is limited by memory rather than by arithmetic.</li>
     <li><strong>GPU timestamps, in batches.</strong> The GPU records the time before and after each batch of 48 back-to-back runs. Browsers may round these timestamps to 100 µs for privacy; batching keeps that rounding between about 3% of the slowest bar and 6% of the fastest. Where timestamps are unavailable the page times batches of 480 runs from JavaScript instead and says so in the results panel.</li>
-    <li><strong>Interleaved order after a warm-up.</strong> The GPU is slow for whatever is measured first. One discarded batch runs before any timing, then every variant is timed in order and again in reverse, and the two positions' samples are pooled: eight batches per variant per position, median reported. Other tabs, thermal state and power mode all move the numbers; run twice if the first looks odd.</li>
+    <li><strong>Interleaved order after a warm-up.</strong> The GPU is slow for whatever is measured first. A discarded warm-up of the original kernel (16 batches) runs before any timing, then every variant is timed in order and again in reverse, and the two positions' samples are pooled: eight batches per variant per position, median reported. Other tabs, thermal state and power mode all move the numbers; run twice if the first looks odd.</li>
   </ol>
 
   <h3>What the numbers mean</h3>
   <ul class="notes">
     <li><strong>µs per run</strong> is the GPU time of a batch of 48 runs divided by 48, then the median over sixteen batches. Lower is better.</li>
-    <li><strong>GB/s</strong> is the 4,718,592 bytes of weights (4.5 MiB) divided by that time, in decimal gigabytes: how fast the weights were read. Higher is better; the ceiling is your chip's memory bandwidth.</li>
+    <li><strong>GB/s</strong> is effective weight-streaming bandwidth: the 4,718,592 bytes of weights (4.5 MiB) divided by that time, in decimal gigabytes, counting a byte the same whether it was read from memory or served from cache. Higher is better; your chip's rated memory bandwidth is the scale to read it against.</li>
     <li><strong>×</strong> is the original kernel's cold time divided by the 32-way split's cold time.</li>
     <li>A <span class="badge ok">matches reference</span> badge means the variant produced the same outputs as the CPU within rounding. If a variant shows <span class="badge no">wrong answer</span>, its speed does not count.</li>
   </ul>
@@ -185,8 +186,9 @@
   </details>
 
   <h2>What the kernel costs in a whole token</h2>
-  <p>Across a whole generated token (one traced run and one 7-token profile run), nine weight-reading kernels move about 741 MiB (777 MB) in 277 runs. On the reference machine they do so at 81 GB/s after correcting for the measurement's per-pass overhead (78 raw), a fifth of the <a href="https://www.apple.com/newsroom/2023/01/apple-unveils-m2-pro-and-m2-max-next-generation-chips-for-next-level-workflows/" target="_blank" rel="noopener noreferrer">400 GB/s</a> the chip is rated for. Four of them, this one included, take 48.5% of the GPU time, and each launches only 6,144 to 12,288 threads for 4.5 MB.</p>
-  <p>The change was then applied inside the running model on the reference machine, by rewriting those four kernels as the engine creates them: <strong>decoding went from 53 to 67 tokens per second, about 1.26×</strong> (1.24 to 1.29× across the two run pairings), in two runs each, with no GPU errors. For scale, <a href="https://huggingface.co/litert-community/gemma-4-E2B-it-litert-lm" target="_blank" rel="noopener noreferrer">Google's model card</a> reports 73 decode tokens per second for this same web bundle on a newer M4 Max, measured over 256 decode tokens after a 1,024-token prefill with a context length of 2,048 tokens (its 160.2 native figure is for a different, larger build). The generated text was identical apart from one token at a near-tie, where a 32-way sum rounds differently from a 4-way one. A different GPU may tune differently.</p>
+  <p>Across a whole generated token (one traced run and one 7-token profile run), nine weight-reading kernels move about 741 MiB in 277 runs. On the reference machine that is an effective weight-streaming bandwidth of 81 GB/s as an overhead-adjusted estimate (78 GB/s raw; the per-kernel measurement moves each dispatch into its own timestamped pass, which adds about 1.5 µs per pass, and the adjusted figure subtracts it), a fifth of the <a href="https://www.apple.com/newsroom/2023/01/apple-unveils-m2-pro-and-m2-max-next-generation-chips-for-next-level-workflows/" target="_blank" rel="noopener noreferrer">400 GB/s</a> the chip is rated for. Four of them, this one included, take 48.5% of the GPU time, and each launches only 6,144 to 12,288 threads for 4.5 MiB.</p>
+  <p>Deeper K splits were then applied inside the running model on the reference machine to this kernel and the three other quantized matrix-vector kernels, as the engine creates them (0112 and 0105 to 2 × 32, 0099 to 2 × 128, 0113 from 2 × 32 to 1 × 256): <strong>decoding went from 57 to 71 tokens per second, 1.20× as the median of the per-repetition pairings (1.18 to 1.33×) and 1.25× as the ratio of the condition medians (17.65 → 14.12 ms per token)</strong>, over five repetitions of each of six patch conditions, 30 runs, with no GPU errors. The per-repetition pairing is the aggregate the shuffled design supports: the condition order is reshuffled inside every repetition, and pairing within a repetition uses that blocking while the ratio of condition medians does not. <a href="https://huggingface.co/litert-community/gemma-4-E2B-it-litert-lm" target="_blank" rel="noopener noreferrer">Google's model card</a> reports 73 decode tokens per second for this same web bundle on a newer M4 Max, measured over 256 decode tokens after a 1,024-token prefill with a context length of 2,048 tokens, while the runs here time the last 67 to 69 tokens of a 76- to 78-token reply to a one-sentence prompt, so the two differ in context length as well as hardware and are not comparable (its 160.2 native figure is for a different, larger build). The generated text was identical apart from one word, which is consistent with a near-tie where a 32-way sum rounds differently from a 4-way one. In an earlier sweep (<code>out/patch.json</code>), 0112 patched alone left the text unchanged; in the 30-run sweep every patched set changes that one word, including the one that leaves 0105 unpatched. The in-model runs were made on this one GPU, all 30 in Chrome 146.</p>
+  <p>Four of those conditions leave one kernel unpatched, which measures each kernel's marginal contribution with the other three already patched: by the ratio of condition medians, without the 4-bit kernel 0099 it drops from 1.25× to 1.13×, and without the 4-bit 0105 to 1.15×, while without this page's kernel 0112 it is still 1.23× and without 0113 1.22×. <strong>So within the four-kernel patch the two 4-bit kernels make the largest marginal contributions, and 0112 and 0113 smaller ones.</strong> Those last two cannot be ordered against each other: dropping 0112 costs less than dropping 0113 under the ratio of condition medians and more under the per-repetition pairing, so which of them ranks last follows from the choice of aggregate. The 1.65× above is the isolated kernel's speedup in Chrome 146 (inferred from the adapter string; 0.84× on Chrome 131); over its 40 dispatches per token that predicts about 0.96 ms per token saved. Patched alone, in an earlier two-repetition sweep with a fixed condition order (<code>out/patch.json</code>, whose unpatched baseline of 18.4 to 18.9 ms makes it not directly comparable with the 30-run sweep), 0112 saved 0.690 and 0.885 ms per token, near that prediction. Leaving it out of the four-kernel patch costs 0.240 ms per token by the condition medians (per repetition −0.235 to 1.960 ms), so with the other three already patched its marginal contribution is smaller than its stand-alone saving in that earlier sweep; whether that reflects overlapping gains or the difference between the two sweeps is not established. 0099, a 4-bit kernel that also serves the 1.5 MiB q and o projections, moves the most in four of five repetitions.</p>
   <p>This page's reference numbers are from an Apple M2 Max; the repository README holds the Colab T4 run. Copy yours with the button above.</p>
 
   <footer>Independent work, not affiliated with Google. Kernel source emitted by <code>@litert-lm/core</code> 0.17.1, published by Google under the <a href="https://www.apache.org/licenses/LICENSE-2.0" target="_blank" rel="noopener noreferrer">Apache License 2.0</a>. Measurement code and text by the page's author. Method, harness and full record: <a href="https://github.com/abgnydn/litert-capture" target="_blank" rel="noopener noreferrer">github.com/abgnydn/litert-capture</a>.</footer>
@@ -198,7 +200,7 @@
   const OUT_SLICES = 3072, IN_SLICES = 384
   const WEIGHT_BYTES = OUT_SLICES * IN_SLICES * 4
   const BATCH = 48, ROUNDS = 8
-  // 24 matrices = 108 MB, well past the M2 Max's system-level cache; 16 (72 MB) left a
+  // 24 matrices = 108 MiB, well past the M2 Max's system-level cache; 16 (72 MiB) left a
   // measurable share of 'cold' reads warm. Falls back to 8 on GPU out-of-memory,
   // and the results panel then says so.
   let NMAT = 24
@@ -211,7 +213,11 @@
     { key: 'split32', label: '32-way split', sub: '2 × 32 workgroup · 98,304 threads', ks: 32, wgX: 2 },
   ]
   const HEADLINE = ['orig', 'split32']
-  const REFERENCE = { // Apple M2 Max (30-core), Chrome 146, 2026-09-22: mean of two interleaved harness runs' medians
+  // Apple M2 Max (30-core), 2026-09-22: mean of two interleaved harness runs' medians.
+  // Chrome 146 is inferred for these two records, which carry only the adapter string
+  // apple/metal-3; the provenanced out/microbench-0112-2026-09-24T07-36-19-655Z.json
+  // records Chrome/146.0.7680.153 for the same kernel on the same machine, at 1.638x.
+  const REFERENCE = {
     orig: { cold: 60.9, hot: 44.8, err: 6.25e-3 }, wg256: { cold: 60.6, hot: 46.6, err: 6.25e-3 },
     split16: { cold: 40.2, hot: 33.0, err: 3.44e-3 }, split32: { cold: 36.8, hot: 34.5, err: 2.04e-3 },
   }
@@ -330,6 +336,7 @@ fn main(@builtin(global_invocation_id) reserved_gid : vec3<u32>,
 
   // ---------- small helpers ----------
   const $ = (id) => document.getElementById(id)
+  const MINE_WHAT = $('mine-what').textContent
   const gbs = (us) => WEIGHT_BYTES / (us * 1e-6) / 1e9
   const median = (a) => { const s = [...a].sort((x, y) => x - y); return s[Math.floor(s.length / 2)] }
   const f16 = (x) => { const f = new Float32Array([x]), u = new Uint32Array(f.buffer)[0]; const s = (u >> 16) & 0x8000, e = ((u >> 23) & 0xff) - 112, m = u & 0x7fffff; if (e <= 0) return s; if (e >= 31) return s | 0x7c00; let h = s | (e << 10) | (m >> 13); if ((m & 0x1fff) > 0x1000 || ((m & 0x1fff) === 0x1000 && (h & 1))) h++; return h }
@@ -369,7 +376,7 @@ fn main(@builtin(global_invocation_id) reserved_gid : vec3<u32>,
     const text = (x, y, s, attrs = {}) => { const t = add('text', { x, y, fill: 'var(--muted)', 'font-family': 'var(--mono)', 'font-size': 11, ...attrs }); t.textContent = s; return t }
     add('rect', { x: 40, y: 22, width: 240, height: 96, rx: 3, fill: 'var(--orig-soft)', stroke: 'var(--orig)' })
     text(160, 66, 'weights', { 'text-anchor': 'middle', fill: 'var(--ink)', 'font-family': 'var(--body)', 'font-size': 13, 'font-weight': 600 })
-    text(160, 84, '12,288 × 1,536 · 2-bit · 4.5 MB', { 'text-anchor': 'middle' })
+    text(160, 84, '12,288 × 1,536 · 2-bit · 4.5 MiB', { 'text-anchor': 'middle' })
     text(160, 14, '1,536 inputs wide', { 'text-anchor': 'middle' })
     text(30, 70, '12,288 rows', { 'text-anchor': 'end' })
     text(300, 74, '×', { fill: 'var(--ink)', 'font-size': 18 })
@@ -425,7 +432,7 @@ fn main(@builtin(global_invocation_id) reserved_gid : vec3<u32>,
       let gpuError = null
       device.addEventListener('uncapturederror', (e) => { gpuError = String(e.error?.message ?? e) })
 
-      say(`Generating ${NMAT} random weight matrices (${(NMAT * WEIGHT_BYTES / 1048576).toFixed(0)} MB)…`); await yieldUI()
+      say(`Generating ${NMAT} random weight matrices (${(NMAT * WEIGHT_BYTES / 1048576).toFixed(0)} MiB)…`); await yieldUI()
       const weights = []
       for (let m = 0; m < NMAT; m++) {
         const a = new Uint8Array(WEIGHT_BYTES)
@@ -540,7 +547,9 @@ fn main(@builtin(global_invocation_id) reserved_gid : vec3<u32>,
       // present
       lastResult = { page: 'kernel-0112', version: 2, kernel: '@litert-lm/core 0.17.1 shader 0112', date: new Date().toISOString(), gpu: adapterInfo, userAgent: navigator.userAgent, timing: hasTs ? (quantized ? 'gpu-timestamps-quantized-100us' : 'gpu-timestamps') : 'cpu-batch', batch: B, rounds: ROUNDS, positions: 2, matrices: NMAT, weightBytes: WEIGHT_BYTES, variants: Object.fromEntries(VARIANTS.map((v) => [v.key, { ks: v.ks, wgX: v.wgX, threads: OUT_SLICES * v.ks }])), results }
       const speed = results[HEADLINE[0]].cold / results[HEADLINE[1]].cold
-      $('mine-speedup').textContent = `${speed.toFixed(2)}×`
+      const headlineOk = HEADLINE.every((k) => results[k].err < ERR_LIMIT)
+      $('mine-speedup').textContent = headlineOk ? `${speed.toFixed(2)}×` : '–'
+      $('mine-what').textContent = !headlineOk ? 'not shown: the original or the 32-way split gave a wrong answer on this GPU, so its speed does not count' : speed < 1 ? MINE_WHAT.replace(/^faster/, 'slower') : MINE_WHAT
       $('mine-meta').textContent = `${[adapterInfo.vendor, adapterInfo.architecture].filter(Boolean).join(' · ') || 'this GPU'} · ${lastResult.timing.replace(/-/g, ' ')} · ${B * ROUNDS * 2} runs per number · ${NMAT} matrices${NMAT < 24 ? ' (reduced: GPU memory)' : ''}`
       scaleMax = niceMax(Math.max(scaleMax, ...Object.values(results).map((d) => gbs(d.hot))))
       renderRows($('mine-rows'), results, scaleMax); renderRows($('ref-rows'), REFERENCE, scaleMax)
@@ -551,7 +560,7 @@ fn main(@builtin(global_invocation_id) reserved_gid : vec3<u32>,
       device.destroy()
     } catch (e) {
       const msg = String(e?.message ?? e)
-      if (/out of memory|allocation|createBuffer|createTexture/i.test(msg) && NMAT > 8) { say(`Not enough GPU memory for ${NMAT} matrices; retrying with 8 (36 MB). Cold reads will be partly cached.`); NMAT = 8; btn.disabled = false; return run() }
+      if (/out of memory|allocation|createBuffer|createTexture/i.test(msg) && NMAT > 8) { say(`Not enough GPU memory for ${NMAT} matrices; retrying with 8 (36 MiB). Cold reads will be partly cached.`); NMAT = 8; btn.disabled = false; return run() }
       say('The measurement stopped: ' + msg)
     }
     btn.disabled = false

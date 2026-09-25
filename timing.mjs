@@ -7,6 +7,8 @@ import { createServer } from 'node:http'
 import { dirname, extname, join, normalize } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import puppeteer from 'puppeteer'
+import { provenance } from './provenance.mjs'
+import { shaderShaById } from './shader-sha.mjs'
 
 const MODE = process.argv[2] ?? 'bare'
 const HERE = dirname(fileURLToPath(import.meta.url))
@@ -56,6 +58,7 @@ try {
   await page.goto(`http://127.0.0.1:${PORT}/timing.html?mode=${MODE}`, { waitUntil: 'load' })
   await page.waitForFunction('window.__timingDone === true', { timeout: TIMEOUT_MS, polling: 1000 })
   const T = await page.evaluate(() => window.__timing)
+  T.provenance = await provenance({ browser, adapter: T.adapter, pkg: T.version })
 
   mkdirSync(OUT, { recursive: true })
   writeFileSync(join(OUT, `timing-${MODE}.json`), JSON.stringify(T, null, 2))
@@ -113,12 +116,23 @@ try {
     try { reference = JSON.parse(readFileSync(join(OUT, 'timing-bare.json'), 'utf8')).warm.text } catch {}
     console.log(`warm output identical to the unmodified (bare) run: ${reference == null ? 'no bare run to compare' : reference === T.warm.text}`)
 
-    // pipeline ids are creation order; check they line up with the capture manifest
+    // pipeline ids are creation order; check they line up with the capture manifest.
+    // A pipeline is matched to the shader it was built from by the SHA-256 of the
+    // WGSL text when both records carry it. Byte length is not an identity (16
+    // pairs of distinct shaders in this capture share a length), so it is only
+    // the fallback for records written before the hash was recorded, and the
+    // printed note says which join was used.
     let manifest = null
     try { manifest = JSON.parse(readFileSync(join(OUT, 'manifest.json'), 'utf8')) } catch {}
+    const fileSha = shaderShaById(join(OUT, 'shaders'))
+    const capSha = (id) => manifest?.shaders[id]?.sha256 ?? fileSha.get(id) ?? null
+    const byHash = !!manifest && T.pipelines.every((p) => typeof p.shaderSha256 === 'string') &&
+      manifest.shaders.every((s) => capSha(s.id))
     const aligned = manifest && manifest.pipelines.length === T.pipelines.length &&
-      T.pipelines.every((p, i) => manifest.shaders[manifest.pipelines[i].shaderId]?.bytes === p.shaderBytes)
-    console.log(`pipeline ids line up with out/manifest.json: ${aligned}`)
+      T.pipelines.every((p, i) => (byHash
+        ? capSha(manifest.pipelines[i].shaderId) === p.shaderSha256
+        : manifest.shaders[manifest.pipelines[i].shaderId]?.bytes === p.shaderBytes))
+    console.log(`pipeline ids line up with out/manifest.json: ${aligned} (joined by ${byHash ? 'shader SHA-256' : 'WGSL byte length: this record carries no shader hash, and byte length is not an identity'})`)
 
     const byChunk = new Map()
     for (const p of T.passes) {
@@ -142,7 +156,7 @@ try {
         return { pid, n, ms: median(totals), us: median(each), usMax: Math.max(...each), wg, shaderId, bytes: T.pipelines[pid]?.shaderBytes }
       }).sort((a, b) => b.ms - a.ms)
       const total = rows.reduce((s, r) => s + r.ms, 0)
-      writeFileSync(join(OUT, 'kernel-profile.json'), JSON.stringify({ tokens: tokens.length, totalMs: total, rows }, null, 2))
+      writeFileSync(join(OUT, 'kernel-profile.json'), JSON.stringify({ tokens: tokens.length, totalMs: total, rows, provenance: T.provenance }, null, 2))
 
       console.log(`\n  ms/token  share   cum   count  median us  shader file            bytes  first dispatch size`)
       let cum = 0

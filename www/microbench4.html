@@ -46,11 +46,17 @@
     for (const need of ['shader-f16', 'timestamp-query']) if (!adapter.features.has(need)) throw new Error('adapter lacks ' + need)
     const device = await adapter.requestDevice({ requiredFeatures: ['shader-f16', 'timestamp-query'] })
     device.addEventListener('uncapturederror', (e) => { R.gpuError = String(e.error?.message ?? e); log('GPU ERROR: ' + R.gpuError) })
-    R.adapter = { vendor: adapter.info?.vendor, architecture: adapter.info?.architecture }
+    R.adapter = { vendor: adapter.info?.vendor, architecture: adapter.info?.architecture, device: adapter.info?.device, description: adapter.info?.description }
 
     const base = await (await fetch(`/out/shaders/${KERNEL}_unlabeled.wgsl`)).text()
     if (!/f16\(\(w\.x\) & 15u\)/.test(base)) throw new Error('not a 4-bit kernel')
     R.baseBytes = base.length
+    // SHA-256 of the kernel source this record was produced from; byte length
+    // alone does not identify a shader (0099 and 0100 are both 3352 bytes).
+    if (globalThis.crypto?.subtle) {
+      const d = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(base))
+      R.baseSha256 = [...new Uint8Array(d)].map((b) => b.toString(16).padStart(2, '0')).join('')
+    } else { R.baseSha256 = null; R.shaderSha256Unavailable = true }
 
     const weights = []
     for (let m = 0; m < NMAT_COLD; m++) { const a = new Uint16Array(WEIGHT_BYTES / 2); for (let i = 0; i < a.length; i++) a[i] = Math.floor(rnd() * 65536); weights.push(a) }

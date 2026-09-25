@@ -1,38 +1,56 @@
 <!doctype html>
 <meta charset="utf-8">
-<title>LiteRT-LM kernel 0112 microbenchmark</title>
+<title>LiteRT-LM 2-bit kernels 0112 / 0113 microbenchmark</title>
 <pre id="log" style="white-space: pre-wrap; font: 12px monospace"></pre>
 
-<!-- Runs the captured 2-bit matrix-vector kernel 0112 in isolation on its real
-     decode shape (1536 -> 12288, 4.5 MB of packed weights) and compares it
-     against minimal text edits of the same source. Two variables are kept
-     separate on purpose, because a variant that changes both cannot say which moved the number:
-       invocations per workgroup (64 as shipped, or 256)
-       total threads dispatched   (12,288 as shipped, or 4x / 8x via a deeper K split)
-     Variants:
+<!-- The 2-bit matrix-vector kernels, in isolation, with a CPU reference.
+     ?kernel=0112 (default) : 1536 -> 12288, texture 3072 x 384 rgba8uint, ships wg 16x4, dispatch 192
+     ?kernel=0113           : 12288 -> 1536, texture  384 x 3072 rgba8uint, ships wg  2x32, dispatch 192
+     The two are the same source apart from the shipped K split, and both read
+     4,718,592 bytes of packed weights per dispatch. Layout (from the WGSL):
+     byte k of texel (dst_s, src_s) holds four 2-bit weights, pair c = output
+     channel c, for input channel k; zero point 2, per-output-channel f16 scale.
+     Variants are minimal text edits of the same source. For 0112 the
+     workgroup-size control changes only invocations per workgroup (64 as
+     shipped, or 256) at the shipped 12,288 threads; a deeper K split raises
+     total threads dispatched (4x / 8x) together with loop stride and reduction
+     depth, so the split variants do not isolate thread count:
+     0112 variants:
        orig        16x4  wg (64 inv),  12,288 threads, texture weights   <- as shipped
        wg256-same  64x4  wg (256 inv), 12,288 threads                    <- control: bigger workgroup only
-       split16-64  4x16  wg (64 inv),  49,152 threads                    <- control: more threads only
-       split32-64  2x32  wg (64 inv),  98,304 threads                    <- same wg shape as their kernel 0113
-       split16-256 16x16 wg (256 inv), 49,152 threads                    <- both
+       split16-64  4x16  wg (64 inv),  49,152 threads                    <- deeper K split (16), which raises thread count, loop stride and reduction depth together
+       split32-64  2x32  wg (64 inv),  98,304 threads                    <- same wg shape as Google's kernel 0113
+       split16-256 16x16 wg (256 inv), 49,152 threads                    <- 256 inv and the deeper K split (16)
        buf-4       16x4, 12,288 threads, weights from a storage buffer
+     0113 variants:
+       orig         2x32 wg (64 inv),  12,288 threads                    <- as shipped
+       split256-256 1x256 wg (256 inv), 98,304 threads                   <- what www/patch.html rewrites 0113 to
      Measurement order: a discarded warm-up variant first (the first timed slot
      reads slow), then every variant forward and again in reverse order; the
      cold and hot samples from both positions are pooled before the median.
-     "Cold" rotates through 24 matrices (108 MB) so weights come from DRAM;
+     "Cold" rotates through 24 matrices (108 MiB), far more than this GPU's caches
+     hold, which makes cache reuse across dispatches unlikely;
      "hot" reuses one matrix. Every variant is checked against a CPU reference. -->
 <script type="module">
   const log = (s) => { document.getElementById('log').append(s + '\n'); console.log('[mb] ' + s) }
-  const OUT_SLICES = 3072, IN_SLICES = 384      // U.i0 = [3072, 384]: 12288 outputs, 1536 inputs
+  const params = new URLSearchParams(location.search)
+  const KERNEL = params.get('kernel') ?? '0112'
+  // out/in are U.i0 = [dst slices, src slices]; wgX/ks are the shipped workgroup
+  const SHAPES = { '0112': { out: 3072, in: 384, wgX: 16, ks: 4 }, '0113': { out: 384, in: 3072, wgX: 2, ks: 32 } }
+  const S = SHAPES[KERNEL]
+  const OUT_SLICES = S.out, IN_SLICES = S.in
   const WEIGHT_BYTES = OUT_SLICES * IN_SLICES * 4 // one rgba8uint texel per (dst_s, src_s)
   const NMAT_COLD = 24, ROUNDS = 12
+  // A variant is a mismatch when it misses the CPU reference by more than TOL;
+  // REL_FLOOR keeps outputs near zero from dominating the relative error.
+  const TOL = 0.05, REL_FLOOR = 0.1
   // ?f32=1: run an f32 transcription of the kernel (f16 -> f32 throughout, scales
   // uploaded as f32) for adapters that do not expose shader-f16. Not Google's
   // kernel verbatim; same structure, so it still tests the K-split lever.
-  const F32 = new URLSearchParams(location.search).get('f32') === '1'
+  const F32 = params.get('f32') === '1'
   const V4 = F32 ? 'vec4<f32>' : 'vec4<f16>'
   const NEED = F32 ? ['timestamp-query'] : ['shader-f16', 'timestamp-query']
-  const R = (window.__mb = { variants: {}, weightBytes: WEIGHT_BYTES, order: [], f32: F32 })
+  const R = (window.__mb = { kernel: KERNEL, variants: {}, weightBytes: WEIGHT_BYTES, order: [], f32: F32, errorTolerance: TOL, relFloor: REL_FLOOR })
 
   const f16 = (x) => { const f = new Float32Array([x]), u = new Uint32Array(f.buffer)[0]; const s = (u >> 16) & 0x8000, e = ((u >> 23) & 0xff) - 112, m = u & 0x7fffff; if (e <= 0) return s; if (e >= 31) return s | 0x7c00; let h = s | (e << 10) | (m >> 13); if ((m & 0x1fff) > 0x1000 || ((m & 0x1fff) === 0x1000 && (h & 1))) h++; return h }
   const fromF16 = (h) => { const s = h & 0x8000 ? -1 : 1, e = (h >> 10) & 0x1f, m = h & 0x3ff; return e === 0 ? s * m * 2 ** -24 : e === 31 ? (m ? NaN : s * Infinity) : s * (1 + m / 1024) * 2 ** (e - 15) }
@@ -50,12 +68,12 @@
       s = mustReplace(s, 'var w : vec4<u32>= vec4<u32>(textureLoad(weights_image2d, vec2<i32>((dst_s), (src_s)), 0));',
         'var wp : u32 = weights_u32.data[src_s * U.i0.x + dst_s];\n    var w : vec4<u32>= vec4<u32>(wp & 0xFFu, (wp >> 8u) & 0xFFu, (wp >> 16u) & 0xFFu, (wp >> 24u) & 0xFFu);')
     }
-    if (ks !== 4 || wgX !== 16) {
+    if (ks !== S.ks || wgX !== S.wgX) {
       s = mustReplace(s, `var<workgroup> temp : array<${V4}, 64>;`, `var<workgroup> temp : array<${V4}, ${wgX * ks}>;`)
-      s = mustReplace(s, 'for (var src_s : i32= tid.y; src_s < U.i0.y; src_s += 4) {', `for (var src_s : i32= tid.y; src_s < U.i0.y; src_s += ${ks}) {`)
-      s = mustReplace(s, 'temp[tid.x * 4 + tid.y]', `temp[tid.x * ${ks} + tid.y]`)
-      s = mustReplace(s, 'for (var ystride : i32= 4 / 2; ystride > 0; ystride /= 2) {', `for (var ystride : i32= ${ks} / 2; ystride > 0; ystride /= 2) {`)
-      s = mustReplace(s, 'r_sp0 += temp[tid.x * 4 + tid.y + ystride];', `r_sp0 += temp[tid.x * ${ks} + tid.y + ystride];`)
+      s = mustReplace(s, `for (var src_s : i32= tid.y; src_s < U.i0.y; src_s += ${S.ks}) {`, `for (var src_s : i32= tid.y; src_s < U.i0.y; src_s += ${ks}) {`)
+      s = mustReplace(s, `temp[tid.x * ${S.ks} + tid.y]`, `temp[tid.x * ${ks} + tid.y]`)
+      s = mustReplace(s, `for (var ystride : i32= ${S.ks} / 2; ystride > 0; ystride /= 2) {`, `for (var ystride : i32= ${ks} / 2; ystride > 0; ystride /= 2) {`)
+      s = mustReplace(s, `r_sp0 += temp[tid.x * ${S.ks} + tid.y + ystride];`, `r_sp0 += temp[tid.x * ${ks} + tid.y + ystride];`)
     }
     return s
   }
@@ -65,10 +83,16 @@
     for (const need of NEED) if (!adapter.features.has(need)) throw new Error('adapter lacks ' + need)
     const device = await adapter.requestDevice({ requiredFeatures: NEED })
     device.addEventListener('uncapturederror', (e) => { R.gpuError = String(e.error?.message ?? e); log('GPU ERROR: ' + R.gpuError) })
-    R.adapter = { vendor: adapter.info?.vendor, architecture: adapter.info?.architecture }
+    R.adapter = { vendor: adapter.info?.vendor, architecture: adapter.info?.architecture, device: adapter.info?.device, description: adapter.info?.description }
 
-    let base = await (await fetch('/out/shaders/0112_unlabeled.wgsl')).text()
+    let base = await (await fetch(`/out/shaders/${KERNEL}_unlabeled.wgsl`)).text()
     R.baseBytes = base.length
+    // SHA-256 of the kernel source this record was produced from; byte length
+    // alone does not identify a shader.
+    if (globalThis.crypto?.subtle) {
+      const d = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(base))
+      R.baseSha256 = [...new Uint8Array(d)].map((b) => b.toString(16).padStart(2, '0')).join('')
+    } else { R.baseSha256 = null; R.shaderSha256Unavailable = true }
     if (F32) base = base.replace('enable f16;', '').split('vec4<f16>').join('vec4<f32>').split('f16(').join('f32(')
 
     // data: random 2-bit weights (unpatterned bytes), per-output-channel scales, input vector
@@ -117,16 +141,23 @@
       return out
     }
 
-    // [name, weights from buffer, K split, workgroup x]
-    const VARIANTS = [
-      ['warmup', false, 4, 16],
-      ['orig', false, 4, 16],
-      ['wg256-same', false, 4, 64],
-      ['split16-64', false, 16, 4],
-      ['split32-64', false, 32, 2],
-      ['split16-256', false, 16, 16],
-      ['buf-4', true, 4, 16],
-    ]
+    // [name, weights from buffer, K split, workgroup x]; the shipped
+    // configuration first as warm-up and again as 'orig'
+    const VARIANTS = KERNEL === '0112'
+      ? [
+          ['warmup', false, 4, 16],
+          ['orig', false, 4, 16],
+          ['wg256-same', false, 4, 64],
+          ['split16-64', false, 16, 4],
+          ['split32-64', false, 32, 2],
+          ['split16-256', false, 16, 16],
+          ['buf-4', true, 4, 16],
+        ]
+      : [
+          ['warmup', false, 32, 2],
+          ['orig', false, 32, 2],
+          ['split256-256', false, 256, 1],
+        ]
     const V = {}
     for (const [name, buf, ks, wgX] of VARIANTS) {
       const dispatchX = OUT_SLICES / wgX
@@ -148,9 +179,15 @@
       // correctness on matrix 0
       { const enc = device.createCommandEncoder(); const p = enc.beginComputePass(); p.setPipeline(pipeline); p.setBindGroup(0, bindGroups[0]); p.dispatchWorkgroups(dispatchX, 1, 1); p.end(); device.queue.submit([enc.finish()]) }
       const out = await readOutput()
-      let maxAbs = 0, maxRef = 0
-      for (let i = 0; i < out.length; i++) { maxAbs = Math.max(maxAbs, Math.abs(out[i] - ref[i])); maxRef = Math.max(maxRef, Math.abs(ref[i])) }
-      V[name] = { name, buf, ks, wgX, dispatchX, invocations: wgX * ks, threads: dispatchX * wgX * ks, pipeline, bindGroups, maxAbsErr: maxAbs, maxRef, out, cold: [], hot: [] }
+      let maxAbs = 0, maxRef = 0, maxRel = 0, mismatches = 0
+      for (let i = 0; i < out.length; i++) {
+        const e = Math.abs(out[i] - ref[i])
+        maxAbs = Math.max(maxAbs, e)
+        maxRef = Math.max(maxRef, Math.abs(ref[i]))
+        maxRel = Math.max(maxRel, e / Math.max(Math.abs(ref[i]), REL_FLOOR))
+        if (e > TOL) mismatches++
+      }
+      V[name] = { name, buf, ks, wgX, dispatchX, invocations: wgX * ks, threads: dispatchX * wgX * ks, pipeline, bindGroups, maxAbsErr: maxAbs, maxRelErr: maxRel, mismatches, outputs: out.length, maxRef, out, cold: [], hot: [] }
     }
     for (const v of Object.values(V)) { let d = 0; for (let i = 0; i < v.out.length; i++) d = Math.max(d, Math.abs(v.out[i] - V.orig.out[i])); v.vsOrig = d }
     for (const v of Object.values(V)) delete v.out
@@ -190,9 +227,9 @@
     for (const name of timed) {
       const v = V[name]
       const stat = (a) => ({ median: median(a), p10: pct(a, 0.1), p90: pct(a, 0.9), n: a.length })
-      R.variants[name] = { buf: v.buf, ks: v.ks, wgX: v.wgX, dispatchX: v.dispatchX, invocations: v.invocations, threads: v.threads, maxAbsErr: v.maxAbsErr, maxRef: v.maxRef, vsOrig: v.vsOrig, cold: stat(v.cold), hot: stat(v.hot) }
+      R.variants[name] = { buf: v.buf, ks: v.ks, wgX: v.wgX, dispatchX: v.dispatchX, invocations: v.invocations, threads: v.threads, maxAbsErr: v.maxAbsErr, maxRelErr: v.maxRelErr, mismatches: v.mismatches, outputs: v.outputs, maxRef: v.maxRef, vsOrig: v.vsOrig, cold: stat(v.cold), hot: stat(v.hot) }
       const r = R.variants[name]
-      log(`${name.padEnd(12)} wg ${String(v.wgX).padStart(2)}x${String(v.ks).padEnd(2)} =${String(v.invocations).padStart(4)} inv  threads ${String(v.threads).padStart(6)}  cold ${r.cold.median.toFixed(1).padStart(6)} µs = ${(WEIGHT_BYTES / (r.cold.median * 1e-6) / 1e9).toFixed(0).padStart(4)} GB/s (p10 ${r.cold.p10.toFixed(1)}, p90 ${r.cold.p90.toFixed(1)})  hot ${r.hot.median.toFixed(1).padStart(6)} µs  max|err| ${v.maxAbsErr.toExponential(2)} vs orig ${v.vsOrig.toExponential(2)}`)
+      log(`${KERNEL} ${name.padEnd(12)} wg ${String(v.wgX).padStart(2)}x${String(v.ks).padEnd(3)} =${String(v.invocations).padStart(4)} inv  threads ${String(v.threads).padStart(6)}  cold ${r.cold.median.toFixed(1).padStart(6)} µs = ${(WEIGHT_BYTES / (r.cold.median * 1e-6) / 1e9).toFixed(0).padStart(4)} GB/s (p10 ${r.cold.p10.toFixed(1)}, p90 ${r.cold.p90.toFixed(1)})  hot ${r.hot.median.toFixed(1).padStart(6)} µs  max|err| ${v.maxAbsErr.toExponential(2)} rel ${v.maxRelErr.toExponential(2)} (max|ref| ${v.maxRef.toFixed(2)}, ${v.mismatches}/${v.outputs} over ${TOL}) vs orig ${v.vsOrig.toExponential(2)}`)
     }
     log('per-position cold medians: ' + R.order.map((o) => `${o.name}=${o.coldMedian.toFixed(1)}`).join(' '))
   } catch (e) {

@@ -8,6 +8,7 @@ import { createServer } from 'node:http'
 import { dirname, extname, join, normalize } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import puppeteer from 'puppeteer'
+import { provenance } from './provenance.mjs'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const WWW = join(HERE, 'www')
@@ -49,6 +50,7 @@ try {
   await page.goto(`http://127.0.0.1:${PORT}/trace.html`, { waitUntil: 'load' })
   await page.waitForFunction('window.__traceDone === true', { timeout: TIMEOUT_MS, polling: 1000 })
   const R = await page.evaluate(() => window.__trace)
+  R.provenance = await provenance({ browser, adapter: R.adapter, pkg: R.version })
   mkdirSync(OUT, { recursive: true })
   writeFileSync(join(OUT, 'trace.json'), JSON.stringify(R))
   if (R.error) { console.log(`PAGE ERROR: ${R.error}`); exitCode = 2 }
@@ -74,7 +76,7 @@ try {
 
   // one token's dispatch sequence
   const chunks = [...new Set(R.dispatches.map((d) => d.chunk))]
-  const token = R.dispatches.filter((d) => d.chunk === chunks[1] ?? chunks[0])
+  const token = R.dispatches.filter((d) => d.chunk === (chunks[1] ?? chunks[0]))
   const seq = token.map((d) => shaderOf(d.pid))
   console.log(`\n== decode tape: ${token.length} dispatches in traced token, ${chunks.length} tokens traced`)
   let best = { p: 0, score: 0 }
@@ -108,7 +110,10 @@ try {
   console.log(`prologue shaders: ${seq.slice(0, start).map((s) => String(s).padStart(4, '0')).join(' ')}`)
   console.log(`epilogue shaders: ${seq.slice(end + 1).map((s) => String(s).padStart(4, '0')).join(' ')}`)
 
-  // matvec kernels: shapes and bytes
+  // matvec kernels: shapes and bytes.
+  // These kernel indices were read off @litert-lm/core 0.17.1 with the Gemma 4
+  // E2B web bundle; they are positions in that build's shader creation order and
+  // will differ for any other package version or model bundle.
   const MATVEC = [99, 105, 112, 113]
   console.log(`\n== weight matrices read per token`)
   let totalBytes = 0, totalUs = 0

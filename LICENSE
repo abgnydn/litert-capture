@@ -23,4 +23,11 @@ SOFTWARE.
 The WGSL files under out/shaders/ are not covered by this license. They were
 emitted at run time by @litert-lm/core 0.17.1 (Google LLC) and are
 redistributed under the Apache License 2.0; see out/shaders/NOTICE and
-out/shaders/LICENSE.
+out/shaders/LICENSE. The same applies to the kernel 0112 text embedded in
+www/kernel-0112.html, space/index.html and colab/kernel-0112-t4.ipynb (the
+last base64-encoded, together with a copy of www/microbench.html), which is the same Apache-2.0 text and is attributed in
+each file; the Space's copies of the notice and license text are
+space/NOTICE and space/LICENSE-Apache-2.0. Also not covered by this license
+are the short quotations of @litert-lm/core source in README.md and the
+kernel-text anchors in www/microbench.html, www/microbench4.html and
+www/patch.html, which remain Google's under the Apache License 2.0.
