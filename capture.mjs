@@ -79,6 +79,8 @@ try {
     sha256: shaderSha256 ?? createHash('sha256').update(code).digest('hex'),
   }))
   manifest.provenance = await provenance({ browser, adapter: cap.adapter, pkg: cap.version })
+  // ROADMAP 05: model SHA at top level for joins; null when no bundle on disk.
+  manifest.model = manifest.provenance.model
   writeFileSync(join(OUT, 'manifest.json'), JSON.stringify(manifest, null, 2))
   if (cap.shaderSha256Unavailable) console.log('note: crypto.subtle was unavailable in the page; shader hashes were computed in the driver from the captured source')
 
