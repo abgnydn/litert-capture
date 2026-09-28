@@ -108,6 +108,8 @@ node colab/build-notebook.mjs   # 7: self-contained notebook for a Colab T4
 node space/build.mjs         # the public page as a complete document, for the Hugging Face Space
 ```
 
+To track kernel drift across releases, `LITERT_VERSION=... node capture.mjs` captures that `@litert-lm/core` release instead (default `0.17.1`); `out/manifest.json` records the page `version` plus the requested `requested_version`.
+
 The download URL is pinned to repository revision
 `b3ca0d2f076785a8f4b2219ddbd2bdb99954eae1` (lastModified 2026-08-31, read from
 the Hugging Face API), and the file it serves is 2,008,432,640 bytes with
