@@ -55,7 +55,7 @@ context length as well as hardware and are not comparable; its 160.2 tok/s nativ
 bundle), with output identical but for one word. Leave-one-out sets
 over 30 runs put the largest marginal contributions within the four-kernel
 patch on the two 4-bit kernels 0099 and 0105 and smaller ones on 0112 and
-0113; patched alone, in an earlier two-repetition sweep with a fixed
+0113, which cannot be ordered against each other because which ranks last follows from the choice of aggregate; patched alone, in an earlier two-repetition sweep with a fixed
 condition order (`out/patch.json`, not directly comparable), 0112 saved 0.690
 and 0.885 ms per token, near the roughly 0.96 ms its isolated gain predicts. The captured kernels all begin with
 `enable f16`, and Chrome exposed no `shader-f16` on a Colab T4 through
@@ -465,7 +465,7 @@ Prefill (cold message, a one-sentence prompt; the prompt's token count is
 not recorded): 6,076 dispatches over 102
 pipelines, 37 of which never run in decode. Not profiled.
 
-## Kernel 0112 in isolation: a deeper K split, with the thread count it multiplies, moves it; on Chrome 146, workgroup size does not at the original's thread count (fifth experiment, 2026-09-22 and 2026-09-24)
+## Kernel 0112 in isolation: a deeper K split, with the thread count it multiplies, moves it; on Chrome 146 (inferred for 2026-09-22, recorded for 2026-09-24), workgroup size does not at the original's thread count (fifth experiment, 2026-09-22 and 2026-09-24)
 
 `node microbench.mjs`. Runs the captured 2-bit matrix-vector kernel 0112
 verbatim on its real decode shape (1536 → 12288, 4.5 MiB packed weights,
@@ -729,7 +729,7 @@ brackets is the spread across those five.
 for Testing 153 (Vulkan 1.4, NVIDIA driver 580.82.7), driven from a
 desktop Chrome session. Record: `out/microbench-colab-t4-f32.json`, transcribed by
 hand from the notebook's printed output (the notebook itself writes
-`microbench-colab.json` with the driver's field names; that file was not
+`microbench-colab-t4-f32.json` with the driver's field names; that file was not
 copied back). The notebook builder and the page handle three conditions of
 this configuration: Colab's Ubuntu 24.04 names
 the ALSA package `libasound2t64` (one wrong name aborts the whole apt

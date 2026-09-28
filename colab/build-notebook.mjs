@@ -55,13 +55,13 @@ const files = {
   'run.mjs': Buffer.from(driver).toString('base64'),
 }
 
-const cell = (type, source) => ({ cell_type: type, metadata: {}, source: source.split('\n').map((l, i, a) => (i < a.length - 1 ? l + '\n' : l)), ...(type === 'code' ? { execution_count: null, outputs: [] } : {}) })
+const cell = (type, id, source) => ({ cell_type: type, id, metadata: {}, source: source.split('\n').map((l, i, a) => (i < a.length - 1 ? l + '\n' : l)), ...(type === 'code' ? { execution_count: null, outputs: [] } : {}) })
 
 const nb = {
   nbformat: 4, nbformat_minor: 5,
   metadata: { accelerator: 'GPU', colab: { gpuType: 'T4' }, kernelspec: { name: 'python3', display_name: 'Python 3' } },
   cells: [
-    cell('markdown', `# LiteRT-LM kernel 0112 on a Colab T4
+    cell('markdown', 'a1b2c3d4', `# LiteRT-LM kernel 0112 on a Colab T4
 
 **First: Runtime → Change runtime type → T4 GPU.**
 
@@ -70,7 +70,7 @@ Runs the captured LiteRT-LM WebGPU matrix-vector kernel 0112 (Gemma 4 E2B web, @
 Nothing is downloaded from Hugging Face: the page generates its own random weights.
 
 Kernel 0112 is emitted at run time by \`@litert-lm/core\` 0.17.1 (Google LLC) and is reproduced here under the Apache License 2.0; provenance and the license text are in \`out/shaders/NOTICE\` and \`out/shaders/LICENSE\` in the repository, https://github.com/abgnydn/litert-capture, which also holds the method, the harness and the records. Independent work, not affiliated with Google.`),
-    cell('code', `# 1) Node 22 + the NVIDIA Vulkan userspace matching the driver
+    cell('code', 'e5f6a7b8', `# 1) Node 22 + the NVIDIA Vulkan userspace matching the driver
 import subprocess
 drv = subprocess.check_output('nvidia-smi --query-gpu=driver_version --format=csv,noheader', shell=True).decode().split('.')[0].strip()
 print('NVIDIA driver major:', drv, '-> installing libnvidia-gl-' + drv)
@@ -81,7 +81,7 @@ print('NVIDIA driver major:', drv, '-> installing libnvidia-gl-' + drv)
 !rm -f /usr/share/vulkan/icd.d/lvp_icd*.json
 print('--- Vulkan device (want Tesla T4, not llvmpipe): ---')
 !vulkaninfo --summary 2>/dev/null | grep -E 'deviceName|driverName' || echo 'NO VULKAN DEVICE'`),
-    cell('code', `# 2) Unpack the page, the captured kernel and the driver; install puppeteer 25.11.0 (downloads Chrome for Testing 153, which made the committed T4 record)
+    cell('code', 'c9d0e1f2', `# 2) Unpack the page, the captured kernel and the driver; install puppeteer 25.11.0 (downloads Chrome for Testing 153, which made the committed T4 record)
 import base64, os, json
 files = ${JSON.stringify(files)}
 os.makedirs('kernel0112/out/shaders', exist_ok=True)
@@ -89,12 +89,12 @@ for name, data in files.items():
     with open(os.path.join('kernel0112', name), 'wb') as f:
         f.write(base64.b64decode(data))
 !cd kernel0112 && npm init -y > /dev/null && npm i --silent puppeteer@25.11.0 > /dev/null && echo installed`),
-    cell('code', `# 3) Run. Prints one line per variant; the JSON is the record to copy back.
+    cell('code', 'a3b4c5d6', `# 3) Run. Prints one line per variant; the JSON is the record to copy back.
 !cd kernel0112 && node run.mjs
 print(open('kernel0112/microbench-colab-t4-f32.json').read()[:600])`),
-    cell('markdown', `## Reading the result
+    cell('markdown', 'e7f8a9b0', `## Reading the result
 
-\`orig\` is Google's kernel as shipped (16 × 4 workgroups, 12,288 threads). \`wg256-same\` changes only the workgroup size (control). \`split16-64\` and \`split32-64\` keep 64-thread workgroups and dispatch 4x and 8x the threads. The GB/s on each printed line is effective weight-streaming bandwidth: the 4.5 MiB (4,718,592 bytes) of weights the kernel reads per unit of kernel time, which is not a measurement of memory traffic, since a byte served from cache counts the same. Byte counts in this notebook are MiB (2^20 bytes) and GB/s is decimal. On the M2 Max: orig 60.9 µs, control 60.6, split32 36.8 (1.65x, in two runs whose browser, Chrome 146, is inferred from the adapter string; the same split reads 0.84x on Chrome 131 on the same machine). Whether the T4 shows the same shape is the question this notebook answers. Download \`kernel0112/microbench-colab-t4-f32.json\` and drop it into \`out/\`.`),
+\`orig\` is Google's kernel as shipped (16 × 4 workgroups, 12,288 threads). \`wg256-same\` changes only the workgroup size (control). \`split16-64\` and \`split32-64\` keep 64-thread workgroups and dispatch 4x and 8x the threads. The GB/s on each printed line is effective weight-streaming bandwidth: the 4.5 MiB (4,718,592 bytes) of weights the kernel reads per unit of kernel time, which is not a measurement of memory traffic, since a byte served from cache counts the same. Byte counts in this notebook are MiB (2^20 bytes) and GB/s is decimal. On the M2 Max: orig 60.9 µs, control 60.6, split32 36.8 (1.65x, in two runs whose browser, Chrome 146, is inferred from the adapter string, confirmed by provenanced out/microbench-0112-2026-09-24T07-36-19-655Z.json at 1.638x; same single-dispatch harness reads 0.84x in one recorded Chrome 131 run, 78.12 vs 93.12 us, on the same machine). Whether the T4 shows the same shape is the question this notebook answers. Download \`kernel0112/microbench-colab-t4-f32.json\` and drop it into \`out/\`.`),
   ],
 }
 writeFileSync(join(HERE, 'kernel-0112-t4.ipynb'), JSON.stringify(nb, null, 1))
