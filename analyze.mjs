@@ -14,6 +14,7 @@ const optional = (name) => { try { return JSON.parse(readFileSync(join(OUT, name
 const G = optional('timing-gpu.json')
 const B = optional('timing-bare.json')
 const PEAK_GBS = Number(process.argv[2] ?? 400) // rated memory bandwidth of this machine
+const VERSION = process.env.LITERT_VERSION ?? '0.17.1'
 
 // What produced each record this join reads. Records written before the field
 // existed say so instead of being passed off as belonging to this machine.
@@ -98,10 +99,11 @@ const totalUs = rows.reduce((a, r) => a + r.us, 0)
 // 0123 (per-layer gathers), and the attention kernels 0101/0103 (local, over a
 // 131 KB 8-bit KV window) and 0108/0110 (global, loop bound from params_buffer)
 // whose binding is also called weights_buffer but holds the KV cache.
-// These kernel indices were read off @litert-lm/core 0.17.1 with the Gemma 4
+// These kernel indices were read off @litert-lm/core VERSION with the Gemma 4
 // E2B web bundle; they are positions in that build's shader creation order and
 // will differ for any other package version or model bundle.
 const MATVEC = new Set([98, 99, 100, 105, 106, 107, 112, 113, 134])
+if (R.version !== VERSION || M.version !== VERSION) console.log(`warning: kernel indices read off @litert-lm/core ${VERSION}, record is trace ${R.version} / manifest ${M.version}`)
 const weightRows = rows.filter((r) => r.bytes > 0 && MATVEC.has(r.s))
 console.log(`weight kernels counted: ${[...MATVEC].map((s) => String(s).padStart(4, '0')).join(' ')}; attention kernels seen (params_buffer bound): ${[...ATTENTION].filter((s) => [101, 103, 108, 110].includes(s)).map((s) => String(s).padStart(4, '0')).join(' ')} plus 0101 0103 by structure`)
 
