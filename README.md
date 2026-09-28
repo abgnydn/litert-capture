@@ -40,8 +40,9 @@ Chrome 146 record of 0112 with the browser recorded,
 `out/microbench-0112-2026-09-24T07-36-19-655Z.json`, gives 1.638x on
 Chrome 146; control: a bigger workgroup at the same thread count does
 nothing; the isolated measurement inverts on Chrome 131, see "Browser
-version"), and 1.53x on an NVIDIA T4 in one run of an f32
-transcription of the same kernel, copied by hand from the notebook output.
+version"), and 1.58x (1.5789x, 61.44 → 38.912 µs) on an NVIDIA T4 in a machine
+record of an f32 transcription of the same kernel (2026-09-28, 576 cold + 24
+hot samples per variant, forward+reverse pooled).
 Deeper K splits in all four quantized matrix-vector kernels (0112 and 0105
 at 2 × 32, 0099 at 2 × 128, 0113 at 1 × 256) take the running model from 57 to 71
 tokens per second, 1.20x as the median of the per-repetition pairings
@@ -66,8 +67,10 @@ dispatch tape. The 0112 isolation reproduced in three runs, one with Chrome 146
 recorded in its provenance and two on Chrome 146 as inferred from the adapter
 string, and the in-model A/B
 in five repetitions of every condition; the capture, the timing and trace runs,
-the per-kernel profile, the two 4-bit isolation runs, the 0113 isolation run
-and the T4 run are single runs and say so.
+the per-kernel profile, the two 4-bit isolation runs and the 0113 isolation run
+are single runs and say so; the T4 run is a machine record of 2026-09-28
+(576 cold + 24 hot samples per variant, forward+reverse pooled, flat at
+61.4/61.9 µs orig and 38.9/38.9 µs split32, tight 3-5% widths).
 
 The overhead adjustment, wherever a figure below is called overhead-adjusted:
 the per-kernel measurement moves each dispatch into its own timestamped pass,
@@ -723,14 +726,15 @@ brackets is the spread across those five.
   main table, 0105's 2 × 32 and 0099's 2 × 128 in its 4-bit table, 0113's
   1 × 256 in its 0113 table.
 
-## On an NVIDIA T4 (seventh experiment, 2026-09-22)
+## On an NVIDIA T4 (seventh experiment, 2026-09-28)
 
 `colab/kernel-0112-t4.ipynb`, run on a Colab Pro T4 through headless Chrome
 for Testing 153 (Vulkan 1.4, NVIDIA driver 580.82.7), driven from a
-desktop Chrome session. Record: `out/microbench-colab-t4-f32.json`, transcribed by
-hand from the notebook's printed output (the notebook itself writes
-`microbench-colab-t4-f32.json` with the driver's field names; that file was not
-copied back). The notebook builder and the page handle three conditions of
+desktop Chrome session. Record: `out/microbench-colab-t4-f32.json`, a machine
+record dated 2026-09-28T08:19:36.930Z (576 cold + 24 hot samples per variant,
+forward+reverse pooled; orig 61.44 µs p10 60.64 p90 62.688, split32-64 38.912
+µs p10 38.048 p90 39.072; f32 true; machine fields
+kernel/baseBytes/baseSha256/adapter/gpuInfo/order, no note). The notebook builder and the page handle three conditions of
 this configuration: Colab's Ubuntu 24.04 names
 the ALSA package `libasound2t64` (one wrong name aborts the whole apt
 install, so no Vulkan userspace and "NO VULKAN DEVICE"); headless Chrome for
@@ -829,28 +833,27 @@ the bytes are a transcription rather than Google's). CPU reference passes at
 
 | Variant | Workgroup | Threads | Cold µs (p10 to p90) | GB/s | Forward / reverse position |
 |---|---|---|---|---|---|
-| orig | 16 × 4 = 64 | 12,288 | 71.8 (61 to 74) | 66 | 73.7 / 61.9 |
-| wg256-same, control | 64 × 4 = 256 | 12,288 | 78.0 (68 to 80) | 61 | 79.9 / 69.0 |
-| split16-64 | 4 × 16 = 64 | 49,152 | 49.5 (43 to 52) | 95 | 51.3 / 44.4 |
-| split32-64 | 2 × 32 = 64 | 98,304 | 46.9 (39 to 49) | 101 | 48.0 / 39.8 |
-| split16-256 | 16 × 16 = 256 | 49,152 | 46.0 (42 to 53) | 103 | 52.5 / 42.7 |
-| buf-4 | 16 × 4 = 64 | 12,288 | 66.3 (65 to 70) | 71 | 67.1 / 65.7 |
+| orig | 16 × 4 = 64 | 12,288 | 61.44 (60.64 to 62.688) | 77 | 61.4 / 61.9 |
+| wg256-same, control | 64 × 4 = 256 | 12,288 | 67.104 (64.288 to 71.52) | 70 | 65.2 / 70.3 |
+| split16-64 | 4 × 16 = 64 | 49,152 | 43.488 (42.592 to 45.056) | 109 | 43.0 / 44.8 |
+| split32-64 | 2 × 32 = 64 | 98,304 | 38.912 (38.048 to 39.072) | 121 | 38.9 / 38.9 |
+| split16-256 | 16 × 16 = 256 | 49,152 | 42.368 (41.312 to 43.328) | 111 | 42.3 / 42.4 |
+| buf-4 | 16 × 4 = 64 | 12,288 | 64.576 (63.52 to 65.536) | 73 | 64.1 / 65.1 |
 
-- 32-way split: **1.53x** pooled, 1.54x forward, 1.56x reverse, from this
-  single Colab run of the f32 transcription, copied by hand from the
-  notebook output. The bigger
-  workgroup at the same thread count reads 78 µs against the original's 72.
+- 32-way split: **1.58x (1.5789x, 61.44 → 38.912 µs)** pooled, flat across
+  positions (orig 61.4 / 61.9, split32 38.9 / 38.9), from this machine record
+  of the f32 transcription (2026-09-28, 576 cold + 24 hot samples per variant,
+  forward+reverse pooled, tight 3-5% widths). The bigger
+  workgroup at the same thread count reads 67.104 µs against the original's 61.44.
   Same shape as the M2 Max result, on a different vendor and API.
-- 66 → 101 GB/s of effective weight-streaming bandwidth in this single f32 run,
-  copied by hand from the notebook
-  output, against the T4's rated 300 GB/s
+- 77 → 121 GB/s of effective weight-streaming bandwidth in this machine-record f32 run,
+  against the T4's rated 300 GB/s
   ([NVIDIA's T4 datasheet](https://www.nvidia.com/content/dam/en-zz/Solutions/Data-Center/tesla-t4/t4-tensor-core-datasheet-951643.pdf),
-  "16 GB GDDR6" / "300 GB/sec"): 22% → 34%. The T4 is a
-  70 W part and keeps speeding up through the run (five of the six variants
-  read 13 to 19% faster in the reverse position; the storage-buffer variant
-  only 2%), so the pooled medians are conservative; the ratios are stable
-  across positions.
-- Storage-buffer weights help by 8% at 12k threads here (66 vs 72 µs).
+  "16 GB GDDR6" / "300 GB/sec"): 26% → 40%. The T4 is a
+  70 W part; forward and reverse positions agree (orig 61.4 vs 61.9, split32
+  38.9 vs 38.9), so the pooled medians are stable and the widths tight
+  (p10-p90 3-5%).
+- Storage-buffer weights read about 5% slower at 12k threads here (64.576 vs 61.44 µs).
 - Caveats: f32 not f16; one Colab session; Chrome for Testing, headless, in a
   container. A desktop NVIDIA run with f16 is the next check.
 

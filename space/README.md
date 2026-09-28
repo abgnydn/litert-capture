@@ -27,8 +27,7 @@ the same kernel on the same machine with `provenance.browser`
 `Chrome/146.0.7680.153`), and in Chrome 131 on the same machine the
 single-dispatch harness measures the split as slower (0.84x, one run); both records
 are committed. On a Colab T4 it is
-1.53x, from a single run of an f32 transcription of the kernel, copied by hand from
-the notebook output, because Chrome exposed no 16-bit float shaders there. In the
+1.58x (1.5789x, 61.44->38.912 µs), from a machine record of an f32 transcription of the kernel (2026-09-28, 576 cold + 24 hot samples per variant, forward+reverse pooled, flat orig 61.4/61.9 and split32 38.9/38.9, tight 3-5% widths; supersedes the hand-transcribed single run), because Chrome exposed no 16-bit float shaders there. In the
 running model on the M2 Max, with this kernel and the three other quantized
 matrix-vector kernels split deeper, decode goes from 57 to 71 tokens per second, 1.20x
 as the median of the per-repetition pairings (1.18 to 1.33x) and 1.25x as the
