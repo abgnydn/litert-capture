@@ -553,7 +553,8 @@ fn main(@builtin(global_invocation_id) reserved_gid : vec3<u32>,
       lastResult = { page: 'kernel-0112', version: 2, kernel: '@litert-lm/core 0.17.1 shader 0112', date: new Date().toISOString(), gpu: adapterInfo, userAgent: navigator.userAgent, timing: hasTs ? (quantized ? 'gpu-timestamps-quantized-100us' : 'gpu-timestamps') : 'cpu-batch', batch: B, rounds: ROUNDS, positions: 2, matrices: NMAT, weightBytes: WEIGHT_BYTES, variants: Object.fromEntries(VARIANTS.map((v) => [v.key, { ks: v.ks, wgX: v.wgX, threads: OUT_SLICES * v.ks }])), results }
       const speed = results[HEADLINE[0]].cold / results[HEADLINE[1]].cold
       const headlineOk = HEADLINE.every((k) => results[k].err < ERR_LIMIT)
-      $('mine-speedup').textContent = headlineOk ? `${speed.toFixed(2)}×` : '–'
+      const display = speed < 1 ? 1 / speed : speed
+      $('mine-speedup').textContent = headlineOk ? `${display.toFixed(2)}×` : '–'
       $('mine-what').textContent = !headlineOk ? 'not shown: the original or the 32-way split gave a wrong answer on this GPU, so its speed does not count' : speed < 1 ? MINE_WHAT.replace(/^faster/, 'slower') : MINE_WHAT
       $('mine-meta').textContent = `${[adapterInfo.vendor, adapterInfo.architecture].filter(Boolean).join(' · ') || 'this GPU'} · ${lastResult.timing.replace(/-/g, ' ')} · ${B * ROUNDS * 2} runs per number · ${NMAT} matrices${NMAT < 24 ? ' (reduced: GPU memory)' : ''}`
       scaleMax = niceMax(Math.max(scaleMax, ...Object.values(results).map((d) => gbs(d.hot))))

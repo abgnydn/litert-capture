@@ -42,10 +42,10 @@ for (const q of ['', '?f32=1']) {
 }
 R.date = new Date().toISOString()
 R.gpuInfo = await page.evaluate(async () => { const a = await navigator.gpu.requestAdapter(); return { vendor: a?.info?.vendor, architecture: a?.info?.architecture, device: a?.info?.device, description: a?.info?.description, features: [...(a?.features ?? [])] } })
-writeFileSync('microbench-colab.json', JSON.stringify(R, null, 2))
+writeFileSync('microbench-colab-t4-f32.json', JSON.stringify(R, null, 2))
 console.log('ADAPTER', JSON.stringify(R.gpuInfo))
 if (R.error) console.log('PAGE ERROR', R.error)
-console.log('saved microbench-colab.json; copy it back into out/ of the litert-capture folder')
+console.log('saved microbench-colab-t4-f32.json; copy it back into out/ of the litert-capture folder')
 await browser.close(); server.close()
 `
 
@@ -91,10 +91,10 @@ for name, data in files.items():
 !cd kernel0112 && npm init -y > /dev/null && npm i --silent puppeteer@25.11.0 > /dev/null && echo installed`),
     cell('code', `# 3) Run. Prints one line per variant; the JSON is the record to copy back.
 !cd kernel0112 && node run.mjs
-print(open('kernel0112/microbench-colab.json').read()[:600])`),
+print(open('kernel0112/microbench-colab-t4-f32.json').read()[:600])`),
     cell('markdown', `## Reading the result
 
-\`orig\` is Google's kernel as shipped (16 × 4 workgroups, 12,288 threads). \`wg256-same\` changes only the workgroup size (control). \`split16-64\` and \`split32-64\` keep 64-thread workgroups and dispatch 4x and 8x the threads. The GB/s on each printed line is effective weight-streaming bandwidth: the 4.5 MiB (4,718,592 bytes) of weights the kernel reads per unit of kernel time, which is not a measurement of memory traffic, since a byte served from cache counts the same. Byte counts in this notebook are MiB (2^20 bytes) and GB/s is decimal. On the M2 Max: orig 60.9 µs, control 60.6, split32 36.8 (1.65x, in two runs whose browser, Chrome 146, is inferred from the adapter string; the same split reads 0.84x on Chrome 131 on the same machine). Whether the T4 shows the same shape is the question this notebook answers. Download \`kernel0112/microbench-colab.json\` and drop it into \`out/\`.`),
+\`orig\` is Google's kernel as shipped (16 × 4 workgroups, 12,288 threads). \`wg256-same\` changes only the workgroup size (control). \`split16-64\` and \`split32-64\` keep 64-thread workgroups and dispatch 4x and 8x the threads. The GB/s on each printed line is effective weight-streaming bandwidth: the 4.5 MiB (4,718,592 bytes) of weights the kernel reads per unit of kernel time, which is not a measurement of memory traffic, since a byte served from cache counts the same. Byte counts in this notebook are MiB (2^20 bytes) and GB/s is decimal. On the M2 Max: orig 60.9 µs, control 60.6, split32 36.8 (1.65x, in two runs whose browser, Chrome 146, is inferred from the adapter string; the same split reads 0.84x on Chrome 131 on the same machine). Whether the T4 shows the same shape is the question this notebook answers. Download \`kernel0112/microbench-colab-t4-f32.json\` and drop it into \`out/\`.`),
   ],
 }
 writeFileSync(join(HERE, 'kernel-0112-t4.ipynb'), JSON.stringify(nb, null, 1))
