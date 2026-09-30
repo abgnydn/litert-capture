@@ -25,6 +25,13 @@
 // 2x128 (24.2 us, out/microbench-0099-2026-09-22T05-39-24-280Z.json), 0113 1x256
 // (37.0 us, out/microbench-0113-2026-09-24T07-36-44-034Z.json). Documented from
 // the existing records; no bench run here, defaults unchanged.
+//
+// ROADMAP 12: Record hot/cold timings separately. Cold rotates through 24
+// matrices (NMAT_COLD, 108 MiB, 576 samples = 2 x ROUNDS 12 x 24 pooled
+// forward+reverse); hot reuses 1 matrix (24 samples = 2 x 12 x 1). Both are
+// already recorded as cold/hot medians (median/p10/p90/n) per variant in
+// www/microbench.html; this split is explicit and the default runs both
+// (optional --mode=cold|hot passthrough not wired).
 
 import { createReadStream, statSync, writeFileSync } from 'node:fs'
 import { createServer } from 'node:http'
