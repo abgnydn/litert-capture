@@ -9,6 +9,11 @@
 // "% of rated" figures; text summary sections are weights per token, achieved
 // GB/s, weight kernels by shape sorted by total (top kernels), linear fit,
 // and layers. Documented from existing practice; default unchanged.
+//
+// ROADMAP 50: grow versioned corpus (out/shaders/ plus out/*.json plus
+// replay) and triage Dawn/Chrome inversions via linked repros. Only this
+// bundle's records exist so far; corpus growth plus triage are open work,
+// no new records here. Documented from existing practice; default unchanged.
 import { readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { shaderShaById } from './shader-sha.mjs'
