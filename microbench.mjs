@@ -64,6 +64,14 @@
 // Warm-up is 10x (288 cold + 12 hot) on the warmup variant, all discarded;
 // the warmup variant itself is never timed. Documented from existing
 // practice; defaults unchanged.
+//
+// ROADMAP 16: timestamp-query path when available for GPU timing. Each timed
+// single-dispatch pass carries timestampWrites (begin/end) into a timestamp
+// query set, resolved via resolveQuerySet + copyBufferToBuffer and read back
+// for the per-dispatch median (www/microbench.html and www/microbench4.html,
+// NQ 2 x ROUNDS x NMAT_COLD). The pages require timestamp-query (adapter
+// lacks -> error); optional ?f32=1 keeps the timestamp path on the f32
+// transcription. Documented from existing practice; defaults unchanged.
 
 import { createReadStream, statSync, writeFileSync } from 'node:fs'
 import { createServer } from 'node:http'

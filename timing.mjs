@@ -1,6 +1,14 @@
 // Drives www/timing.html and reports where a decoded token's time goes.
 //   node timing.mjs bare   -> tok/s, time to first token, CPU-side vs waiting-on-GPU split
 //   node timing.mjs gpu    -> GPU execution time per token from timestamp queries
+//
+// ROADMAP 16: timestamp-query path when available for GPU timing. Bare uses
+// no GPU timestamps (mapAsync CPU split only); gpu requests timestamp-query
+// when the adapter exposes it and injects timestampWrites per compute pass,
+// kernel additionally splits every dispatch into its own timestamped pass;
+// both resolve via resolveQuerySet + copyBufferToBuffer and record gpuNote
+// when unavailable. Documented from existing practice in www/timing.html;
+// optional ?v= / ?chunks= passthrough not wired here; defaults unchanged.
 
 import { createReadStream, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs'
 import { createServer } from 'node:http'
