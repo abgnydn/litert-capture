@@ -150,6 +150,10 @@ try {
   R.date = new Date().toISOString()
   // ROADMAP 18: dated file per run -- stamp is R.date with : and . as -,
   // out/microbench-<kernel>-<stamp>.json; never overwrites; R keeps full flags.
+  //
+  // ROADMAP 40: append each run median plus provenance to BENCH.md log.
+  // Appending medians is open work, no BENCH.md written here; the dated
+  // record stays the source of truth. Default unchanged.
   const stamp = R.date.replace(/[:.]/g, '-')
   const name = `microbench${R.kernel ? '-' + R.kernel : ''}-${stamp}.json`
   writeFileSync(join(OUT, name), JSON.stringify(R, null, 2))
