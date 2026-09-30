@@ -12,6 +12,12 @@
 // pooled before the median, R.order records per-position medians); both cancel
 // linear clock drift. Always on, no flag; default unchanged.
 //
+// ROADMAP 19: 6 conditions x 5 reps = 30 runs (default `node patch.mjs 5`).
+// Each repetition Fisher-Yates reshuffles CONDITIONS with one recorded seed
+// (out/patch-ab.json shuffleSeed 1381548739, orders[] holds the realized
+// order); each run launches a fresh Chrome in once() and closes it after.
+// Documented from existing practice; defaults unchanged.
+//
 // Usage: node patch.mjs [repeats]   (default 5, i.e. 30 runs)
 // Writes out/patch-ab.json. out/patch.json, the record of the earlier
 // four-set, two-repetition run, is not touched.
