@@ -24,6 +24,12 @@
 // P.unscaledDispatches in the record). Documented from existing practice;
 // defaults unchanged.
 //
+// ROADMAP 22: report paired medians alongside ratio-of-medians. The
+// per-repetition baseline/all-four pairing gives 1.20x median (1.18-1.33x
+// range) while the ratio of condition medians gives 1.25x (17.65 -> 14.12
+// ms/token) from the same out/patch-ab.json runs. Documented from existing
+// practice; defaults unchanged.
+//
 // Usage: node patch.mjs [repeats]   (default 5, i.e. 30 runs)
 // Writes out/patch-ab.json. out/patch.json, the record of the earlier
 // four-set, two-repetition run, is not touched.
