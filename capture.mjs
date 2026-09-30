@@ -16,6 +16,10 @@ const OUT = join(HERE, 'out')
 const PORT = 8917
 const TIMEOUT_MS = 20 * 60 * 1000
 
+// @litert-lm/core release to capture. Re-run per release to track kernel drift:
+// LITERT_VERSION=... node capture.mjs. Default matches the committed records.
+const LITERT_VERSION = process.env.LITERT_VERSION ?? '0.17.1'
+
 const MIME = { '.html': 'text/html', '.js': 'text/javascript', '.wasm': 'application/wasm' }
 
 const server = createServer((req, res) => {
@@ -53,7 +57,12 @@ try {
   page.on('pageerror', (e) => console.log(`[pageerror] ${e.message}`))
   page.on('requestfailed', (r) => console.log(`[requestfailed] ${r.url()} ${r.failure()?.errorText}`))
 
-  const query = process.argv[2] ?? ''
+  const rawQuery = process.argv[2] ?? ''
+  const query = /[?&]v=/.test(rawQuery)
+    ? rawQuery
+    : rawQuery === ''
+      ? `?v=${encodeURIComponent(LITERT_VERSION)}`
+      : `${rawQuery}&v=${encodeURIComponent(LITERT_VERSION)}`
   await page.goto(`http://127.0.0.1:${PORT}/capture.html${query}`, { waitUntil: 'load' })
   await page.waitForFunction('window.__captureDone === true', { timeout: TIMEOUT_MS, polling: 1000 })
 
@@ -78,6 +87,7 @@ try {
     bytes: code.length,
     sha256: shaderSha256 ?? createHash('sha256').update(code).digest('hex'),
   }))
+  manifest.requested_version = LITERT_VERSION
   manifest.provenance = await provenance({ browser, adapter: cap.adapter, pkg: cap.version })
   writeFileSync(join(OUT, 'manifest.json'), JSON.stringify(manifest, null, 2))
   if (cap.shaderSha256Unavailable) console.log('note: crypto.subtle was unavailable in the page; shader hashes were computed in the driver from the captured source')
