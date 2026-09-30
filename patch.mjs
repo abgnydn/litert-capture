@@ -42,6 +42,12 @@
 // by one token ("twenty," at index 20, 58 vs 60 tokens) in out/patch-ab.json
 // runs. Documented from existing practice; defaults unchanged.
 //
+// ROADMAP 24: repeat in-model run on Chrome 131 to check version inversion.
+// The committed 30-run sweep (out/patch-ab.json) is Chrome 146 only; the
+// isolated 0112 result inverts on Chrome 131 (32-way split 1.19x slower
+// there vs 1.638x faster on Chrome 146), so the in-model 131 repeat is
+// untested open work, not run here. Defaults unchanged.
+//
 // Usage: node patch.mjs [repeats]   (default 5, i.e. 30 runs)
 // Writes out/patch-ab.json. out/patch.json, the record of the earlier
 // four-set, two-repetition run, is not touched.
