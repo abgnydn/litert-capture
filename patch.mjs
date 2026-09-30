@@ -18,6 +18,12 @@
 // order); each run launches a fresh Chrome in once() and closes it after.
 // Documented from existing practice; defaults unchanged.
 //
+// ROADMAP 20: scaled dispatches hold split wins at size. Every dispatch of a
+// patched pipeline is scaled oldWgX/newWgX so the same output slices are
+// covered (www/patch.html dispatchWorkgroups hook; P.scaledDispatches vs
+// P.unscaledDispatches in the record). Documented from existing practice;
+// defaults unchanged.
+//
 // Usage: node patch.mjs [repeats]   (default 5, i.e. 30 runs)
 // Writes out/patch-ab.json. out/patch.json, the record of the earlier
 // four-set, two-repetition run, is not touched.

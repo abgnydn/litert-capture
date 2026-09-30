@@ -80,6 +80,12 @@
 // Each record carries the full flags (per-variant buf/ks/wgX/dispatchX/
 // invocations/threads plus top-level f32/errorTolerance/relFloor) alongside
 // provenance/manifest_sha256. Documented from existing behavior; defaults unchanged.
+//
+// ROADMAP 20: scaled dispatches hold split wins at size. Each variant covers
+// the same output slices with dispatch count scaled OUT_SLICES/wgX
+// (www/microbench.html, www/microbench4.html dispatchX), the isolation
+// analogue of the www/patch.html oldWgX/newWgX scaling. Documented from
+// existing practice; defaults unchanged.
 
 import { createReadStream, statSync, writeFileSync } from 'node:fs'
 import { createServer } from 'node:http'
