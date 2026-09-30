@@ -86,6 +86,11 @@
 // (www/microbench.html, www/microbench4.html dispatchX), the isolation
 // analogue of the www/patch.html oldWgX/newWgX scaling. Documented from
 // existing practice; defaults unchanged.
+//
+// ROADMAP 48: vendor matrix Intel/AMD/Adreno/Metal/Linux plus f16 toggle
+// trial is open work. Only Apple Metal (M2 Max) plus one Colab T4 f32
+// transcription exist so far; the ?f32=1 toggle above is the f16 stand-in,
+// no new vendors here. Documented from existing practice; defaults unchanged.
 
 import { createReadStream, statSync, writeFileSync } from 'node:fs'
 import { createServer } from 'node:http'
