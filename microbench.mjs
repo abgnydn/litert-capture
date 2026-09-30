@@ -64,6 +64,12 @@
 // Warm-up is 10x (288 cold + 12 hot) on the warmup variant, all discarded;
 // the warmup variant itself is never timed. Documented from existing
 // practice; defaults unchanged.
+//
+// ROADMAP 20: scaled dispatches hold split wins at size. Each variant covers
+// the same output slices with dispatch count scaled OUT_SLICES/wgX
+// (www/microbench.html, www/microbench4.html dispatchX), the isolation
+// analogue of the www/patch.html oldWgX/newWgX scaling. Documented from
+// existing practice; defaults unchanged.
 
 import { createReadStream, statSync, writeFileSync } from 'node:fs'
 import { createServer } from 'node:http'

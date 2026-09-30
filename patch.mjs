@@ -12,6 +12,12 @@
 // pooled before the median, R.order records per-position medians); both cancel
 // linear clock drift. Always on, no flag; default unchanged.
 //
+// ROADMAP 20: scaled dispatches hold split wins at size. Every dispatch of a
+// patched pipeline is scaled oldWgX/newWgX so the same output slices are
+// covered (www/patch.html dispatchWorkgroups hook; P.scaledDispatches vs
+// P.unscaledDispatches in the record). Documented from existing practice;
+// defaults unchanged.
+//
 // Usage: node patch.mjs [repeats]   (default 5, i.e. 30 runs)
 // Writes out/patch-ab.json. out/patch.json, the record of the earlier
 // four-set, two-repetition run, is not touched.
