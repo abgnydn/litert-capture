@@ -1,6 +1,10 @@
 // Drives www/capture.html in a real Chrome with WebGPU and writes what the
 // hooks recorded to out/. Reuses zero-tvm's puppeteer install and the desktop
 // flag set from zero-tvm/bench/run.mjs.
+//
+// ROADMAP 47: nightly CI chain `pnpm capture -> timing -> trace -> analyze ->
+// microbench -> patch` (`package.json:10-15`) is open work, docs note only,
+// no .github/workflows here. Default `node capture.mjs` unchanged.
 
 import { createHash } from 'node:crypto'
 import { createReadStream, mkdirSync, statSync, writeFileSync } from 'node:fs'
