@@ -48,6 +48,11 @@
 // there vs 1.638x faster on Chrome 146), so the in-model 131 repeat is
 // untested open work, not run here. Defaults unchanged.
 //
+// ROADMAP 25: run 0112-alone reshuffled to confirm single-kernel effect.
+// Standalone 0112 figures are fixed-order 2-rep out/patch.json (none,
+// 0112, 0112+0105, all x2), so the reshuffled multi-rep 0112-alone run is
+// untried open work, not run here. Defaults unchanged.
+//
 // Usage: node patch.mjs [repeats]   (default 5, i.e. 30 runs)
 // Writes out/patch-ab.json. out/patch.json, the record of the earlier
 // four-set, two-repetition run, is not touched.
