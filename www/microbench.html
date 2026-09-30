@@ -25,9 +25,11 @@
      0113 variants:
        orig         2x32 wg (64 inv),  12,288 threads                    <- as shipped
        split256-256 1x256 wg (256 inv), 98,304 threads                   <- what www/patch.html rewrites 0113 to
-     Measurement order: a discarded warm-up variant first (the first timed slot
-     reads slow), then every variant forward and again in reverse order; the
-     cold and hot samples from both positions are pooled before the median.
+      Measurement order: a discarded warm-up variant first (the first timed slot
+      reads slow), then every variant forward and again in reverse order to cancel
+      linear clock drift (each variant takes each sweep position once); the
+      cold and hot samples from both positions are pooled before the median.
+      Always on, no flag; R.order keeps the per-position medians.
      "Cold" rotates through 24 matrices (108 MiB), far more than this GPU's caches
      hold, which makes cache reuse across dispatches unlikely;
      "hot" reuses one matrix. Every variant is checked against a CPU reference. -->

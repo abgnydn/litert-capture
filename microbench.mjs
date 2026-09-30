@@ -25,6 +25,12 @@
 // 2x128 (24.2 us, out/microbench-0099-2026-09-22T05-39-24-280Z.json), 0113 1x256
 // (37.0 us, out/microbench-0113-2026-09-24T07-36-44-034Z.json). Documented from
 // the existing records; no bench run here, defaults unchanged.
+//
+// ROADMAP 13: forward+reverse order cancels linear clock drift. The pages time
+// each variant forward then again in reverse ([...timed, ...[...timed].reverse()])
+// and pool both positions' cold+hot samples before the median; R.order records
+// the per-position medians so the two directions can be compared. Always on,
+// no flag; default unchanged.
 
 import { createReadStream, statSync, writeFileSync } from 'node:fs'
 import { createServer } from 'node:http'

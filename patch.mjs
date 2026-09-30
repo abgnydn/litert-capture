@@ -7,6 +7,11 @@
 // diffed against the unpatched run at token granularity, not compared for
 // equality, so a difference is reported as the tokens that differ and where.
 //
+// ROADMAP 13: the reshuffle above is the in-model analogue of the microbench
+// forward+reverse pooling (each variant timed forward then reverse, both positions
+// pooled before the median, R.order records per-position medians); both cancel
+// linear clock drift. Always on, no flag; default unchanged.
+//
 // Usage: node patch.mjs [repeats]   (default 5, i.e. 30 runs)
 // Writes out/patch-ab.json. out/patch.json, the record of the earlier
 // four-set, two-repetition run, is not touched.
