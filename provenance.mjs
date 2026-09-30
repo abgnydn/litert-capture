@@ -7,6 +7,11 @@
 // The model bundle is 2 GB, so its SHA-256 is cached in out/model.json keyed by
 // file, size and mtime; a changed file re-hashes. A missing model (microbench
 // does not need one) is recorded as null, not an error.
+//
+// ROADMAP 35: stamp browser/adapter/node/os/pkg/model/power/thermal/commit
+// via provenance.mjs. Fields already stamped by provenance(): browser,
+// adapter, node, os, package, model, power, thermal, harness_commit,
+// harness_dirty, timestamp. Made explicit here; default unchanged.
 
 import { execFileSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
