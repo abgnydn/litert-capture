@@ -16,8 +16,13 @@
                    its own timestamped pass (replaying pipeline and bind
                    groups): GPU execution time per kernel. Heavily perturbs
                    the run, so only the per-kernel attribution is meaningful.
-     CPU-side numbers come from mode=bare only. Optional ?v= / ?chunks=
-     tune the bundle and token count; default is v 0.17.1, 200 chunks. -->
+<     CPU-side numbers come from mode=bare only. Optional ?v= / ?chunks=
+     tune the bundle and token count; default is v 0.17.1, 200 chunks.
+     ROADMAP 17: cpu-batch fallback lives in www/kernel-0112.html (batches of
+     48 GPU-timestamped runs vs 480 JavaScript-timed runs, results timing
+     gpu-timestamps vs cpu-batch); this page instead records gpuNote when
+     timestamp-query is unavailable. Documented from existing practice;
+     default unchanged. -->
 <script>
 (() => {
   const params = new URLSearchParams(location.search)

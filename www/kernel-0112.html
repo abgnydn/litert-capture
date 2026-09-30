@@ -142,7 +142,7 @@
     <dt>dispatch</dt>
     <dd>One execution of the kernel on the GPU.</dd>
     <dt>single-dispatch vs batched</dt>
-    <dd>The node harness times one dispatch at a time, while this page records the time before and after each batch of 48 back-to-back runs.</dd>
+    <dd>The node harness times one dispatch at a time, while this page records the time before and after each batch of 48 back-to-back runs (480 under the cpu-batch fallback; the results JSON timing field reads gpu-timestamps vs cpu-batch).</dd>
     <dt>K split</dt>
     <dd>The K split is how many threads share each dot product.</dd>
     <dt>cold / hot</dt>
@@ -178,13 +178,13 @@
     <li><strong>Random weights, made here.</strong> The page generates 24 different 4.5 MiB matrices of random bytes in your browser (108 MiB; if the GPU cannot hold them it retries with 8 and the results panel says so). No model weights are downloaded and no results leave your browser; the page's fonts are fetched from Google's font servers. The real model's weights are not needed to measure speed: a memory-bound kernel should take the same time whatever the values, and the bytes are unpatterned because some GPUs compress patterned textures.</li>
     <li><strong>A reference answer on the CPU.</strong> For the first matrix, plain JavaScript computes the 12,288 outputs. Every GPU variant must match it to within 16-bit float rounding (0.05 on outputs of size about 2) or it is marked wrong, and a wrong variant's speed does not count.</li>
     <li><strong>Cold and hot.</strong> "Cold" rotates through all 24 matrices (108 MiB, far more than the reference chip's caches hold), which makes cache reuse from one run to the next unlikely, as in the real model where 40 different matrices stream past. "Hot" reuses one matrix, small enough to stay in the chip's cache. The gap between them shows how much a variant is limited by memory rather than by arithmetic.</li>
-    <li><strong>GPU timestamps, in batches.</strong> The GPU records the time before and after each batch of 48 back-to-back runs. Browsers may round these timestamps to 100 µs for privacy; batching keeps that rounding between about 3% of the slowest bar and 6% of the fastest. Where timestamps are unavailable the page times batches of 480 runs from JavaScript instead and says so in the results panel.</li>
+    <li><strong>GPU timestamps, in batches (cpu-batch fallback).</strong> The GPU records the time before and after each batch of 48 back-to-back runs. Browsers may round these timestamps to 100 µs for privacy; batching keeps that rounding between about 3% of the slowest bar and 6% of the fastest. Where timestamps are unavailable the page falls back to cpu-batch timing: batches of 480 runs timed from JavaScript instead and says so in the results panel. The results JSON timing field reads gpu-timestamps (or gpu-timestamps-quantized-100us when rounded) vs cpu-batch; default is the GPU path when available, unchanged.</li>
     <li><strong>Interleaved order after a warm-up.</strong> The GPU is slow for whatever is measured first. A discarded warm-up of the original kernel (16 batches) runs before any timing, then every variant is timed in order and again in reverse, and the two positions' samples are pooled: eight batches per variant per position, median reported. Other tabs, thermal state and power mode all move the numbers; run twice if the first looks odd.</li>
   </ol>
 
   <h3>What the numbers mean</h3>
   <ul class="notes">
-    <li><strong>µs per run</strong> is the GPU time of a batch of 48 runs divided by 48, then the median over sixteen batches. Lower is better.</li>
+    <li><strong>µs per run</strong> is the batch time divided by the batch size (48 GPU-timestamped runs, 480 JavaScript-timed runs under the cpu-batch fallback), then the median over sixteen batches. Lower is better.</li>
     <li><strong>GB/s</strong> is effective weight-streaming bandwidth: the 4,718,592 bytes of weights (4.5 MiB) divided by that time, in decimal gigabytes, counting a byte the same whether it was read from memory or served from cache. Higher is better; your chip's rated memory bandwidth is the scale to read it against.</li>
     <li><strong>×</strong> is the original kernel's cold time divided by the 32-way split's cold time.</li>
     <li>A <span class="badge ok">matches reference</span> badge means the variant produced the same outputs as the CPU within rounding. If a variant shows <span class="badge no">wrong answer</span>, its speed does not count.</li>

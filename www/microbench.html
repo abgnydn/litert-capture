@@ -44,11 +44,16 @@
      maxAbsErr + maxRelErr + mismatches recorded); ?f32=1 runs an f32
      transcription for adapters without shader-f16, default is the f16 kernel
      as shipped. Always on, no flag for the check; default unchanged.
-     GPU timing uses the timestamp-query path: each single-dispatch pass
+<     GPU timing uses the timestamp-query path: each single-dispatch pass
      carries timestampWrites (begin/end) into a timestamp query set, resolved
      via resolveQuerySet + copyBufferToBuffer (NQ 2 x ROUNDS x NMAT_COLD);
      the device requires timestamp-query (adapter lacks -> error). Optional
-     ?f32=1 keeps the timestamp path on the f32 transcription. -->
+     ?f32=1 keeps the timestamp path on the f32 transcription.
+     ROADMAP 17: cpu-batch fallback lives in www/kernel-0112.html (batches of
+     48 GPU-timestamped runs vs 480 JavaScript-timed runs, results timing
+     gpu-timestamps vs cpu-batch); this page requires timestamp-query
+     (adapter lacks -> error). Documented from existing practice; default
+     unchanged. -->
 <script type="module">
   const log = (s) => { document.getElementById('log').append(s + '\n'); console.log('[mb] ' + s) }
   const params = new URLSearchParams(location.search)
