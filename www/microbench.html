@@ -43,7 +43,12 @@
      reference for matrix 0 (2-bit dequant, zero point 2; TOL 0.05 / REL_FLOOR 0.1,
      maxAbsErr + maxRelErr + mismatches recorded); ?f32=1 runs an f32
      transcription for adapters without shader-f16, default is the f16 kernel
-     as shipped. Always on, no flag for the check; default unchanged. -->
+     as shipped. Always on, no flag for the check; default unchanged.
+     ROADMAP 17: cpu-batch fallback lives in www/kernel-0112.html (batches of
+     48 GPU-timestamped runs vs 480 JavaScript-timed runs, results timing
+     gpu-timestamps vs cpu-batch); this page requires timestamp-query
+     (adapter lacks -> error). Documented from existing practice; default
+     unchanged. -->
 <script type="module">
   const log = (s) => { document.getElementById('log').append(s + '\n'); console.log('[mb] ' + s) }
   const params = new URLSearchParams(location.search)

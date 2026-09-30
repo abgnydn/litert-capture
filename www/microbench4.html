@@ -18,7 +18,12 @@
      12 hot) on the warmup variant, all discarded. Every variant
      is checked against a per-shape JS CPU reference for matrix 0 (nibble
      dequant, zero point 8, maxAbsErr recorded); no ?f32 flag on this page,
-     f16 required. Always on; default unchanged. -->
+     f16 required. Always on; default unchanged.
+     ROADMAP 17: cpu-batch fallback lives in www/kernel-0112.html (batches of
+     48 GPU-timestamped runs vs 480 JavaScript-timed runs, results timing
+     gpu-timestamps vs cpu-batch); this page requires timestamp-query
+     (adapter lacks -> error). Documented from existing practice; default
+     unchanged. -->
 <script type="module">
   const log = (s) => { document.getElementById('log').append(s + '\n'); console.log('[mb] ' + s) }
   const params = new URLSearchParams(location.search)
