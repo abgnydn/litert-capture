@@ -15,6 +15,11 @@
 // tape stays a text summary (console plus out/trace.json); a timeline viewer
 // is open work, no new viewer here. Documented from existing practice;
 // default unchanged.
+//
+// ROADMAP 49: generalize capture.mjs / trace.mjs to WebLLM, ONNX Runtime
+// Web, and Transformers.js. Only the LiteRT-LM bundle is wired here; other
+// engines are open work, no new driver here. Default `node trace.mjs`
+// unchanged.
 
 import { createReadStream, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs'
 import { createServer } from 'node:http'
