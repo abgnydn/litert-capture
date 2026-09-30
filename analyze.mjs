@@ -2,6 +2,13 @@
 // out/timing-kernel.json (GPU time per dispatch) and out/shaders/*.wgsl.
 // Dispatch order within a token is deterministic, so the two runs are joined
 // by position after checking that their pipeline sequences are identical.
+//
+// ROADMAP 29: summarize top kernels with analyze.mjs 400-char text summary
+// (`package.json:13`: `node analyze.mjs 400`). The 400 is the rated memory
+// bandwidth in GB/s for this machine (PEAK_GBS, argv[2] ?? 400), used for the
+// "% of rated" figures; text summary sections are weights per token, achieved
+// GB/s, weight kernels by shape sorted by total (top kernels), linear fit,
+// and layers. Documented from existing practice; default unchanged.
 import { readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { shaderShaById } from './shader-sha.mjs'
