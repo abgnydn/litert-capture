@@ -117,6 +117,11 @@ console.log(`weight kernels counted: ${[...MATVEC].map((s) => String(s).padStart
 // Splitting every dispatch into its own pass adds a per-pass cost. Measure it
 // as (split per-token sum - unsplit per-token sum) / 1304 and report corrected
 // figures alongside the raw ones.
+//
+// ROADMAP 30: apply split-pass correction (~1.5us/pass) to K-split timings.
+// Measured about 1.52 us per pass here, subtracted via corr() for corrected
+// figures alongside the raw ones. Documented from existing practice; default
+// unchanged.
 let overheadUs = 0
 try {
   if (!G) throw new Error('out/timing-gpu.json not readable')
