@@ -2,6 +2,11 @@
 // www/microbench.html on a T4 through headless Chrome. The page, the captured
 // kernel and a driver are embedded base64, so the notebook runs on its own.
 // Cell 1 is zero-tvm's proven recipe for getting a real Vulkan device on Colab.
+//
+// ROADMAP 38: add T4 machine fields date/gpuInfo/order for Colab runs. The
+// driver stamps R.date and R.gpuInfo and the page records R.order; the fresh
+// record out/microbench-colab-t4-f32.json already carries them. Made explicit
+// here; default unchanged.
 import { readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
