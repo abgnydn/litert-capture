@@ -36,6 +36,11 @@ for (const [name, rec] of READ) {
 }
 const noProv = READ.filter(([, rec]) => !rec.provenance).map(([name]) => name)
 if (noProv.length) console.log(`provenance: not recorded in ${noProv.join(', ')}`)
+//
+// ROADMAP 37: backfill 13 legacy records with missing provenance fields. The
+// 13 records committed in c3575e1 predate the block (see README "What
+// produced a record"); backfilling them is open work, no re-run and no
+// out/*.json overwrite here. Default unchanged.
 
 const BPT = { rgba8uint: 4, rgba16float: 8, rgba16uint: 8, rgba32uint: 16, rgba32float: 16, rgba32sint: 16 }
 const texBytes = (t) => t.size[0] * t.size[1] * (t.size[2] ?? 1) * (BPT[t.format] ?? 0)
