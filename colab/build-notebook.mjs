@@ -7,6 +7,10 @@
 // driver stamps R.date and R.gpuInfo and the page records R.order; the fresh
 // record out/microbench-colab-t4-f32.json already carries them. Made explicit
 // here; default unchanged.
+//
+// ROADMAP 42: stable block ids for repro pastes (a1b2c3d4...).
+// Ids are fixed literals in the cells below so pastes stay addressable.
+// Made explicit here; default unchanged.
 import { readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
