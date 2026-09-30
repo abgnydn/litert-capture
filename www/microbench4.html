@@ -11,7 +11,10 @@
      zero point 8, per-output-channel f16 scale. Variants keep the arithmetic
      and change only the K split (and workgroup x so the workgroup stays
      within 256 invocations). Same measurement discipline as microbench.html:
-     warm-up variant, forward then reverse order, pooled samples. -->
+     warm-up variant, forward then reverse order, pooled samples. Every variant
+     is checked against a per-shape JS CPU reference for matrix 0 (nibble
+     dequant, zero point 8, maxAbsErr recorded); no ?f32 flag on this page,
+     f16 required. Always on; default unchanged. -->
 <script type="module">
   const log = (s) => { document.getElementById('log').append(s + '\n'); console.log('[mb] ' + s) }
   const params = new URLSearchParams(location.search)
