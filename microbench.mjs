@@ -34,6 +34,13 @@
 // (www/microbench.html, www/microbench4.html) vary wgX together with ks;
 // default `node microbench.mjs` runs all variants unchanged (optional --wg
 // passthrough not wired).
+//
+// ROADMAP 12: Record hot/cold timings separately. Cold rotates through 24
+// matrices (NMAT_COLD, 108 MiB, 576 samples = 2 x ROUNDS 12 x 24 pooled
+// forward+reverse); hot reuses 1 matrix (24 samples = 2 x 12 x 1). Both are
+// already recorded as cold/hot medians (median/p10/p90/n) per variant in
+// www/microbench.html; this split is explicit and the default runs both
+// (optional --mode=cold|hot passthrough not wired).
 
 import { createReadStream, statSync, writeFileSync } from 'node:fs'
 import { createServer } from 'node:http'

@@ -28,9 +28,13 @@
      Measurement order: a discarded warm-up variant first (the first timed slot
      reads slow), then every variant forward and again in reverse order; the
      cold and hot samples from both positions are pooled before the median.
-     "Cold" rotates through 24 matrices (108 MiB), far more than this GPU's caches
-     hold, which makes cache reuse across dispatches unlikely;
-     "hot" reuses one matrix. Every variant is checked against a CPU reference. -->
+     "Cold" rotates through 24 matrices (108 MiB, NMAT_COLD=24, 576 samples =
+     2 x ROUNDS 12 x 24 pooled forward+reverse), far more than this GPU's
+     caches hold, which makes cache reuse across dispatches unlikely;
+     "hot" reuses one matrix (24 samples = 2 x 12 x 1). Both are recorded
+     separately as cold/hot medians (median/p10/p90/n) per variant in
+     R.variants; the default runs both (optional ?mode=cold|hot not wired).
+     Every variant is checked against a CPU reference. -->
 <script type="module">
   const log = (s) => { document.getElementById('log').append(s + '\n'); console.log('[mb] ' + s) }
   const params = new URLSearchParams(location.search)
