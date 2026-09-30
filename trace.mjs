@@ -9,6 +9,7 @@ import { dirname, extname, join, normalize } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import puppeteer from 'puppeteer'
 import { provenance } from './provenance.mjs'
+import { manifestSha256 } from './shader-sha.mjs'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const WWW = join(HERE, 'www')
@@ -52,6 +53,8 @@ try {
   await page.waitForFunction('window.__traceDone === true', { timeout: TIMEOUT_MS, polling: 1000 })
   const R = await page.evaluate(() => window.__trace)
   R.provenance = await provenance({ browser, adapter: R.adapter, pkg: R.version })
+  // ROADMAP 08: tie this record to the capture manifest it joins against.
+  R.manifest_sha256 = manifestSha256(join(OUT, 'manifest.json'))
   mkdirSync(OUT, { recursive: true })
   writeFileSync(join(OUT, 'trace.json'), JSON.stringify(R))
   if (R.error) { console.log(`PAGE ERROR: ${R.error}`); exitCode = 2 }

@@ -18,6 +18,7 @@ import { dirname, extname, join, normalize } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import puppeteer from 'puppeteer'
 import { provenance } from './provenance.mjs'
+import { manifestSha256 } from './shader-sha.mjs'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const WWW = join(HERE, 'www')
@@ -132,7 +133,8 @@ let exitCode = 0
 // and a crash at run 29 should not lose the first 28.
 const save = (extra = {}) => {
   mkdirSync(OUT, { recursive: true })
-  writeFileSync(join(OUT, 'patch-ab.json'), JSON.stringify({ date: new Date().toISOString(), repeats: REPEATS, steadyFrom: STEADY_FROM, conditions: CONDITIONS, shuffleSeed: SEED, orders, failure: null, summary: [], ...extra, runs }, null, 2))
+  // ROADMAP 08: tie this record to the capture manifest it joins against.
+  writeFileSync(join(OUT, 'patch-ab.json'), JSON.stringify({ date: new Date().toISOString(), repeats: REPEATS, steadyFrom: STEADY_FROM, conditions: CONDITIONS, shuffleSeed: SEED, manifest_sha256: manifestSha256(join(OUT, 'manifest.json')), orders, failure: null, summary: [], ...extra, runs }, null, 2))
 }
 // A run that errored, raised a GPU validation error or did not patch every
 // kernel it was asked to makes every comparison in the sweep meaningless, so

@@ -22,3 +22,11 @@ export const shaderShaById = (shaderDir) => {
   }
   return byId
 }
+
+// ROADMAP 08: SHA-256 of out/manifest.json, stored alongside out/*.json
+// records so a record joins unambiguously to the capture it was measured
+// against. Null when the manifest is unreadable; records written before the
+// field existed read back as null rather than a made-up hash.
+export const manifestSha256 = (manifestPath) => {
+  try { return createHash('sha256').update(readFileSync(manifestPath)).digest('hex') } catch { return null }
+}

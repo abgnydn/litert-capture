@@ -15,6 +15,7 @@ import { dirname, extname, join, normalize } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import puppeteer from 'puppeteer'
 import { provenance } from './provenance.mjs'
+import { manifestSha256 } from './shader-sha.mjs'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const WWW = join(HERE, 'www')
@@ -51,6 +52,8 @@ try {
   // The page runs the captured shader on its own, with no @litert-lm/core and no
   // model bundle, so package is null and model is whatever bundle is on disk.
   R.provenance = await provenance({ browser, adapter: R.adapter, pkg: null })
+  // ROADMAP 08: tie this record to the capture manifest it joins against.
+  R.manifest_sha256 = manifestSha256(join(OUT, 'manifest.json'))
   R.date = new Date().toISOString()
   // every run is kept in its own dated file; nothing is overwritten
   const stamp = R.date.replace(/[:.]/g, '-')
