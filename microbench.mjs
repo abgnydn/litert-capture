@@ -13,6 +13,18 @@
 //   node microbench.mjs 'microbench4.html?kernel=0105'  full page path still works
 // PUPPETEER_EXECUTABLE_PATH picks the Chrome build, which is the whole point of
 // the 131-vs-146 pair: the record then carries that build in `provenance.browser`.
+//
+// ROADMAP 10: K-split search per kernel shape. Sweep ks with the matching wgX
+// so the workgroup stays 64 invocations (2-bit 0112/0113 in www/microbench.html,
+// 4-bit 0105/0099 in www/microbench4.html) or 256 invocations, dispatchX =
+// OUT_SLICES / wgX; each variant is timed forward+reverse pooled (576 cold +
+// 24 hot samples) against a CPU reference and written to a dated
+// out/microbench-<kernel>-<stamp>.json record. Committed best splits by cold
+// median: 0112 2x32 (36.8 us, out/microbench-0112-2026-09-24T07-36-19-655Z.json),
+// 0105 2x32 (28.1 us, out/microbench-0105-2026-09-22T05-39-22-096Z.json), 0099
+// 2x128 (24.2 us, out/microbench-0099-2026-09-22T05-39-24-280Z.json), 0113 1x256
+// (37.0 us, out/microbench-0113-2026-09-24T07-36-44-034Z.json). Documented from
+// the existing records; no bench run here, defaults unchanged.
 
 import { createReadStream, statSync, writeFileSync } from 'node:fs'
 import { createServer } from 'node:http'
