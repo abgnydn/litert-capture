@@ -1,6 +1,9 @@
 // Wraps www/kernel-0112.html (an HTML fragment that begins with <title>)
 // into a complete document for
 // the static Hugging Face Space. Run: node space/build.mjs
+//
+// ROADMAP 41: wrap results with space/build.mjs for Space deploy.
+// The fragment stays the source of truth; build only wraps it. Default unchanged.
 import { readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
