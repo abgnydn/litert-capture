@@ -99,6 +99,11 @@ export const provenance = async ({ browser, adapter, pkg }) => {
   if (Number.isFinite(major) && major < LATEST_TESTED) {
     console.warn(`provenance: browser ${version} is behind latest tested Chrome ${LATEST_TESTED}`)
   }
+  //
+  // ROADMAP 36: refuse records missing browser version, adapter, or harness
+  // commit. provenance() warns when the browser is behind LATEST_TESTED;
+  // refusing a record with a missing field is open work -- fields stay
+  // nullable here so existing writers keep writing. Default unchanged.
   return {
     browser: version,
   adapter: adapter ?? null,
