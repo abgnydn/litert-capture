@@ -156,6 +156,11 @@ try {
   console.log(`(kernel times are medians from out/kernel-profile.json, split-pass measurement, so bandwidth is a lower bound)`)
 
   // prefill
+  //
+  // ROADMAP 33: cover 37 prefill pipelines never used in decode. R.prefillPipelines
+  // counts the cold message vs decode pids (prefillOnly here, 37 in README);
+  // prefill shapes are listed, not profiled: covering them is open work.
+  // Documented from existing practice in out/trace.json; default unchanged.
   const prefillOnly = Object.keys(R.prefillPipelines).map(Number).filter((pid) => !usByPid.has(pid))
   const prefillDisp = Object.values(R.prefillPipelines).reduce((s, n) => s + n, 0)
   console.log(`\n== prefill (cold message): ${prefillDisp} dispatches over ${Object.keys(R.prefillPipelines).length} pipelines, ${prefillOnly.length} of them never used in decode`)
