@@ -12,7 +12,10 @@
      and change only the K split (and workgroup x so the workgroup stays
      within 256 invocations). Same measurement discipline as microbench.html:
      warm-up variant, forward then reverse order to cancel linear clock drift,
-     pooled samples before the median. Always on, no flag. Every variant
+     pooled samples before the median. Always on, no flag.
+     Per variant per position ROUNDS 12 x NMAT_COLD 24 = 288 cold and 12 x 1 =
+     12 hot, pooled to 576 cold + 24 hot timed; warm-up is 10x (288 cold +
+     12 hot) on the warmup variant, all discarded. Every variant
      is checked against a per-shape JS CPU reference for matrix 0 (nibble
      dequant, zero point 8, maxAbsErr recorded); no ?f32 flag on this page,
      f16 required. Always on; default unchanged. -->

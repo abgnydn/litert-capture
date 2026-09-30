@@ -56,6 +56,14 @@
 // Optional ?f32=1 runs an f32 transcription on adapters without shader-f16
 // (same structure, not Google's kernel verbatim); default is the f16 kernel
 // as shipped. Always on, no flag for the check itself; defaults unchanged.
+//
+// ROADMAP 15: 576 timed + warmup/discard per config. Per variant per position
+// cold is ROUNDS 12 x NMAT_COLD 24 = 288 and hot is ROUNDS 12 x 1 = 12;
+// forward + reverse pooled gives 576 cold + 24 hot timed samples
+// (www/microbench.html and www/microbench4.html, NMAT_COLD 24 / ROUNDS 12).
+// Warm-up is 10x (288 cold + 12 hot) on the warmup variant, all discarded;
+// the warmup variant itself is never timed. Documented from existing
+// practice; defaults unchanged.
 
 import { createReadStream, statSync, writeFileSync } from 'node:fs'
 import { createServer } from 'node:http'
