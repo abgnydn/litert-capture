@@ -126,7 +126,8 @@ and the dispatch counts would all have to be re-derived.
 Every experiment needs the model except 5 and 7. `capture.mjs`, `timing.mjs`,
 `trace.mjs` and `patch.mjs` overwrite their records under `out/` (`out/shaders/`
 included), so commit or copy `out/` before re-running them; `microbench.mjs`
-keeps every run in a dated file. Chrome flags used by the drivers:
+keeps every run in a dated file (`out/microbench-<kernel>-<stamp>.json`, stamp
+from the run date, never overwritten) with the full flags in the record. Chrome flags used by the drivers:
 `--enable-unsafe-webgpu`, `--enable-features=Vulkan` (no effect on Metal),
 `--enable-dawn-features=allow_unsafe_apis,disable_adapter_blocklist` and,
 for the timing harnesses, `--disable-dawn-features=timestamp_quantization`.

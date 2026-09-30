@@ -64,6 +64,14 @@
 // Warm-up is 10x (288 cold + 12 hot) on the warmup variant, all discarded;
 // the warmup variant itself is never timed. Documented from existing
 // practice; defaults unchanged.
+//
+// ROADMAP 18: dated out/microbench-*.json per run with full flags. R.date is
+// a fresh ISO timestamp per run; stamp replaces : and . with - so the name is
+// out/microbench-<kernel>-<stamp>.json (no kernel suffix when R.kernel is
+// missing). Every run writes a new file; nothing is overwritten or merged.
+// Each record carries the full flags (per-variant buf/ks/wgX/dispatchX/
+// invocations/threads plus top-level f32/errorTolerance/relFloor) alongside
+// provenance/manifest_sha256. Documented from existing behavior; defaults unchanged.
 
 import { createReadStream, statSync, writeFileSync } from 'node:fs'
 import { createServer } from 'node:http'
@@ -126,7 +134,8 @@ try {
   // ROADMAP 08: tie this record to the capture manifest it joins against.
   R.manifest_sha256 = manifestSha256(join(OUT, 'manifest.json'))
   R.date = new Date().toISOString()
-  // every run is kept in its own dated file; nothing is overwritten
+  // ROADMAP 18: dated file per run -- stamp is R.date with : and . as -,
+  // out/microbench-<kernel>-<stamp>.json; never overwrites; R keeps full flags.
   const stamp = R.date.replace(/[:.]/g, '-')
   const name = `microbench${R.kernel ? '-' + R.kernel : ''}-${stamp}.json`
   writeFileSync(join(OUT, name), JSON.stringify(R, null, 2))
