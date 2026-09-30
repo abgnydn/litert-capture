@@ -101,6 +101,8 @@ try {
     bytes: manifest.provenance.model?.bytes ?? BUNDLE_BYTES,
     sha256: manifest.provenance.model?.sha256 ?? BUNDLE_SHA256,
   }
+  // ROADMAP 05: model SHA at top level for joins; null when no bundle on disk.
+  manifest.model = manifest.provenance.model
   writeFileSync(join(OUT, 'manifest.json'), JSON.stringify(manifest, null, 2))
   if (cap.shaderSha256Unavailable) console.log('note: crypto.subtle was unavailable in the page; shader hashes were computed in the driver from the captured source')
 
