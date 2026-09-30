@@ -92,6 +92,10 @@ const harnessDirty = () => {
   const s = git(['status', '--porcelain', '--', '.', ':!out/*.json'])
   return s == null ? null : s.trim() !== ''
 }
+//
+// ROADMAP 39: mark harness_dirty when working tree differs from committed
+// harness. harnessDirty() already reports uncommitted changes outside the
+// JSON records under out/; made explicit here. Default unchanged.
 
 export const provenance = async ({ browser, adapter, pkg }) => {
   const version = await browser.version()
