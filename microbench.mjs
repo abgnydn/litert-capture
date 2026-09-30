@@ -1,11 +1,16 @@
 // Drives www/microbench.html (the 2-bit kernels 0112 and 0113 in isolation) and
+// www/microbench4.html (the 4-bit kernels 0105 and 0099 in isolation) and
 // saves a dated record under out/. Serves out/ as /out/ so the page can load the
 // captured shader text verbatim.
 //
-// Usage: node microbench.mjs [page]
+// Usage: node microbench.mjs [page|--kernel=ID|ID]
 //   node microbench.mjs                            kernel 0112 (the default page)
-//   node microbench.mjs 'microbench.html?kernel=0113'
-//   node microbench.mjs 'microbench4.html?kernel=0105'
+//   node microbench.mjs 0113                       same as 'microbench.html?kernel=0113'
+//   node microbench.mjs --kernel=0113              same as above
+//   node microbench.mjs 0105                       same as 'microbench4.html?kernel=0105'
+//   node microbench.mjs 0099                       same as 'microbench4.html?kernel=0099'
+//   node microbench.mjs 'microbench.html?kernel=0113'   full page path still works
+//   node microbench.mjs 'microbench4.html?kernel=0105'  full page path still works
 // PUPPETEER_EXECUTABLE_PATH picks the Chrome build, which is the whole point of
 // the 131-vs-146 pair: the record then carries that build in `provenance.browser`.
 
@@ -43,8 +48,23 @@ try {
   const page = await browser.newPage()
   page.on('console', (m) => { const t = m.text(); if (t.startsWith('[mb]')) console.log(t) })
   page.on('pageerror', (e) => console.log(`[pageerror] ${e.message}`))
-  // default page is the 2-bit kernel 0112; pass e.g. 'microbench.html?kernel=0113'
-  const PAGE = process.argv[2] ?? 'microbench.html'
+  // ROADMAP 09: per-kernel flags. 2-bit kernels live in microbench.html,
+  // 4-bit kernels in microbench4.html; bare IDs and --kernel= map to those
+  // existing ?kernel= paths so the default stays kernel 0112.
+  const KERNEL_PAGES = {
+    '0112': 'microbench.html',
+    '0113': 'microbench.html?kernel=0113',
+    '0105': 'microbench4.html?kernel=0105',
+    '0099': 'microbench4.html?kernel=0099',
+  }
+  const resolvePage = (arg) => {
+    if (arg === undefined) return 'microbench.html'
+    const m = /^(?:--kernel=|\?kernel=)?(0112|0113|0105|0099)$/.exec(arg.trim())
+    if (m) return KERNEL_PAGES[m[1]]
+    return arg
+  }
+  // default page is the 2-bit kernel 0112; pass e.g. 0113 or --kernel=0105
+  const PAGE = resolvePage(process.argv[2])
   await page.goto(`http://127.0.0.1:${PORT}/${PAGE}`, { waitUntil: 'load' })
   await page.waitForFunction('window.__mbDone === true', { timeout: 5 * 60 * 1000, polling: 500 })
   const R = await page.evaluate(() => window.__mb)
