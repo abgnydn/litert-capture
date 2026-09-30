@@ -20,6 +20,13 @@ const TIMEOUT_MS = 20 * 60 * 1000
 // LITERT_VERSION=... node capture.mjs. Default matches the committed records.
 const LITERT_VERSION = process.env.LITERT_VERSION ?? '0.17.1'
 
+// Model bundle pinned to Hugging Face revision b3ca0d2f (see README "Run").
+// Bytes + sha256 come from out/model.json via provenance when present; the
+// constants are that pinned bundle's values.
+const BUNDLE_REVISION = 'b3ca0d2f076785a8f4b2219ddbd2bdb99954eae1'
+const BUNDLE_BYTES = 2008432640
+const BUNDLE_SHA256 = '3a08e8d94e23b814ae5414469c370c503813949acb8ceaa17e4ebf8a35af35b5'
+
 const MIME = { '.html': 'text/html', '.js': 'text/javascript', '.wasm': 'application/wasm' }
 
 const server = createServer((req, res) => {
@@ -89,6 +96,11 @@ try {
   }))
   manifest.requested_version = LITERT_VERSION
   manifest.provenance = await provenance({ browser, adapter: cap.adapter, pkg: cap.version })
+  manifest.bundle = {
+    revision: BUNDLE_REVISION,
+    bytes: manifest.provenance.model?.bytes ?? BUNDLE_BYTES,
+    sha256: manifest.provenance.model?.sha256 ?? BUNDLE_SHA256,
+  }
   writeFileSync(join(OUT, 'manifest.json'), JSON.stringify(manifest, null, 2))
   if (cap.shaderSha256Unavailable) console.log('note: crypto.subtle was unavailable in the page; shader hashes were computed in the driver from the captured source')
 
