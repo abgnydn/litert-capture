@@ -28,6 +28,9 @@
      Measurement order: a discarded warm-up variant first (the first timed slot
      reads slow), then every variant forward and again in reverse order; the
      cold and hot samples from both positions are pooled before the median.
+     Per variant per position ROUNDS 12 x NMAT_COLD 24 = 288 cold and 12 x 1 =
+     12 hot; forward + reverse pooled = 576 cold + 24 hot timed samples.
+     Warm-up is 10x (288 cold + 12 hot) on the warmup variant, all discarded.
      "Cold" rotates through 24 matrices (108 MiB), far more than this GPU's caches
      hold, which makes cache reuse across dispatches unlikely;
      "hot" reuses one matrix. Every variant is checked against a CPU reference. -->
