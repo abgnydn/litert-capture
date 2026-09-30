@@ -159,7 +159,7 @@ per dispatch, still shows about 1.5 to 1.6x across clicks on Chrome 131, a
 console observation with no committed record. So the single-dispatch
 timestamp measurement does not carry from one Chrome version to the other on
 this adapter; why is not established. The T4 record was made with Chrome for
-Testing 153.
+Testing 153. Rule: always verify latest Chrome for Testing before measurement/post; record `provenance.browser`.
 
 **What produced a record.** Every record written by `capture.mjs`,
 `timing.mjs`, `trace.mjs`, `microbench.mjs` and `patch.mjs` carries a

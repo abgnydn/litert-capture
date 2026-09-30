@@ -16,13 +16,14 @@ Status: `main @ 0a5590a`, `ROADMAP.md` 50 points, `out/shaders/*.wgsl = 153`, is
 
 ## 2. Gates — all green or no push
 Run from root, logs to `/tmp/litert-loop-<nn>/gate-<name>.log`:
+- G0 latest Chrome check: compare puppeteer-pinned Chrome for Testing vs latest (`npx @puppeteer/browsers install chrome@stable --dry-run`, or `gh api` / registry check); if behind >1 major, note in record + re-run key microbench on latest before posting.
 - G1 builds byte-identical: `node space/build.mjs && node colab/build-notebook.mjs`, sha both, rerun both, `sha256sum -c`. Differ = red.
 - G2 lint: `pnpm exec biome check .` exit 0.
 - G3 syntax: `for f in *.mjs colab/*.mjs space/*.mjs scripts/*.mjs; do node --check "$f"; done` exit 0.
 - G4 analyze: `node analyze.mjs 400` exit 0.
 - G5 status set: `git status --porcelain` equals expected set only (touched + `STATE.md` + `ledger/<nn>-*.json` + declared `space/index.html` / `colab/kernel-0112-t4.ipynb`). Any `out/shaders/*.wgsl`, `docs/`, `node_modules/`, undeclared `out/*.json` = red.
 - G6 secrets: `gitleaks git --staged --redact --no-banner` exit 0.
-- Push branch only if G1-G6 green. Record exits + SHAs in ledger.
+- Push branch only if G0-G6 green. Record exits + SHAs in ledger.
 
 ## 3. Guards — hard deny
 - `out/shaders/*.wgsl` frozen. Touched = abort point.

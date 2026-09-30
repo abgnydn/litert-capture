@@ -17,6 +17,8 @@ import { fileURLToPath } from 'node:url'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const OUT = join(HERE, 'out')
+// LATEST_TESTED: highest Chrome for Testing major verified so far (154, maintainer repro on M3); update on each G0 latest-Chrome check.
+const LATEST_TESTED = 154
 const MODEL_FILE = 'www/gemma-4-E2B-it-web.litertlm'
 const MODEL = join(HERE, MODEL_FILE)
 const CACHE = join(OUT, 'model.json')
@@ -86,8 +88,14 @@ const harnessDirty = () => {
   return s == null ? null : s.trim() !== ''
 }
 
-export const provenance = async ({ browser, adapter, pkg }) => ({
-  browser: await browser.version(),
+export const provenance = async ({ browser, adapter, pkg }) => {
+  const version = await browser.version()
+  const major = Number(/Chrome\/(\d+)/.exec(version)?.[1])
+  if (Number.isFinite(major) && major < LATEST_TESTED) {
+    console.warn(`provenance: browser ${version} is behind latest tested Chrome ${LATEST_TESTED}`)
+  }
+  return {
+    browser: version,
   adapter: adapter ?? null,
   node: process.version,
   os: { platform: platform(), release: release(), arch: arch() },
@@ -98,4 +106,5 @@ export const provenance = async ({ browser, adapter, pkg }) => ({
   harness_commit: harnessCommit(),
   harness_dirty: harnessDirty(),
   timestamp: new Date().toISOString(),
-})
+  }
+}
