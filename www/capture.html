@@ -118,42 +118,56 @@
   const params = new URLSearchParams(location.search)
   const VERSION = params.get('v') ?? '0.17.1'
   const MAX_CHUNKS = Number(params.get('chunks') ?? 48)
-  try {
-    const adapter = await navigator.gpu?.requestAdapter()
-    window.__capture.adapter = adapter
-      ? { vendor: adapter.info?.vendor, architecture: adapter.info?.architecture, device: adapter.info?.device, description: adapter.info?.description, features: [...adapter.features] }
-      : null
-    log('adapter: ' + JSON.stringify(window.__capture.adapter))
-    log('crossOriginIsolated: ' + self.crossOriginIsolated)
+  // ROADMAP 07: headless hooks. ?autostart=0 arms instead of auto-running so a
+  // driver can attach listeners first, then call window.__captureStart().
+  // window.__captureStop() forces __captureDone for early stop. Default
+  // autostart keeps existing `node capture.mjs` behavior unchanged.
+  const AUTOSTART = params.get('autostart') !== '0'
+  let started = false
+  async function runCapture() {
+    if (started) return
+    started = true
+    try {
+      const adapter = await navigator.gpu?.requestAdapter()
+      window.__capture.adapter = adapter
+        ? { vendor: adapter.info?.vendor, architecture: adapter.info?.architecture, device: adapter.info?.device, description: adapter.info?.description, features: [...adapter.features] }
+        : null
+      log('adapter: ' + JSON.stringify(window.__capture.adapter))
+      log('crossOriginIsolated: ' + self.crossOriginIsolated)
 
-    const { Engine } = await import(`https://cdn.jsdelivr.net/npm/@litert-lm/core@${VERSION}/+esm`)
-    window.__capture.version = VERSION
-    __mark('import-done')
+      const { Engine } = await import(`https://cdn.jsdelivr.net/npm/@litert-lm/core@${VERSION}/+esm`)
+      window.__capture.version = VERSION
+      __mark('import-done')
 
-    const engine = await Engine.create({ model: '/gemma-4-E2B-it-web.litertlm' })
-    __mark('engine-created')
-    log(`engine created: ${window.__capture.shaders.length} shaders, ${window.__capture.pipelines.length} pipelines so far`)
+      const engine = await Engine.create({ model: '/gemma-4-E2B-it-web.litertlm' })
+      __mark('engine-created')
+      log(`engine created: ${window.__capture.shaders.length} shaders, ${window.__capture.pipelines.length} pipelines so far`)
 
-    const chat = await engine.createConversation()
-    __mark('conversation-created')
+      const chat = await engine.createConversation()
+      __mark('conversation-created')
 
-    let text = ''
-    let chunks = 0
-    for await (const chunk of chat.sendMessageStreaming('Count from one to thirty in English words, separated by commas.')) {
-      const piece = chunk?.content?.[0]?.text ?? ''
-      text += piece
-      __mark(`chunk-${chunks}`)
-      if (++chunks >= MAX_CHUNKS) break
+      let text = ''
+      let chunks = 0
+      for await (const chunk of chat.sendMessageStreaming('Count from one to thirty in English words, separated by commas.')) {
+        const piece = chunk?.content?.[0]?.text ?? ''
+        text += piece
+        __mark(`chunk-${chunks}`)
+        if (++chunks >= MAX_CHUNKS) break
+      }
+      __mark('generation-done')
+      window.__capture.output = text
+      log(`output (${chunks} chunks): ${text}`)
+      log(`total: ${window.__capture.shaders.length} shaders, ${window.__capture.pipelines.length} pipelines, ${window.__capture.counters.dispatch} dispatches`)
+    } catch (e) {
+      window.__capture.error = String(e?.stack ?? e)
+      log('ERROR: ' + window.__capture.error)
     }
-    __mark('generation-done')
-    window.__capture.output = text
-    log(`output (${chunks} chunks): ${text}`)
-    log(`total: ${window.__capture.shaders.length} shaders, ${window.__capture.pipelines.length} pipelines, ${window.__capture.counters.dispatch} dispatches`)
-  } catch (e) {
-    window.__capture.error = String(e?.stack ?? e)
-    log('ERROR: ' + window.__capture.error)
+    await window.__settleHashes()
+    if (window.__capture.shaderSha256Unavailable) log('WARNING: crypto.subtle unavailable, shader hashes not recorded in the page')
+    window.__captureDone = true
   }
-  await window.__settleHashes()
-  if (window.__capture.shaderSha256Unavailable) log('WARNING: crypto.subtle unavailable, shader hashes not recorded in the page')
-  window.__captureDone = true
+  window.__captureStart = () => runCapture()
+  window.__captureStop = () => { window.__captureDone = true }
+  if (AUTOSTART) runCapture()
+  else log('capture armed (?autostart=0): call window.__captureStart()')
 </script>
