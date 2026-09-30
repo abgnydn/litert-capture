@@ -10,6 +10,11 @@
 // and passes from prefill counts (R.prefillPipelines) plus the per-token
 // decode sequence. Documented from existing practice in out/trace.json;
 // default `node trace.mjs` unchanged.
+//
+// ROADMAP 34: render trace.json as timeline viewer beyond text summary. The
+// tape stays a text summary (console plus out/trace.json); a timeline viewer
+// is open work, no new viewer here. Documented from existing practice;
+// default unchanged.
 
 import { createReadStream, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs'
 import { createServer } from 'node:http'
