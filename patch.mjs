@@ -53,6 +53,12 @@
 // 0112, 0112+0105, all x2), so the reshuffled multi-rep 0112-alone run is
 // untried open work, not run here. Defaults unchanged.
 //
+// ROADMAP 26: analyze overlap between patched kernels to rule out double-counting.
+// 0112 marginal 0.240ms in-model (no-0112 14.355 - all-four 14.115 ms/token
+// in out/patch-ab.json) vs 0.690/0.885ms standalone (none-0112 diffs x2 in
+// out/patch.json); overlapping vs sweep difference unestablished, made
+// explicit here. Defaults unchanged.
+//
 // Usage: node patch.mjs [repeats]   (default 5, i.e. 30 runs)
 // Writes out/patch-ab.json. out/patch.json, the record of the earlier
 // four-set, two-repetition run, is not touched.
