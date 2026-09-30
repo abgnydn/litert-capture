@@ -184,6 +184,11 @@ console.log(`   read: about ${f(intercept, 0)} µs fixed cost per matvec kernel 
 // layers: segment the tape at FFN-down dispatches (input 3072 or 1536/1024 slices back to 384)
 // FFN down-projection: 6144 -> 1536 (0099) or 12288 -> 1536 (0113). The
 // attention output projections (2048 or 4096 -> 1536) are not cuts.
+//
+// ROADMAP 32: map dispatches to 35 layers via layer map. One FFN-down cut
+// per layer (uni[0] 384, uni[1] 1536/3072, bytes > 0), 35 cuts here;
+// prologue folds into layer 1, tail after last cut is epilogue.
+// Documented from existing practice; default unchanged.
 const isFfnDown = (r) => r.uni && r.uni[0] === 384 && (r.uni[1] === 1536 || r.uni[1] === 3072) && r.bytes > 0
 const cuts = rows.filter(isFfnDown).map((r) => r.i)
 console.log(`\n== layers: ${cuts.length} FFN-down dispatches per token -> ${cuts.length} layers`)
