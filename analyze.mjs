@@ -39,6 +39,12 @@ if (noProv.length) console.log(`provenance: not recorded in ${noProv.join(', ')}
 
 const BPT = { rgba8uint: 4, rgba16float: 8, rgba16uint: 8, rgba32uint: 16, rgba32float: 16, rgba32sint: 16 }
 const texBytes = (t) => t.size[0] * t.size[1] * (t.size[2] ?? 1) * (BPT[t.format] ?? 0)
+//
+// ROADMAP 31: use MiB vs MB consistently and report effective GB/s for each
+// kernel. MB() divides by 1048576 so its "MB" values are MiB (2^20 bytes);
+// GB/s divides by 1e9 (decimal); effective means weight bytes read divided
+// by kernel time, not DRAM traffic (a cache-served byte counts the same).
+// Documented from existing practice; default unchanged.
 const MB = (b) => (b / 1048576).toFixed(1)
 const f = (x, d = 1) => (Number.isFinite(x) ? x.toFixed(d) : 'n/a')
 const median = (a) => { const s = [...a].sort((x, y) => x - y); return s.length ? s[Math.floor(s.length / 2)] : NaN }
