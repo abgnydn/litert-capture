@@ -27,6 +27,13 @@ const BUNDLE_REVISION = 'b3ca0d2f076785a8f4b2219ddbd2bdb99954eae1'
 const BUNDLE_BYTES = 2008432640
 const BUNDLE_SHA256 = '3a08e8d94e23b814ae5414469c370c503813949acb8ceaa17e4ebf8a35af35b5'
 
+// ROADMAP 06: CDN vs tarball source. The harness imports the jsdelivr +esm
+// build at run time (see www/capture.html); the tarball identity is the npm
+// registry metadata for 0.17.1 (see README "Publishing"), not the +esm bundle.
+const LITERT_TARBALL_SHASUM = '3b4e6cdd11a1908a3573809de6be044d390a190a'
+const LITERT_TARBALL_INTEGRITY =
+  'sha512-eUxw6ggqZrvNA8Uk/w0TwglRWryn/clrjqHYyfxQWRl0uz5Txmte+qss0u3Dt+X6W/io4G8ADk97LmjMxVRHUg=='
+
 const MIME = { '.html': 'text/html', '.js': 'text/javascript', '.wasm': 'application/wasm' }
 
 const server = createServer((req, res) => {
@@ -95,6 +102,13 @@ try {
     sha256: shaderSha256 ?? createHash('sha256').update(code).digest('hex'),
   }))
   manifest.requested_version = LITERT_VERSION
+  // ROADMAP 06: CDN vs tarball source in manifest (URL plus tarball sha).
+  manifest.source = {
+    cdn: `https://cdn.jsdelivr.net/npm/@litert-lm/core@${LITERT_VERSION}/+esm`,
+    tarball: `https://registry.npmjs.org/@litert-lm/core/-/core-${LITERT_VERSION}.tgz`,
+    tarball_shasum: LITERT_TARBALL_SHASUM,
+    tarball_integrity: LITERT_TARBALL_INTEGRITY,
+  }
   manifest.provenance = await provenance({ browser, adapter: cap.adapter, pkg: cap.version })
   manifest.bundle = {
     revision: BUNDLE_REVISION,
