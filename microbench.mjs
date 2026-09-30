@@ -47,6 +47,15 @@
 // and pool both positions' cold+hot samples before the median; R.order records
 // the per-position medians so the two directions can be compared. Always on,
 // no flag; default unchanged.
+//
+// ROADMAP 14: CPU reference per kernel shape. Each page checks every variant
+// against a JS CPU reference for matrix 0 and records maxAbsErr alongside the
+// GPU medians (2-bit 0112/0113 in www/microbench.html: 2-bit dequant, zero
+// point 2, TOL 0.05 / REL_FLOOR 0.1, mismatches + maxRelErr; 4-bit 0105/0099
+// in www/microbench4.html: nibble dequant, zero point 8, maxAbsErr only).
+// Optional ?f32=1 runs an f32 transcription on adapters without shader-f16
+// (same structure, not Google's kernel verbatim); default is the f16 kernel
+// as shipped. Always on, no flag for the check itself; defaults unchanged.
 
 import { createReadStream, statSync, writeFileSync } from 'node:fs'
 import { createServer } from 'node:http'

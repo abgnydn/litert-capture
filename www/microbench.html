@@ -36,7 +36,11 @@
      "hot" reuses one matrix (24 samples = 2 x 12 x 1). Both are recorded
      separately as cold/hot medians (median/p10/p90/n) per variant in
      R.variants; the default runs both (optional ?mode=cold|hot not wired).
-     Every variant is checked against a CPU reference. -->
+     Every variant is checked against a per-shape JS CPU
+     reference for matrix 0 (2-bit dequant, zero point 2; TOL 0.05 / REL_FLOOR 0.1,
+     maxAbsErr + maxRelErr + mismatches recorded); ?f32=1 runs an f32
+     transcription for adapters without shader-f16, default is the f16 kernel
+     as shipped. Always on, no flag for the check; default unchanged. -->
 <script type="module">
   const log = (s) => { document.getElementById('log').append(s + '\n'); console.log('[mb] ' + s) }
   const params = new URLSearchParams(location.search)
