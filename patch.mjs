@@ -24,6 +24,13 @@
 // P.unscaledDispatches in the record). Documented from existing practice;
 // defaults unchanged.
 //
+// ROADMAP 21: evaluate LOO sets to isolate per-kernel contribution. Each LOO
+// condition keeps three of the four kernels (no-0099 keeps 105,112,113;
+// no-0105 keeps 99,112,113; no-0112 keeps 99,105,113; no-0113 keeps 99,105,112)
+// via CONDITIONS, with out/patch-ab.json marginal speedups vs baseline at
+// 1.13/1.15/1.23/1.22 (all-four 1.25). Documented from existing practice;
+// defaults unchanged.
+//
 // Usage: node patch.mjs [repeats]   (default 5, i.e. 30 runs)
 // Writes out/patch-ab.json. out/patch.json, the record of the earlier
 // four-set, two-repetition run, is not touched.
