@@ -8,7 +8,7 @@ import { dirname, extname, join, normalize } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import puppeteer from 'puppeteer'
 import { provenance } from './provenance.mjs'
-import { shaderShaById } from './shader-sha.mjs'
+import { manifestSha256, shaderShaById } from './shader-sha.mjs'
 
 const MODE = process.argv[2] ?? 'bare'
 const HERE = dirname(fileURLToPath(import.meta.url))
@@ -59,6 +59,8 @@ try {
   await page.waitForFunction('window.__timingDone === true', { timeout: TIMEOUT_MS, polling: 1000 })
   const T = await page.evaluate(() => window.__timing)
   T.provenance = await provenance({ browser, adapter: T.adapter, pkg: T.version })
+  // ROADMAP 08: tie this record to the capture manifest it joins against.
+  T.manifest_sha256 = manifestSha256(join(OUT, 'manifest.json'))
 
   mkdirSync(OUT, { recursive: true })
   writeFileSync(join(OUT, `timing-${MODE}.json`), JSON.stringify(T, null, 2))
@@ -156,7 +158,7 @@ try {
         return { pid, n, ms: median(totals), us: median(each), usMax: Math.max(...each), wg, shaderId, bytes: T.pipelines[pid]?.shaderBytes }
       }).sort((a, b) => b.ms - a.ms)
       const total = rows.reduce((s, r) => s + r.ms, 0)
-      writeFileSync(join(OUT, 'kernel-profile.json'), JSON.stringify({ tokens: tokens.length, totalMs: total, rows, provenance: T.provenance }, null, 2))
+      writeFileSync(join(OUT, 'kernel-profile.json'), JSON.stringify({ tokens: tokens.length, totalMs: total, rows, provenance: T.provenance, manifest_sha256: T.manifest_sha256 }, null, 2))
 
       console.log(`\n  ms/token  share   cum   count  median us  shader file            bytes  first dispatch size`)
       let cum = 0
