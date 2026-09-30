@@ -15,6 +15,7 @@ const WWW = join(HERE, 'www')
 const OUT = join(HERE, 'out')
 const PORT = 8917
 const TIMEOUT_MS = 20 * 60 * 1000
+const VERSION = process.env.LITERT_VERSION ?? '0.17.1'
 
 const MIME = { '.html': 'text/html', '.js': 'text/javascript', '.wasm': 'application/wasm' }
 const server = createServer((req, res) => {
@@ -111,9 +112,10 @@ try {
   console.log(`epilogue shaders: ${seq.slice(end + 1).map((s) => String(s).padStart(4, '0')).join(' ')}`)
 
   // matvec kernels: shapes and bytes.
-  // These kernel indices were read off @litert-lm/core 0.17.1 with the Gemma 4
+  // These kernel indices were read off @litert-lm/core VERSION with the Gemma 4
   // E2B web bundle; they are positions in that build's shader creation order and
   // will differ for any other package version or model bundle.
+  if (R.version !== VERSION) console.log(`warning: kernel indices read off @litert-lm/core ${VERSION}, trace record is ${R.version}`)
   const MATVEC = [99, 105, 112, 113]
   console.log(`\n== weight matrices read per token`)
   let totalBytes = 0, totalUs = 0
