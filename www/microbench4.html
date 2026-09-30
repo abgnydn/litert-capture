@@ -10,8 +10,9 @@
      holds four nibbles, nibble c = output channel c, for input channel k;
      zero point 8, per-output-channel f16 scale. Variants keep the arithmetic
      and change only the K split (and workgroup x so the workgroup stays
-     within 256 invocations). Same measurement discipline as microbench.html:
-     warm-up variant, forward then reverse order, pooled samples. -->
+      within 256 invocations). Same measurement discipline as microbench.html:
+      warm-up variant, forward then reverse order to cancel linear clock drift,
+      pooled samples before the median. Always on, no flag. -->
 <script type="module">
   const log = (s) => { document.getElementById('log').append(s + '\n'); console.log('[mb] ' + s) }
   const params = new URLSearchParams(location.search)

@@ -41,6 +41,12 @@
 // already recorded as cold/hot medians (median/p10/p90/n) per variant in
 // www/microbench.html; this split is explicit and the default runs both
 // (optional --mode=cold|hot passthrough not wired).
+//
+// ROADMAP 13: forward+reverse order cancels linear clock drift. The pages time
+// each variant forward then again in reverse ([...timed, ...[...timed].reverse()])
+// and pool both positions' cold+hot samples before the median; R.order records
+// the per-position medians so the two directions can be compared. Always on,
+// no flag; default unchanged.
 
 import { createReadStream, statSync, writeFileSync } from 'node:fs'
 import { createServer } from 'node:http'
