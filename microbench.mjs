@@ -25,6 +25,15 @@
 // 2x128 (24.2 us, out/microbench-0099-2026-09-22T05-39-24-280Z.json), 0113 1x256
 // (37.0 us, out/microbench-0113-2026-09-24T07-36-44-034Z.json). Documented from
 // the existing records; no bench run here, defaults unchanged.
+//
+// ROADMAP 11: Sweep workgroup sizes (X) per kernel at capture time. The
+// 0112 wgX 16 vs 64 control already exists as wg256-same (same 12,288
+// threads, 64 vs 256 invocations); generalize per kernel at fixed ks/threads
+// (dispatchX = OUT_SLICES / wgX): 0112 16 vs 64 (ks 4), 0113 2 vs 8 (ks 32),
+// 0105 16 vs 64 (ks 4), 0099 4 vs 16 (ks 16). Current VARIANTS tables
+// (www/microbench.html, www/microbench4.html) vary wgX together with ks;
+// default `node microbench.mjs` runs all variants unchanged (optional --wg
+// passthrough not wired).
 
 import { createReadStream, statSync, writeFileSync } from 'node:fs'
 import { createServer } from 'node:http'
