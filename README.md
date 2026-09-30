@@ -100,6 +100,7 @@ node timing.mjs gpu          #    GPU time per pass                            -
 node timing.mjs kernel       # 3: GPU time per kernel                          -> out/timing-kernel.json, out/kernel-profile.json
 node trace.mjs               # 4: shapes, bytes, memory, dispatch tape         -> out/trace.json
 node analyze.mjs 400         #    joins 3 and 4 offline (400 = rated GB/s of this machine)
+node diff-dispatch.mjs out/trace-old.json out/trace-new.json  # diff two dispatch tapes: added/removed/renamed kernels by pipeline index + shape + bytes
 node microbench.mjs          # 5: kernel 0112 in isolation, controls included  -> out/microbench-0112-<date>.json
 node microbench.mjs 'microbench.html?kernel=0113'    # the other 2-bit kernel; PUPPETEER_EXECUTABLE_PATH picks the Chrome build
 node microbench.mjs 'microbench4.html?kernel=0105'   # the 4-bit kernels (also ?kernel=0099)
