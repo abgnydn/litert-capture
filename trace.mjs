@@ -2,6 +2,14 @@
 // dispatch sequence (layer structure), matrix shapes of the matvec kernels,
 // weight bytes read per token, and achieved bandwidth (joined with
 // out/kernel-profile.json).
+//
+// ROADMAP 28: dump full dispatch tape with trace.mjs to trace.json. The tape
+// is R.dispatches ({chunk, pid, wg, res} per dispatch, joined to pipelines
+// for shader ids) with shapes from texture size/format plus uniform/workgroup
+// values, bytes from texture/buffer sizes summed to weight bytes per token,
+// and passes from prefill counts (R.prefillPipelines) plus the per-token
+// decode sequence. Documented from existing practice in out/trace.json;
+// default `node trace.mjs` unchanged.
 
 import { createReadStream, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs'
 import { createServer } from 'node:http'
