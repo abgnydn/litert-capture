@@ -24,6 +24,11 @@
 // P.unscaledDispatches in the record). Documented from existing practice;
 // defaults unchanged.
 //
+// ROADMAP 23: note output near-tie where patched vs baseline outputs match
+// within tolerance. Cold texts are identical (60 tokens); warm texts differ
+// by one token ("twenty," at index 20, 58 vs 60 tokens) in out/patch-ab.json
+// runs. Documented from existing practice; defaults unchanged.
+//
 // Usage: node patch.mjs [repeats]   (default 5, i.e. 30 runs)
 // Writes out/patch-ab.json. out/patch.json, the record of the earlier
 // four-set, two-repetition run, is not touched.
