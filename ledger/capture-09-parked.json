@@ -1,0 +1,25 @@
+{
+  "item": 9,
+  "slug": "webllm-tvm",
+  "status": "parked",
+  "reason": "model-missing",
+  "detail": "WebLLM TVM capture needs a multi-GB MLC bundle inside this repo (engines/webllm/model/: mlc-chat-config.json + params_shard_*.bin). No MLC bundle is present anywhere under litert-capture (www/ holds only the 1.9 GB LiteRT gemma bundle; engines/webllm/model/ does not exist), and the loop forbids silent multi-GB downloads. Hook + driver + per-kernel/K-search scaffold are committed under engines/webllm/; no synthetic webllm-tvm.json written.",
+  "evidence": {
+    "model_dir": "engines/webllm/model/",
+    "model_present": false,
+    "repo_models": ["www/gemma-4-E2B-it-web.litertlm (LiteRT pack, not MLC-loadable)"],
+    "hook_reference": "~/dev/zero-tvm/src/_archived/capture.ts:124 patchForCapture (device-level, proved interception point)",
+    "tvm_shader_reference": "~/dev/zero-tvm/src/tvm-shaders/ (85 WGSL files: fused_dequantize*_NT_matmul family, batch_prefill/batch_decode paged-KV, rms_norm/fused_add_norm, rope, chunked softmax)",
+    "webllm_version_adapted": "@mlc-ai/web-llm 0.2.85 (npm latest; zero-tvm pins 0.2.84; hook is prototype-level so version-agnostic, model_lib wasm segment + provenance carry the version)",
+    "local_mirror_elsewhere": "~/dev/zero-tvm/.weights-local/Qwen3.5-4B-q4f16_1-MLC (2.2 GB, not copied silently)",
+    "chrome_builds_present": ["131.0.6778.204", "146.0.7680.153", "154.0.8037.92"]
+  },
+  "attempt": "On branch capture/09-webllm-tvm from main @21b006c: inspected zero-tvm patchForCapture + tvm-shaders listing; wrote prototype-level hook.js (covers TVM-internal device + createComputePipelineAsync), capture.html (CreateMLCEngine against /model/ mirror), capture.mjs (model gate first, exit 3 with exact commands when absent), analyze.mjs (per-kernel-family join + K-search worklist, exits 1 without record). Verified engines/webllm/model/ absent; ran no download, wrote no measurements.",
+  "next_steps": [
+    "hf download mlc-ai/Phi-3-mini-4k-instruct-q4f16_1-MLC --local-dir engines/webllm/model",
+    "node engines/webllm/capture.mjs",
+    "node engines/webllm/analyze.mjs 400",
+    "Smaller alternative: hf download mlc-ai/Llama-3.2-1B-Instruct-q4f16_1-MLC --local-dir engines/webllm/model"
+  ],
+  "timestamp": "2026-10-02T06:57:09Z"
+}
