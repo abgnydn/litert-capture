@@ -118,6 +118,10 @@
   const params = new URLSearchParams(location.search)
   const VERSION = params.get('v') ?? '0.17.1'
   const MAX_CHUNKS = Number(params.get('chunks') ?? 48)
+  // CAPTURE-ROADMAP 01 (prefill): ?prompt= overrides the short default prompt
+  // with a long one so the prefill phase dominates the captured dispatches.
+  // Default (no ?prompt=) keeps existing `node capture.mjs` behavior unchanged.
+  const PROMPT = params.get('prompt') ?? 'Count from one to thirty in English words, separated by commas.'
   // ROADMAP 07: headless hooks. ?autostart=0 arms instead of auto-running so a
   // driver can attach listeners first, then call window.__captureStart().
   // window.__captureStop() forces __captureDone for early stop. Default
@@ -148,7 +152,8 @@
 
       let text = ''
       let chunks = 0
-      for await (const chunk of chat.sendMessageStreaming('Count from one to thirty in English words, separated by commas.')) {
+      window.__capture.prompt = PROMPT
+      for await (const chunk of chat.sendMessageStreaming(PROMPT)) {
         const piece = chunk?.content?.[0]?.text ?? ''
         text += piece
         __mark(`chunk-${chunks}`)

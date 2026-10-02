@@ -13,6 +13,7 @@ import { dirname, extname, join, normalize } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import puppeteer from 'puppeteer'
 import { provenance } from './provenance.mjs'
+import { manifestSha256 } from './shader-sha.mjs'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const WWW = join(HERE, 'www')
@@ -75,7 +76,18 @@ try {
   page.on('pageerror', (e) => console.log(`[pageerror] ${e.message}`))
   page.on('requestfailed', (r) => console.log(`[requestfailed] ${r.url()} ${r.failure()?.errorText}`))
 
-  const rawQuery = process.argv[2] ?? ''
+  // CAPTURE-ROADMAP 01 (prefill): --out <name> writes the manifest record
+  // to out/<name> instead of out/manifest.json, so a long-prompt capture can
+  // land in out/prefill.json without touching the committed manifest.
+  // Default `node capture.mjs` (no --out) unchanged.
+  const args = process.argv.slice(2)
+  let outName = 'manifest.json'
+  const qParts = []
+  for (let i = 0; i < args.length; i++) {
+    if (args[i] === '--out' && args[i + 1]) { outName = args[i + 1]; i++ }
+    else qParts.push(args[i])
+  }
+  const rawQuery = qParts[0] ?? ''
   const query = /[?&]v=/.test(rawQuery)
     ? rawQuery
     : rawQuery === ''
@@ -121,7 +133,10 @@ try {
   }
   // ROADMAP 05: model SHA at top level for joins; null when no bundle on disk.
   manifest.model = manifest.provenance.model
-  writeFileSync(join(OUT, 'manifest.json'), JSON.stringify(manifest, null, 2))
+  // CAPTURE-ROADMAP 01: a redirected record ties to the capture manifest it
+  // joins against (same convention as trace.mjs ROADMAP 08).
+  if (outName !== 'manifest.json') manifest.manifest_sha256 = manifestSha256(join(OUT, 'manifest.json'))
+  writeFileSync(join(OUT, outName), JSON.stringify(manifest, null, 2))
   if (cap.shaderSha256Unavailable) console.log('note: crypto.subtle was unavailable in the page; shader hashes were computed in the driver from the captured source')
 
   console.log(`\nshaders: ${shaders.length}  pipelines: ${cap.pipelines.length}`)
