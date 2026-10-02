@@ -1,0 +1,570 @@
+{
+  "date": "2026-10-02T06:47:51.051Z",
+  "method": "offline join of committed out/trace.json (weight bytes per dispatch from texture/buffer sizes) with out/timing-kernel.json (median GPU µs per dispatch position over tokens with identical pipeline sequence) and out/kernel-profile.json (per-pid cross-check); no GPU run, no synthetic numbers; same positional join, weight-binding scan, MATVEC set and split-pass correction as analyze.mjs so figures match its summary; rendered per kernel in www/roofline.html",
+  "inputs": {
+    "trace.json": {
+      "version": "0.17.1",
+      "dispatches": 3912,
+      "pipelines": 153,
+      "adapter": {
+        "vendor": "apple",
+        "architecture": "metal-3"
+      }
+    },
+    "timing-kernel.json": {
+      "version": "0.17.1",
+      "passes": 9128,
+      "mode": "kernel"
+    },
+    "kernel-profile.json": {
+      "tokens": 7,
+      "rows": 65,
+      "totalMs": 17.399365
+    },
+    "manifest.json": {
+      "version": "0.17.1",
+      "pipelines": 153,
+      "shaders": 153
+    },
+    "timing-gpu.json": {
+      "version": "0.17.1",
+      "passes": 1633
+    },
+    "timing-bare.json": {
+      "version": "0.17.1",
+      "marks": 160
+    },
+    "provenance_note": "trace.json, timing-kernel.json, manifest.json, timing-gpu.json, timing-bare.json and kernel-profile.json on main predate the provenance block and carry no provenance; derivation provenance below describes this offline regrouping, not a GPU run"
+  },
+  "manifest_sha256": "abffb5bfeb871d3a5af1ce6bb8990176d8627877a9441582a7ba7cd6d5f3fc2e",
+  "provenance": {
+    "browser": null,
+    "adapter": {
+      "vendor": "apple",
+      "architecture": "metal-3"
+    },
+    "node": "v24.18.0",
+    "os": {
+      "platform": "darwin",
+      "release": "25.5.0",
+      "arch": "arm64"
+    },
+    "package": "0.17.1",
+    "model": null,
+    "power": {
+      "source": "AC",
+      "percent": 100,
+      "low_power_mode": false
+    },
+    "thermal": [
+      "Note: No thermal warning level has been recorded",
+      "Note: No performance warning level has been recorded",
+      "Note: No CPU power status has been recorded"
+    ],
+    "harness_commit": "eaf88e2b405082f1da649d8e2c71c95ed3f7276a",
+    "harness_dirty": true,
+    "timestamp": "2026-10-02T06:47:51.067Z",
+    "note": "offline derivation: browser null because no page was driven; adapter/package copied from trace.json inputs; power/thermal are the derivation machine state, not a measurement condition"
+  },
+  "peak_gbs": 400,
+  "split_pass_overhead_us": 1.524,
+  "split_pass_note": "unsplit GPU sum 16.03 ms, split sum 18.02 ms -> 1.52 µs per pass",
+  "summary": {
+    "weight_bytes_per_token": 776601600,
+    "weight_mib_per_token": 740.6,
+    "weight_dispatches_per_token": 277,
+    "weight_kernels": [
+      98,
+      99,
+      100,
+      105,
+      106,
+      107,
+      112,
+      113,
+      134
+    ],
+    "weight_ms_raw": 9.99,
+    "weight_ms_corrected": 9.57,
+    "gbs_raw": 78,
+    "gbs_corrected": 81,
+    "pct_of_peak_corrected": 20,
+    "whole_token_ms": 18.8,
+    "whole_token_effective_gbs": 41,
+    "traced_tokens": 3,
+    "timed_tokens_aligned": 7,
+    "dispatches_per_token": 1304
+  },
+  "fit": {
+    "n": 276,
+    "intercept_us": 6.18,
+    "intercept_us_corrected": 4.66,
+    "streaming_gbs": 89,
+    "r2": 0.981
+  },
+  "rows": [
+    {
+      "kernel": 112,
+      "count": 40,
+      "bytes_per_dispatch": 4718592,
+      "bytes_per_dispatch_mib": 4.5,
+      "shape": "3072x384 rgba8uint",
+      "uniform_i0_3": [
+        3072,
+        384,
+        0,
+        0
+      ],
+      "median_us": 58.874,
+      "median_us_corrected": 57.35,
+      "gbs_raw": 80.1,
+      "gbs_corrected": 82.3,
+      "bytes_per_us_raw": 80147.3,
+      "bytes_per_us_corrected": 82276.9,
+      "total_ms_raw": 2.365
+    },
+    {
+      "kernel": 105,
+      "count": 30,
+      "bytes_per_dispatch": 4718592,
+      "bytes_per_dispatch_mib": 4.5,
+      "shape": "1536x384 rgba16uint",
+      "uniform_i0_3": [
+        1536,
+        384,
+        0,
+        0
+      ],
+      "median_us": 57.958,
+      "median_us_corrected": 56.434,
+      "gbs_raw": 81.4,
+      "gbs_corrected": 83.6,
+      "bytes_per_us_raw": 81414,
+      "bytes_per_us_corrected": 83612.3,
+      "total_ms_raw": 1.767
+    },
+    {
+      "kernel": 113,
+      "count": 20,
+      "bytes_per_dispatch": 4718592,
+      "bytes_per_dispatch_mib": 4.5,
+      "shape": "384x3072 rgba8uint",
+      "uniform_i0_3": [
+        384,
+        3072,
+        0,
+        0
+      ],
+      "median_us": 60.457,
+      "median_us_corrected": 58.933,
+      "gbs_raw": 78,
+      "gbs_corrected": 80.1,
+      "bytes_per_us_raw": 78048.7,
+      "bytes_per_us_corrected": 80066.8,
+      "total_ms_raw": 1.22
+    },
+    {
+      "kernel": 99,
+      "count": 15,
+      "bytes_per_dispatch": 4718592,
+      "bytes_per_dispatch_mib": 4.5,
+      "shape": "384x1536 rgba16uint",
+      "uniform_i0_3": [
+        384,
+        1536,
+        0,
+        0
+      ],
+      "median_us": 59.291,
+      "median_us_corrected": 57.767,
+      "gbs_raw": 79.6,
+      "gbs_corrected": 81.7,
+      "bytes_per_us_raw": 79583.6,
+      "bytes_per_us_corrected": 81683,
+      "total_ms_raw": 0.896
+    },
+    {
+      "kernel": 99,
+      "count": 28,
+      "bytes_per_dispatch": 1572864,
+      "bytes_per_dispatch_mib": 1.5,
+      "shape": "384x512 rgba16uint",
+      "uniform_i0_3": [
+        384,
+        512,
+        0,
+        0
+      ],
+      "median_us": 23.75,
+      "median_us_corrected": 22.226,
+      "gbs_raw": 66.2,
+      "gbs_corrected": 70.8,
+      "bytes_per_us_raw": 66225.9,
+      "bytes_per_us_corrected": 70766.3,
+      "total_ms_raw": 0.674
+    },
+    {
+      "kernel": 134,
+      "count": 1,
+      "bytes_per_dispatch": 100663296,
+      "bytes_per_dispatch_mib": 96,
+      "shape": "buffer 96.0 MB",
+      "uniform_i0_3": [
+        1,
+        65536,
+        1,
+        384
+      ],
+      "median_us": 645.406,
+      "median_us_corrected": 643.882,
+      "gbs_raw": 156,
+      "gbs_corrected": 156.3,
+      "bytes_per_us_raw": 155968.9,
+      "bytes_per_us_corrected": 156338.1,
+      "total_ms_raw": 0.645
+    },
+    {
+      "kernel": 99,
+      "count": 28,
+      "bytes_per_dispatch": 1572864,
+      "bytes_per_dispatch_mib": 1.5,
+      "shape": "512x384 rgba16uint",
+      "uniform_i0_3": [
+        512,
+        384,
+        0,
+        0
+      ],
+      "median_us": 20.415,
+      "median_us_corrected": 18.891,
+      "gbs_raw": 77,
+      "gbs_corrected": 83.3,
+      "bytes_per_us_raw": 77044.5,
+      "bytes_per_us_corrected": 83259.3,
+      "total_ms_raw": 0.579
+    },
+    {
+      "kernel": 105,
+      "count": 7,
+      "bytes_per_dispatch": 3145728,
+      "bytes_per_dispatch_mib": 3,
+      "shape": "1024x384 rgba16uint",
+      "uniform_i0_3": [
+        1024,
+        384,
+        0,
+        0
+      ],
+      "median_us": 54.957,
+      "median_us_corrected": 53.433,
+      "gbs_raw": 57.2,
+      "gbs_corrected": 58.9,
+      "bytes_per_us_raw": 57239.8,
+      "bytes_per_us_corrected": 58872.2,
+      "total_ms_raw": 0.384
+    },
+    {
+      "kernel": 106,
+      "count": 35,
+      "bytes_per_dispatch": 393216,
+      "bytes_per_dispatch_mib": 0.375,
+      "shape": "64x384 rgba32uint",
+      "uniform_i0_3": [
+        64,
+        384,
+        0,
+        0
+      ],
+      "median_us": 10.374,
+      "median_us_corrected": 8.85,
+      "gbs_raw": 37.9,
+      "gbs_corrected": 44.4,
+      "bytes_per_us_raw": 37904,
+      "bytes_per_us_corrected": 44430.4,
+      "total_ms_raw": 0.363
+    },
+    {
+      "kernel": 107,
+      "count": 35,
+      "bytes_per_dispatch": 393216,
+      "bytes_per_dispatch_mib": 0.375,
+      "shape": "384x64 rgba32uint",
+      "uniform_i0_3": [
+        384,
+        64,
+        0,
+        0
+      ],
+      "median_us": 8.75,
+      "median_us_corrected": 7.226,
+      "gbs_raw": 44.9,
+      "gbs_corrected": 54.4,
+      "bytes_per_us_raw": 44939,
+      "bytes_per_us_corrected": 54415.6,
+      "total_ms_raw": 0.306
+    },
+    {
+      "kernel": 99,
+      "count": 7,
+      "bytes_per_dispatch": 3145728,
+      "bytes_per_dispatch_mib": 3,
+      "shape": "384x1024 rgba16uint",
+      "uniform_i0_3": [
+        384,
+        1024,
+        0,
+        0
+      ],
+      "median_us": 41.666,
+      "median_us_corrected": 40.142,
+      "gbs_raw": 75.5,
+      "gbs_corrected": 78.4,
+      "bytes_per_us_raw": 75498.7,
+      "bytes_per_us_corrected": 78364.7,
+      "total_ms_raw": 0.292
+    },
+    {
+      "kernel": 100,
+      "count": 24,
+      "bytes_per_dispatch": 196608,
+      "bytes_per_dispatch_mib": 0.188,
+      "shape": "64x384 rgba16uint",
+      "uniform_i0_3": [
+        64,
+        384,
+        0,
+        0
+      ],
+      "median_us": 9.958,
+      "median_us_corrected": 8.434,
+      "gbs_raw": 19.7,
+      "gbs_corrected": 23.3,
+      "bytes_per_us_raw": 19743.7,
+      "bytes_per_us_corrected": 23310.9,
+      "total_ms_raw": 0.238
+    },
+    {
+      "kernel": 98,
+      "count": 1,
+      "bytes_per_dispatch": 13762560,
+      "bytes_per_dispatch_mib": 13.125,
+      "shape": "2240x384 rgba32uint",
+      "uniform_i0_3": [
+        2240,
+        384,
+        0,
+        0
+      ],
+      "median_us": 150.789,
+      "median_us_corrected": 149.265,
+      "gbs_raw": 91.3,
+      "gbs_corrected": 92.2,
+      "bytes_per_us_raw": 91270.3,
+      "bytes_per_us_corrected": 92202.1,
+      "total_ms_raw": 0.151
+    },
+    {
+      "kernel": 99,
+      "count": 6,
+      "bytes_per_dispatch": 393216,
+      "bytes_per_dispatch_mib": 0.375,
+      "shape": "128x384 rgba16uint",
+      "uniform_i0_3": [
+        128,
+        384,
+        0,
+        0
+      ],
+      "median_us": 18.292,
+      "median_us_corrected": 16.768,
+      "gbs_raw": 21.5,
+      "gbs_corrected": 23.5,
+      "bytes_per_us_raw": 21496.6,
+      "bytes_per_us_corrected": 23450.2,
+      "total_ms_raw": 0.109
+    }
+  ],
+  "by_kernel": [
+    {
+      "kernel": 99,
+      "dispatches": 84,
+      "bytes_total": 183238656,
+      "bytes_total_mib": 174.8,
+      "ms_raw": 2.527,
+      "ms_corrected": 2.399,
+      "gbs_raw": 72.5,
+      "gbs_corrected": 76.4,
+      "bytes_per_us_raw": 72500.9,
+      "bytes_per_us_corrected": 76369.1,
+      "shapes": 5
+    },
+    {
+      "kernel": 112,
+      "dispatches": 40,
+      "bytes_total": 188743680,
+      "bytes_total_mib": 180,
+      "ms_raw": 2.355,
+      "ms_corrected": 2.294,
+      "gbs_raw": 80.1,
+      "gbs_corrected": 82.3,
+      "bytes_per_us_raw": 80147.3,
+      "bytes_per_us_corrected": 82277.1,
+      "shapes": 1
+    },
+    {
+      "kernel": 105,
+      "dispatches": 37,
+      "bytes_total": 163577856,
+      "bytes_total_mib": 156,
+      "ms_raw": 2.123,
+      "ms_corrected": 2.067,
+      "gbs_raw": 77,
+      "gbs_corrected": 79.1,
+      "bytes_per_us_raw": 77034.4,
+      "bytes_per_us_corrected": 79135.9,
+      "shapes": 2
+    },
+    {
+      "kernel": 113,
+      "dispatches": 20,
+      "bytes_total": 94371840,
+      "bytes_total_mib": 90,
+      "ms_raw": 1.209,
+      "ms_corrected": 1.179,
+      "gbs_raw": 78,
+      "gbs_corrected": 80.1,
+      "bytes_per_us_raw": 78048.7,
+      "bytes_per_us_corrected": 80067.1,
+      "shapes": 1
+    },
+    {
+      "kernel": 134,
+      "dispatches": 1,
+      "bytes_total": 100663296,
+      "bytes_total_mib": 96,
+      "ms_raw": 0.645,
+      "ms_corrected": 0.644,
+      "gbs_raw": 156,
+      "gbs_corrected": 156.3,
+      "bytes_per_us_raw": 155968.9,
+      "bytes_per_us_corrected": 156338.1,
+      "shapes": 1
+    },
+    {
+      "kernel": 106,
+      "dispatches": 35,
+      "bytes_total": 13762560,
+      "bytes_total_mib": 13.1,
+      "ms_raw": 0.363,
+      "ms_corrected": 0.31,
+      "gbs_raw": 37.9,
+      "gbs_corrected": 44.4,
+      "bytes_per_us_raw": 37904,
+      "bytes_per_us_corrected": 44431.2,
+      "shapes": 1
+    },
+    {
+      "kernel": 107,
+      "dispatches": 35,
+      "bytes_total": 13762560,
+      "bytes_total_mib": 13.1,
+      "ms_raw": 0.306,
+      "ms_corrected": 0.253,
+      "gbs_raw": 44.9,
+      "gbs_corrected": 54.4,
+      "bytes_per_us_raw": 44939,
+      "bytes_per_us_corrected": 54416.8,
+      "shapes": 1
+    },
+    {
+      "kernel": 100,
+      "dispatches": 24,
+      "bytes_total": 4718592,
+      "bytes_total_mib": 4.5,
+      "ms_raw": 0.239,
+      "ms_corrected": 0.202,
+      "gbs_raw": 19.7,
+      "gbs_corrected": 23.3,
+      "bytes_per_us_raw": 19743.7,
+      "bytes_per_us_corrected": 23311.4,
+      "shapes": 1
+    },
+    {
+      "kernel": 98,
+      "dispatches": 1,
+      "bytes_total": 13762560,
+      "bytes_total_mib": 13.1,
+      "ms_raw": 0.151,
+      "ms_corrected": 0.149,
+      "gbs_raw": 91.3,
+      "gbs_corrected": 92.2,
+      "bytes_per_us_raw": 91270.3,
+      "bytes_per_us_corrected": 92202.2,
+      "shapes": 1
+    }
+  ],
+  "kernel_profile_check": {
+    "pids_checked": 9,
+    "max_abs_diff_us_vs_profile": 0.166,
+    "note": "per-pid medians agree up to token selection; kernel-profile.json bytes are WGSL bytes, not weight bytes, so only its us medians are compared; multi-shape kernels mix shapes under one pid, hence per-pid (not per-shape) comparison"
+  },
+  "prefill": {
+    "note": "prefill dispatches counted in trace.prefillPipelines have no per-kernel GPU timing on main, so the timed roofline above is decode only; prefill-only pipelines listed for the joint view",
+    "prefill_pipelines": 102,
+    "prefill_dispatches": 6076,
+    "prefill_only_count": 37,
+    "prefill_only_top10": [
+      {
+        "pid": 31,
+        "shader": 31,
+        "dispatches": 546
+      },
+      {
+        "pid": 76,
+        "shader": 76,
+        "dispatches": 144
+      },
+      {
+        "pid": 34,
+        "shader": 34,
+        "dispatches": 105
+      },
+      {
+        "pid": 35,
+        "shader": 35,
+        "dispatches": 105
+      },
+      {
+        "pid": 83,
+        "shader": 83,
+        "dispatches": 99
+      },
+      {
+        "pid": 36,
+        "shader": 36,
+        "dispatches": 72
+      },
+      {
+        "pid": 77,
+        "shader": 77,
+        "dispatches": 72
+      },
+      {
+        "pid": 37,
+        "shader": 37,
+        "dispatches": 45
+      },
+      {
+        "pid": 39,
+        "shader": 39,
+        "dispatches": 45
+      },
+      {
+        "pid": 40,
+        "shader": 40,
+        "dispatches": 45
+      }
+    ]
+  },
+  "note": "roofline reading: decode is memory-bound on the weight stream (about 81 GB/s corrected, 20% of the 400 GB/s rated); per-kernel bytes/µs = GB/s x 1000; the linear fit gives about 6 µs fixed cost per matvec dispatch (about 4.7 µs corrected) then streaming at about 89 GB/s; small kernels under ~6 µs sit below the line (launch-bound), large matvecs sit on it; file sha: 153 shaders scanned for weight bindings"
+}
