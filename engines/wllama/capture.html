@@ -1,0 +1,39 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>wllama capture</title>
+<pre id="log" style="white-space: pre-wrap; font: 12px monospace"></pre>
+<script src="./hook.js"></script>
+<script type="module">
+  const log = (s) => { document.getElementById('log').append(s + '\n'); console.log('[wllama] ' + s) }
+  async function run() {
+    try {
+      const adapter = await navigator.gpu?.requestAdapter()
+      window.__wllamaCapture.adapter = adapter
+        ? { vendor: adapter.info?.vendor, architecture: adapter.info?.architecture, device: adapter.info?.device, description: adapter.info?.description, features: [...adapter.features] }
+        : null
+      log('adapter: ' + JSON.stringify(window.__wllamaCapture.adapter))
+      // GGUF served at /model/ by capture.mjs (see README). Same protocol
+      // as the sibling benches: one prompt, short completion, n_gpu_layers
+      // default (99999 = full offload; ?ngl=0 is the CPU control).
+      const { Wllama } = await import('https://cdn.jsdelivr.net/npm/@wllama/wllama@3.5.1/esm/index.js')
+      window.__wllamaVersion = '@wllama/wllama 3.5.1 (cdn esm)'
+      const inst = new Wllama({ 'single-thread/wllama.wasm': location.origin + '/wllama.wasm' })
+      await inst.loadModelFromUrl(location.origin + '/model/phi3-q4.gguf', { n_gpu_layers: 99999, n_ctx: 2048 })
+      const t0 = performance.now()
+      const out = await inst.createChatCompletion(
+        [{ role: 'user', content: 'Count from one to thirty in English words, separated by commas.' }],
+        { nPredict: 64, sampling: { temp: 0 } },
+      )
+      window.__wllamaWallMs = performance.now() - t0
+      window.__wllamaOutput = out
+      log('output: ' + JSON.stringify(out).slice(0, 200))
+      log(`wall ${(window.__wllamaWallMs).toFixed(0)} ms; ${window.__wllamaCapture.shaders.length} shaders, ${window.__wllamaCapture.pipelines.length} pipelines`)
+    } catch (e) {
+      window.__wllamaCapture.error = String(e?.stack ?? e)
+      log('ERROR: ' + window.__wllamaCapture.error)
+    }
+    await window.__wllamaSettle()
+    window.__wllamaDone = true
+  }
+  run()
+</script>

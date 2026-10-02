@@ -1,0 +1,24 @@
+{
+  "item": 11,
+  "slug": "wllama",
+  "status": "parked",
+  "reason": "model-missing",
+  "detail": "wllama capture needs a multi-GB GGUF inside this repo (engines/wllama/model/*.gguf). No GGUF is present anywhere under litert-capture (engines/wllama/model/ does not exist), and the loop forbids silent multi-GB downloads. Same capture+trace scaffold (hook + driver + analyze join) is committed under engines/wllama/; no synthetic wllama.json written.",
+  "evidence": {
+    "model_dir": "engines/wllama/model/",
+    "model_present": false,
+    "pipeline": "same capture+trace shape as root harness: hook.js WGSL dump + dispatch counters, analyze.mjs per-pipeline table, trace half joins by position",
+    "wllama_reference": "~/dev/zero-tvm/src/wllama-bench/main.ts (@wllama/wllama 3.5.1, /local-gguf mirror, ?model=phi3|qwen3|qwen35, ?ngl control)",
+    "wllama_version": "@wllama/wllama 3.5.1 (pinned in capture.html CDN import)",
+    "quant_caveat": "GGUF Q4 vs MLC q4f16_1 differ in block layout/group size/rounding: future numbers are runtime+quantization, never same-bytes",
+    "local_mirrors_elsewhere": ["~/dev/zero-tvm/.weights-local/gguf/phi3-q4.gguf (2.2 GB)", "~/dev/zero-tvm/.weights-local/gguf/qwen3-4b-q4km.gguf (2.3 GB)", "~/dev/zero-tvm/.weights-local/gguf/qwen35-4b-q4km.gguf (2.6 GB, none copied silently)"],
+    "chrome_builds_present": ["131.0.6778.204", "146.0.7680.153", "154.0.8037.92"]
+  },
+  "attempt": "On branch capture/11-wllama from main @21b006c: wrote prototype-level hook.js, capture.html (@wllama/wllama 3.5.1, /model/ GGUF, full offload), capture.mjs (model gate first, exit 3 when absent), analyze.mjs (per-pipeline dispatch/bytes/sha table). Verified engines/wllama/model/ absent; ran no download, wrote no measurements.",
+  "next_steps": [
+    "hf download microsoft/Phi-3-mini-4k-instruct-gguf --include 'Phi-3-mini-4k-instruct-q4.gguf' --local-dir engines/wllama/model",
+    "node engines/wllama/capture.mjs",
+    "node engines/wllama/analyze.mjs 400"
+  ],
+  "timestamp": "2026-10-02T07:00:02Z"
+}
