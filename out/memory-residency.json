@@ -1,0 +1,245 @@
+{
+  "date": "2026-10-02T05:29:35.434Z",
+  "method": "offline derivation from committed out/trace.json (+ committed out/kernel-profile.json split cost per token); sizes are measured tape values, no new GPU run",
+  "summary": {
+    "textures": {
+      "n": 367,
+      "mib": 1001.2963027954102
+    },
+    "buffers": {
+      "n": 2522,
+      "mib": 190.2894744873047
+    },
+    "peakMib": 1191.5857772827148,
+    "steadyLoadBaseMib": 1190.2732772827148,
+    "decodeRunPhaseMib": 1.265625,
+    "prefillPhaseBuffers": {
+      "n": 3,
+      "bytes": 49152
+    },
+    "decodeCostPerToken": {
+      "splitSumMs": 17.399365,
+      "tokens": 7
+    }
+  },
+  "texturesByFormat": {
+    "rgba32uint": {
+      "n": 71,
+      "mib": 39.375
+    },
+    "rgba16uint": {
+      "n": 145,
+      "mib": 335.25
+    },
+    "rgba8uint": {
+      "n": 66,
+      "mib": 277
+    },
+    "rgba16float": {
+      "n": 79,
+      "mib": 349.67127227783203
+    },
+    "rgba32sint": {
+      "n": 4,
+      "mib": 0
+    },
+    "rgba32float": {
+      "n": 2,
+      "mib": 0.000030517578125
+    }
+  },
+  "unknownTextureFormats": [
+    "rgba32sint"
+  ],
+  "buffersByPhase": {
+    "load": {
+      "n": 2438,
+      "mib": 188.9769744873047
+    },
+    "prefill": {
+      "n": 3,
+      "mib": 0.046875
+    },
+    "run": {
+      "n": 81,
+      "mib": 1.265625
+    }
+  },
+  "largestBuffers": [
+    {
+      "id": 9,
+      "bytes": 100663296,
+      "phase": "load"
+    },
+    {
+      "id": 862,
+      "bytes": 37748736,
+      "phase": "load"
+    },
+    {
+      "id": 2,
+      "bytes": 18874368,
+      "phase": "load"
+    },
+    {
+      "id": 3,
+      "bytes": 18874368,
+      "phase": "load"
+    },
+    {
+      "id": 7,
+      "bytes": 1048576,
+      "phase": "load"
+    },
+    {
+      "id": 10,
+      "bytes": 1048576,
+      "phase": "load"
+    },
+    {
+      "id": 1981,
+      "bytes": 1048576,
+      "phase": "load"
+    },
+    {
+      "id": 11,
+      "bytes": 524288,
+      "phase": "load"
+    }
+  ],
+  "largestTextures": [
+    {
+      "id": 350,
+      "size": [
+        8192,
+        1024,
+        1
+      ],
+      "format": "rgba16float",
+      "bytes": 67108864,
+      "phase": "load"
+    },
+    {
+      "id": 341,
+      "size": [
+        1024,
+        3072,
+        1
+      ],
+      "format": "rgba16float",
+      "bytes": 25165824,
+      "phase": "load"
+    },
+    {
+      "id": 342,
+      "size": [
+        1024,
+        3072,
+        1
+      ],
+      "format": "rgba16float",
+      "bytes": 25165824,
+      "phase": "load"
+    },
+    {
+      "id": 343,
+      "size": [
+        1024,
+        3072,
+        1
+      ],
+      "format": "rgba16float",
+      "bytes": 25165824,
+      "phase": "load"
+    },
+    {
+      "id": 346,
+      "size": [
+        8192,
+        384,
+        1
+      ],
+      "format": "rgba16float",
+      "bytes": 25165824,
+      "phase": "load"
+    },
+    {
+      "id": 281,
+      "size": [
+        1024,
+        2240,
+        1
+      ],
+      "format": "rgba16float",
+      "bytes": 18350080,
+      "phase": "load"
+    },
+    {
+      "id": 282,
+      "size": [
+        1024,
+        2240,
+        1
+      ],
+      "format": "rgba16float",
+      "bytes": 18350080,
+      "phase": "load"
+    },
+    {
+      "id": 283,
+      "size": [
+        1024,
+        2240,
+        1
+      ],
+      "format": "rgba16float",
+      "bytes": 18350080,
+      "phase": "load"
+    }
+  ],
+  "uploadTiming": {
+    "status": "parked",
+    "reason": "not-in-tape",
+    "detail": "out/trace.json records resource creation (size/format/phase) but no load timestamps, so weight-upload time vs steady state cannot be derived from it. Next step: add __mark spans around weight-texture creation in www/trace.html, re-run node trace.mjs --out memory-residency-trace.json, join by resource id."
+  },
+  "note": "peak residency 1192 MiB (367 textures + 2522 buffers live at trace end); steady decode is the 1190 MiB load base plus the 1.3 MiB run-phase working set. Upload timing parked, not estimated.",
+  "sources": [
+    "out/trace.json",
+    "out/kernel-profile.json"
+  ],
+  "manifest_sha256": "abffb5bfeb871d3a5af1ce6bb8990176d8627877a9441582a7ba7cd6d5f3fc2e",
+  "provenance": {
+    "browser": "Chrome/146.0.7680.153",
+    "adapter": {
+      "vendor": "apple",
+      "architecture": "metal-3",
+      "device": "",
+      "description": ""
+    },
+    "node": "v24.18.0",
+    "os": {
+      "platform": "darwin",
+      "release": "25.5.0",
+      "arch": "arm64"
+    },
+    "package": null,
+    "model": {
+      "file": "www/gemma-4-E2B-it-web.litertlm",
+      "bytes": 2008432640,
+      "sha256": "3a08e8d94e23b814ae5414469c370c503813949acb8ceaa17e4ebf8a35af35b5"
+    },
+    "power": {
+      "source": "AC",
+      "percent": 98,
+      "low_power_mode": false
+    },
+    "thermal": [
+      "Note: No thermal warning level has been recorded",
+      "Note: No performance warning level has been recorded",
+      "Note: No CPU power status has been recorded"
+    ],
+    "harness_commit": "eaf88e2b405082f1da649d8e2c71c95ed3f7276a",
+    "harness_dirty": true,
+    "timestamp": "2026-10-02T05:29:35.344Z"
+  }
+}
