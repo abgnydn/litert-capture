@@ -1,0 +1,118 @@
+{
+  "date": "2026-10-02T05:27:22.594Z",
+  "method": "fresh bare run (maps split per timing.mjs) cut per chunk, joined by median with committed timing-gpu.json + kernel-profile.json from the same machine",
+  "chunks": 16,
+  "steadyFrom": 8,
+  "summary": {
+    "n": 7,
+    "cpuMs": {
+      "median": 1.1349999904632568,
+      "p10": 0.15500003099441528,
+      "p90": 1.3199999928474426
+    },
+    "waitMs": {
+      "median": 16.405000030994415,
+      "p10": 16.02000004053116,
+      "p90": 16.599999964237213
+    },
+    "gpuBusyMsUnsplit": {
+      "median": 16.03446,
+      "p10": 15.72576,
+      "p90": 16.326124
+    },
+    "splitSumMsPerToken": 17.399365,
+    "residualWaitMinusGpuMs": 0.370540030994416
+  },
+  "perChunk": [
+    {
+      "chunk": 8,
+      "wallMs": 17.519999980926514,
+      "waitMs": 16.19999998807907,
+      "cpuMs": 1.3199999928474426,
+      "readbacks": 1
+    },
+    {
+      "chunk": 9,
+      "wallMs": 17.305000007152557,
+      "waitMs": 16.02000004053116,
+      "cpuMs": 1.284999966621399,
+      "readbacks": 1
+    },
+    {
+      "chunk": 10,
+      "wallMs": 17.75,
+      "waitMs": 16.430000007152557,
+      "cpuMs": 1.3199999928474426,
+      "readbacks": 1
+    },
+    {
+      "chunk": 11,
+      "wallMs": 17.415000021457672,
+      "waitMs": 16.280000030994415,
+      "cpuMs": 1.1349999904632568,
+      "readbacks": 1
+    },
+    {
+      "chunk": 12,
+      "wallMs": 17.4200000166893,
+      "waitMs": 16.405000030994415,
+      "cpuMs": 1.0149999856948853,
+      "readbacks": 1
+    },
+    {
+      "chunk": 13,
+      "wallMs": 17.459999978542328,
+      "waitMs": 16.430000007152557,
+      "cpuMs": 1.0299999713897705,
+      "readbacks": 1
+    },
+    {
+      "chunk": 14,
+      "wallMs": 16.75499999523163,
+      "waitMs": 16.599999964237213,
+      "cpuMs": 0.15500003099441528,
+      "readbacks": 1
+    }
+  ],
+  "note": "per-chunk CPU-side median 1.13 ms vs GPU-wait median 16.41 ms (wall 17.54 ms); unsplit GPU busy median 16.03 ms, split per-dispatch sum 17.40 ms. p90-p10 widths: cpu 102.6%, wait 3.5%. Join is by median across separate runs (bare/gpu/kernel), not same-token.",
+  "sources": [
+    "out/timing-bare.json",
+    "out/timing-gpu.json",
+    "out/kernel-profile.json"
+  ],
+  "manifest_sha256": "abffb5bfeb871d3a5af1ce6bb8990176d8627877a9441582a7ba7cd6d5f3fc2e",
+  "provenance": {
+    "browser": "Chrome/146.0.7680.153",
+    "adapter": {
+      "vendor": "apple",
+      "architecture": "metal-3",
+      "device": "",
+      "description": ""
+    },
+    "node": "v24.18.0",
+    "os": {
+      "platform": "darwin",
+      "release": "25.5.0",
+      "arch": "arm64"
+    },
+    "package": "0.17.1",
+    "model": {
+      "file": "www/gemma-4-E2B-it-web.litertlm",
+      "bytes": 2008432640,
+      "sha256": "3a08e8d94e23b814ae5414469c370c503813949acb8ceaa17e4ebf8a35af35b5"
+    },
+    "power": {
+      "source": "AC",
+      "percent": 97,
+      "low_power_mode": false
+    },
+    "thermal": [
+      "Note: No thermal warning level has been recorded",
+      "Note: No performance warning level has been recorded",
+      "Note: No CPU power status has been recorded"
+    ],
+    "harness_commit": "eaf88e2b405082f1da649d8e2c71c95ed3f7276a",
+    "harness_dirty": true,
+    "timestamp": "2026-10-02T05:27:22.344Z"
+  }
+}
