@@ -1,0 +1,25 @@
+{
+  "item": 7,
+  "slug": "native-ratio",
+  "status": "parked",
+  "reason": "needs-download",
+  "detail": "Native runner exists (llama.cpp b9840, AppleClang ARM64, Metal-capable) but no same-model native weights are on disk: ollama has only qwen2.5-coder:7b, no GGUF of Gemma 4 E2B / Gemma 3n E2B anywhere local, and the www/gemma-4-E2B-it-web.litertlm bundle is a LiteRT pack that llama.cpp cannot load. A same-model native-vs-web ratio needs a multi-GB GGUF download, which the loop forbids without explicit human go. No synthetic ratio written; no out/native-ratio.json created.",
+  "evidence": {
+    "llama_cli": "version 9840 (8c146a836), AppleClang 21.0.0.21000099, Darwin arm64",
+    "ollama_models": ["qwen2.5-coder:7b"],
+    "local_gguf_of_gemma_e2b": false,
+    "web_bundle": "www/gemma-4-E2B-it-web.litertlm (LiteRT pack, not GGUF-loadable)"
+  },
+  "work_note": {
+    "goal": "M2 Max native vs web tok/s on the same model and the same two prompts the web harness uses",
+    "commands": [
+      "hf download google/gemma-3n-E2B-it-GGUF --include '*Q8_0.gguf' --local-dir ~/dev/research/litert-capture/www-native",
+      "llama-bench -m ~/dev/research/litert-capture/www-native/<file>.gguf -p 512,1024 -n 128 -ngl 99 -c 2048",
+      "node timing.mjs bare  # web side: reuse committed prompts; compare warm steady-state tok/s",
+      "record both provenances + manifest_sha256 into out/native-ratio.json"
+    ],
+    "prompts": "reuse timing.html cold/warm prompts verbatim (count one-to-thirty / thirty-to-one) for comparability",
+    "caveat": "quantization parity matters: web bundle is the shipped LiteRT quant; pick the closest GGUF quant and note the mismatch rather than claiming equality"
+  },
+  "timestamp": "2026-10-02T09:15:00Z"
+}
