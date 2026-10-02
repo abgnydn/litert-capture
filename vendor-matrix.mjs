@@ -30,7 +30,7 @@ const median = (a) => { const s = [...a].sort((x, y) => x - y); return s.length 
 // Brief Chrome launch for a real provenance stamp (browser + adapter). Serves
 // a memory-only probe page: no model bundle, no engine, nothing measured here.
 const freshProvenance = async () => {
-  const srv = createServer((req, res) => {
+  const srv = createServer((_req, res) => {
     res.writeHead(200, { 'Content-Type': 'text/html' })
     res.end('<!doctype html><title>probe</title>')
   })
