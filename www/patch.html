@@ -156,8 +156,17 @@
       log(`${label}: ${n} chunks: ${text.slice(0, 120)}`)
       return { text, chunks: n }
     }
-    P.cold = await run('cold', 'Count from one to thirty in English words, separated by commas.')
-    P.warm = await run('warm', 'Count down from thirty to one in English words, separated by commas.')
+    // CAPTURE-ROADMAP 16 (correctness-gate): ?cold= / ?warm= override the two
+    // decode prompts so the token-diff gate can run across prompts. (This
+    // module script cannot see the first script's params const, so it reads
+    // the query itself.) Defaults are the original counting prompts, so
+    // `node patch.mjs` is unchanged.
+    const query = new URLSearchParams(location.search)
+    const COLD_PROMPT = query.get('cold') ?? 'Count from one to thirty in English words, separated by commas.'
+    const WARM_PROMPT = query.get('warm') ?? 'Count down from thirty to one in English words, separated by commas.'
+    P.prompts = { cold: COLD_PROMPT, warm: WARM_PROMPT }
+    P.cold = await run('cold', COLD_PROMPT)
+    P.warm = await run('warm', WARM_PROMPT)
     // Pipelines can also be built lazily during generation, so both checks run
     // again here: a target that was never seen must not pass as a patched run.
     if (P.patchError) throw new Error(P.patchError)
