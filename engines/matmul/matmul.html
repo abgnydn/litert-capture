@@ -1,0 +1,215 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Generic WebGPU matmul microbench</title>
+<pre id="log" style="white-space: pre-wrap; font: 12px monospace"></pre>
+
+<!-- Generic f32 matmul C = A @ B microbench, ported from www/microbench.html.
+     No model, no bundle: A/B are random f32 matrices generated in the page.
+     Shape: M = N = K = 512 (1 MiB per matrix, 3 MiB per dispatch).
+     Variants are minimal text edits of the same source (K-search lever):
+       orig     8x8 wg (64 inv), stride 1                      <- baseline
+       wg256    16x16 wg (256 inv), stride 1                   <- workgroup control
+       ksplit2  8x8 wg, 2 accumulators, stride 2                <- K split 2
+       ksplit4  8x8 wg, 4 accumulators, stride 4                <- K split 4
+     Measurement order mirrors microbench.html: a discarded warm-up variant
+     first, then every variant forward and again in reverse to cancel linear
+     clock drift; cold and hot samples from both positions are pooled before
+     the median. Per variant per position ROUNDS 6 x NMAT_COLD 8 = 48 cold
+     and 6 x 1 = 6 hot; forward + reverse pooled = 96 cold + 12 hot timed
+     samples. "Cold" rotates through 8 matrix pairs (24 MiB); "hot" reuses
+     one pair. Every variant is checked against a JS CPU reference for pair 0
+     (TOL 1e-3 absolute on f32 sums of 512 products). GPU timing uses the
+     timestamp-query path (adapter lacks -> error). -->
+<script type="module">
+  const log = (s) => { document.getElementById('log').append(s + '\n'); console.log('[matmul] ' + s) }
+  const M = 512, N = 512, K = 512
+  const MATRIX_BYTES = M * K * 4
+  const DISPATCH_BYTES = (M * K + K * N + M * N) * 4
+  const NMAT_COLD = 8, ROUNDS = 6
+  const TOL = 1e-3
+  const R = (window.__mb = { kernel: 'matmul-512', shape: { M, N, K }, bytesPerDispatch: DISPATCH_BYTES, variants: {}, order: [] })
+
+  const median = (a) => { const s = [...a].sort((x, y) => x - y); return s[Math.floor(s.length / 2)] }
+  const pct = (a, p) => { const s = [...a].sort((x, y) => x - y); return s[Math.min(s.length - 1, Math.floor(s.length * p))] }
+  let seed = 987654321
+  const rnd = () => ((seed = (seed * 1664525 + 1013904223) >>> 0) / 2 ** 32)
+
+  const BASE = `
+struct Dims { dimM : u32, dimN : u32, dimK : u32, pad : u32 };
+@group(0) @binding(0) var<storage, read> A : array<f32>;
+@group(0) @binding(1) var<storage, read> B : array<f32>;
+@group(0) @binding(2) var<storage, read_write> C : array<f32>;
+@group(0) @binding(3) var<uniform> U : Dims;
+@compute @workgroup_size(WGX, WGY)
+fn main(@builtin(global_invocation_id) gid : vec3<u32>) {
+  let row = gid.y;
+  let col = gid.x;
+  if (row >= U.dimM || col >= U.dimN) { return; }
+  ACCUM_DECL
+  for (var k = 0u; k < U.dimK; k += STRIDE) {
+    ACCUM_STEP
+  }
+  ACCUM_STORE
+}
+`
+  const mustReplace = (src, from, to) => { if (!src.includes(from)) throw new Error('anchor not found: ' + from.slice(0, 60)); return src.split(from).join(to) }
+  const variantSource = (wgX, wgY, stride) => {
+    let s = BASE
+    s = mustReplace(s, 'WGX', String(wgX))
+    s = mustReplace(s, 'WGY', String(wgY))
+    s = mustReplace(s, 'STRIDE', String(stride))
+    if (stride === 1) {
+      s = mustReplace(s, 'ACCUM_DECL', 'var acc : f32 = 0.0;')
+      s = mustReplace(s, 'ACCUM_STEP', 'acc += A[row * U.dimK + k] * B[k * U.dimN + col];')
+      s = mustReplace(s, 'ACCUM_STORE', 'C[row * U.dimN + col] = acc;')
+    } else {
+      const decl = Array.from({ length: stride }, (_, i) => `var acc${i} : f32 = 0.0;`).join('\n  ')
+      const step = Array.from({ length: stride }, (_, i) => `acc${i} += A[row * U.dimK + k + ${i}u] * B[(k + ${i}u) * U.dimN + col];`).join('\n    ')
+      const sum = Array.from({ length: stride }, (_, i) => `acc${i}`).join(' + ')
+      s = mustReplace(s, 'ACCUM_DECL', decl)
+      s = mustReplace(s, 'ACCUM_STEP', `if (k + ${stride}u <= U.dimK) {\n    ${step}\n  }`)
+      s = mustReplace(s, 'ACCUM_STORE', `C[row * U.dimN + col] = ${sum};`)
+    }
+    return s
+  }
+
+  try {
+    const adapter = (await navigator.gpu.requestAdapter({ powerPreference: 'high-performance' }) ?? await navigator.gpu.requestAdapter())
+    if (!adapter.features.has('timestamp-query')) throw new Error('adapter lacks timestamp-query')
+    const device = await adapter.requestDevice({ requiredFeatures: ['timestamp-query'] })
+    device.addEventListener('uncapturederror', (e) => { R.gpuError = String(e.error?.message ?? e); log('GPU ERROR: ' + R.gpuError) })
+    R.adapter = { vendor: adapter.info?.vendor, architecture: adapter.info?.architecture, device: adapter.info?.device, description: adapter.info?.description }
+    if (globalThis.crypto?.subtle) {
+      const d = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(BASE))
+      R.baseSha256 = [...new Uint8Array(d)].map((b) => b.toString(16).padStart(2, '0')).join('')
+    } else { R.baseSha256 = null; R.shaderSha256Unavailable = true }
+    R.baseBytes = BASE.length
+
+    // data: NMAT_COLD random pairs + one hot pair
+    const mkPair = () => {
+      const A = new Float32Array(M * K), B = new Float32Array(K * N)
+      for (let i = 0; i < A.length; i++) A[i] = rnd() * 2 - 1
+      for (let i = 0; i < B.length; i++) B[i] = rnd() * 2 - 1
+      return { A, B }
+    }
+    const pairs = []
+    for (let m = 0; m < NMAT_COLD; m++) pairs.push(mkPair())
+
+    // CPU reference for pair 0 (single-threaded triple loop, ~134M mults)
+    log('cpu reference: computing 512^3 reference in JS ...')
+    const ref = new Float32Array(M * N)
+    {
+      const { A, B } = pairs[0]
+      for (let r = 0; r < M; r++) {
+        for (let c = 0; c < N; c++) {
+          let acc = 0
+          for (let k = 0; k < K; k++) acc += A[r * K + k] * B[k * N + c]
+          ref[r * N + c] = acc
+        }
+        if ((r & 63) === 63) log(`cpu reference: row ${r + 1}/${M}`)
+      }
+    }
+    log('cpu reference: done')
+
+    const mkBuf = (data, usage) => { const b = device.createBuffer({ size: data.byteLength, usage: usage | GPUBufferUsage.COPY_DST }); device.queue.writeBuffer(b, 0, data); return b }
+    const uni = device.createBuffer({ size: 16, usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST })
+    device.queue.writeBuffer(uni, 0, new Uint32Array([M, N, K, 0]))
+    const readBuf = device.createBuffer({ size: M * N * 4, usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.MAP_READ })
+    const NQ = 2 * ROUNDS * NMAT_COLD
+    const qs = device.createQuerySet({ type: 'timestamp', count: NQ })
+    const qResolve = device.createBuffer({ size: NQ * 8, usage: GPUBufferUsage.QUERY_RESOLVE | GPUBufferUsage.COPY_SRC })
+    const qRead = device.createBuffer({ size: NQ * 8, usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.MAP_READ })
+
+    const VARIANTS = [
+      ['warmup', 8, 8, 1],
+      ['orig', 8, 8, 1],
+      ['wg256', 16, 16, 1],
+      ['ksplit2', 8, 8, 2],
+      ['ksplit4', 8, 8, 4],
+    ]
+    const V = {}
+    for (const [name, wgX, wgY, stride] of VARIANTS) {
+      const dispatchX = Math.ceil(N / wgX), dispatchY = Math.ceil(M / wgY)
+      const module = device.createShaderModule({ code: variantSource(wgX, wgY, stride) })
+      const info = await module.getCompilationInfo()
+      const errs = info.messages.filter((m) => m.type === 'error')
+      if (errs.length) throw new Error(`${name} failed to compile: ${errs.map((m) => `${m.lineNum}: ${m.message}`).join('; ')}`)
+      const pipeline = device.createComputePipeline({ layout: 'auto', compute: { module, entryPoint: 'main' } })
+      const mkC = () => device.createBuffer({ size: M * N * 4, usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC })
+      const aBufs = pairs.map((p) => mkBuf(p.A, GPUBufferUsage.STORAGE))
+      const bBufs = pairs.map((p) => mkBuf(p.B, GPUBufferUsage.STORAGE))
+      const cBufs = pairs.map(() => mkC())
+      const bindGroups = pairs.map((_, m) => device.createBindGroup({
+        layout: pipeline.getBindGroupLayout(0),
+        entries: [
+          { binding: 0, resource: { buffer: aBufs[m] } },
+          { binding: 1, resource: { buffer: bBufs[m] } },
+          { binding: 2, resource: { buffer: cBufs[m] } },
+          { binding: 3, resource: { buffer: uni } },
+        ],
+      }))
+      // correctness on pair 0
+      {
+        const enc = device.createCommandEncoder()
+        const p = enc.beginComputePass()
+        p.setPipeline(pipeline); p.setBindGroup(0, bindGroups[0]); p.dispatchWorkgroups(dispatchX, dispatchY, 1); p.end()
+        enc.copyBufferToBuffer(cBufs[0], 0, readBuf, 0, M * N * 4)
+        device.queue.submit([enc.finish()])
+        await readBuf.mapAsync(GPUMapMode.READ)
+        const out = new Float32Array(readBuf.getMappedRange().slice(0))
+        readBuf.unmap()
+        let maxAbs = 0, mismatches = 0
+        for (let i = 0; i < out.length; i++) {
+          const e = Math.abs(out[i] - ref[i])
+          maxAbs = Math.max(maxAbs, e)
+          if (e > TOL) mismatches++
+        }
+        V[name] = { name, wgX, wgY, stride, dispatchX, dispatchY, invocations: wgX * wgY, pipeline, bindGroups, cBufs, maxAbsErr: maxAbs, mismatches, outputs: out.length, cold: [], hot: [] }
+        log(`${name}: correctness max|err| ${maxAbs.toExponential(2)} mismatches ${mismatches}/${out.length} (tol ${TOL})`)
+        if (name !== 'warmup' && mismatches > 0) throw new Error(`${name} failed CPU reference: ${mismatches} mismatches`)
+      }
+    }
+
+    const time = async (v, nmat) => {
+      { const enc = device.createCommandEncoder(); for (let m = 0; m < nmat; m++) { const p = enc.beginComputePass(); p.setPipeline(v.pipeline); p.setBindGroup(0, v.bindGroups[m]); p.dispatchWorkgroups(v.dispatchX, v.dispatchY, 1); p.end() } device.queue.submit([enc.finish()]) }
+      await device.queue.onSubmittedWorkDone()
+      const enc = device.createCommandEncoder()
+      let q = 0
+      for (let r = 0; r < ROUNDS; r++) for (let m = 0; m < nmat; m++) {
+        const p = enc.beginComputePass({ timestampWrites: { querySet: qs, beginningOfPassWriteIndex: q, endOfPassWriteIndex: q + 1 } })
+        p.setPipeline(v.pipeline); p.setBindGroup(0, v.bindGroups[m]); p.dispatchWorkgroups(v.dispatchX, v.dispatchY, 1); p.end(); q += 2
+      }
+      enc.resolveQuerySet(qs, 0, q, qResolve, 0)
+      enc.copyBufferToBuffer(qResolve, 0, qRead, 0, q * 8)
+      device.queue.submit([enc.finish()])
+      await qRead.mapAsync(GPUMapMode.READ)
+      const ts = new BigUint64Array(qRead.getMappedRange().slice(0))
+      qRead.unmap()
+      const us = []
+      for (let i = 0; i < q; i += 2) us.push(Number(ts[i + 1] - ts[i]) / 1e3)
+      return us
+    }
+
+    const timed = VARIANTS.slice(1).map((x) => x[0])
+    for (let i = 0; i < 3; i++) { await time(V.warmup, NMAT_COLD); await time(V.warmup, 1) }
+    for (const name of [...timed, ...[...timed].reverse()]) {
+      const v = V[name]
+      const c = await time(v, NMAT_COLD), h = await time(v, 1)
+      v.cold.push(...c); v.hot.push(...h)
+      R.order.push({ name, coldMedian: median(c), hotMedian: median(h) })
+    }
+    for (const name of timed) {
+      const v = V[name]
+      const stat = (a) => ({ median: median(a), p10: pct(a, 0.1), p90: pct(a, 0.9), n: a.length })
+      R.variants[name] = { wgX: v.wgX, wgY: v.wgY, stride: v.stride, dispatchX: v.dispatchX, dispatchY: v.dispatchY, invocations: v.invocations, maxAbsErr: v.maxAbsErr, mismatches: v.mismatches, outputs: v.outputs, cold: stat(v.cold), hot: stat(v.hot) }
+      const r = R.variants[name]
+      const gbs = (DISPATCH_BYTES / (r.cold.median * 1e-6) / 1e9).toFixed(1)
+      log(`${name.padEnd(8)} wg ${v.wgX}x${v.wgY} stride ${v.stride}  cold ${r.cold.median.toFixed(1).padStart(8)} us = ${gbs.padStart(6)} GB/s (p10 ${r.cold.p10.toFixed(1)}, p90 ${r.cold.p90.toFixed(1)})  hot ${r.hot.median.toFixed(1)} us  max|err| ${v.maxAbsErr.toExponential(2)}`)
+    }
+    log('per-position cold medians: ' + R.order.map((o) => `${o.name}=${o.coldMedian.toFixed(1)}`).join(' '))
+  } catch (e) {
+    R.error = String(e?.stack ?? e)
+    log('ERROR: ' + R.error)
+  }
+  window.__mbDone = true
+</script>

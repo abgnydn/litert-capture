@@ -1,0 +1,189 @@
+{
+  "kernel": "matmul-512",
+  "shape": {
+    "M": 512,
+    "N": 512,
+    "K": 512
+  },
+  "bytesPerDispatch": 3145728,
+  "variants": {
+    "orig": {
+      "wgX": 8,
+      "wgY": 8,
+      "stride": 1,
+      "dispatchX": 64,
+      "dispatchY": 64,
+      "invocations": 64,
+      "maxAbsErr": 0.000034332275390625,
+      "mismatches": 0,
+      "outputs": 262144,
+      "cold": {
+        "median": 2119.351,
+        "p10": 1344.355,
+        "p90": 4975.098,
+        "n": 96
+      },
+      "hot": {
+        "median": 1799.93,
+        "p10": 1348.687,
+        "p90": 2282.09,
+        "n": 12
+      }
+    },
+    "wg256": {
+      "wgX": 16,
+      "wgY": 16,
+      "stride": 1,
+      "dispatchX": 32,
+      "dispatchY": 32,
+      "invocations": 256,
+      "maxAbsErr": 0.000034332275390625,
+      "mismatches": 0,
+      "outputs": 262144,
+      "cold": {
+        "median": 1451.353,
+        "p10": 1206.357,
+        "p90": 3621.111,
+        "n": 96
+      },
+      "hot": {
+        "median": 1594.308,
+        "p10": 1223.065,
+        "p90": 2040.136,
+        "n": 12
+      }
+    },
+    "ksplit2": {
+      "wgX": 8,
+      "wgY": 8,
+      "stride": 2,
+      "dispatchX": 64,
+      "dispatchY": 64,
+      "invocations": 64,
+      "maxAbsErr": 0.00001811981201171875,
+      "mismatches": 0,
+      "outputs": 262144,
+      "cold": {
+        "median": 1813.43,
+        "p10": 1222.066,
+        "p90": 3611.695,
+        "n": 96
+      },
+      "hot": {
+        "median": 1571.559,
+        "p10": 1198.856,
+        "p90": 1801.847,
+        "n": 12
+      }
+    },
+    "ksplit4": {
+      "wgX": 8,
+      "wgY": 8,
+      "stride": 4,
+      "dispatchX": 64,
+      "dispatchY": 64,
+      "invocations": 64,
+      "maxAbsErr": 0.00001239776611328125,
+      "mismatches": 0,
+      "outputs": 262144,
+      "cold": {
+        "median": 1151.774,
+        "p10": 780.988,
+        "p90": 3002.954,
+        "n": 96
+      },
+      "hot": {
+        "median": 1213.314,
+        "p10": 888.445,
+        "p90": 1708.391,
+        "n": 12
+      }
+    }
+  },
+  "order": [
+    {
+      "name": "orig",
+      "coldMedian": 2119.351,
+      "hotMedian": 2219.758
+    },
+    {
+      "name": "wg256",
+      "coldMedian": 1459.561,
+      "hotMedian": 1594.308
+    },
+    {
+      "name": "ksplit2",
+      "coldMedian": 1813.43,
+      "hotMedian": 1629.933
+    },
+    {
+      "name": "ksplit4",
+      "coldMedian": 1129.692,
+      "hotMedian": 1673.892
+    },
+    {
+      "name": "ksplit4",
+      "coldMedian": 1198.731,
+      "hotMedian": 1158.317
+    },
+    {
+      "name": "ksplit2",
+      "coldMedian": 1836.639,
+      "hotMedian": 1441.895
+    },
+    {
+      "name": "wg256",
+      "coldMedian": 1401.062,
+      "hotMedian": 1729.181
+    },
+    {
+      "name": "orig",
+      "coldMedian": 2138.01,
+      "hotMedian": 1542.061
+    }
+  ],
+  "adapter": {
+    "vendor": "apple",
+    "architecture": "metal-3",
+    "device": "",
+    "description": ""
+  },
+  "baseSha256": "8ee87d5fa26a2955bc74717faac34be82986f5ea842f830795f95fc0cba85f2c",
+  "baseBytes": 561,
+  "provenance": {
+    "browser": "Chrome/146.0.7680.153",
+    "adapter": {
+      "vendor": "apple",
+      "architecture": "metal-3",
+      "device": "",
+      "description": ""
+    },
+    "node": "v24.18.0",
+    "os": {
+      "platform": "darwin",
+      "release": "25.5.0",
+      "arch": "arm64"
+    },
+    "package": null,
+    "model": {
+      "file": "www/gemma-4-E2B-it-web.litertlm",
+      "bytes": 2008432640,
+      "sha256": "3a08e8d94e23b814ae5414469c370c503813949acb8ceaa17e4ebf8a35af35b5"
+    },
+    "power": {
+      "source": "AC",
+      "percent": 100,
+      "low_power_mode": false
+    },
+    "thermal": [
+      "Note: No thermal warning level has been recorded",
+      "Note: No performance warning level has been recorded",
+      "Note: No CPU power status has been recorded"
+    ],
+    "harness_commit": "21b006c8140e95ae86e62c298ccfba0f4340bd3b",
+    "harness_dirty": true,
+    "timestamp": "2026-10-02T07:03:41.925Z"
+  },
+  "manifest_sha256": "abffb5bfeb871d3a5af1ce6bb8990176d8627877a9441582a7ba7cd6d5f3fc2e",
+  "date": "2026-10-02T07:03:41.926Z"
+}
