@@ -1,0 +1,127 @@
+{
+  "kernel": "0113",
+  "variants": {
+    "orig": {
+      "buf": false,
+      "ks": 32,
+      "wgX": 2,
+      "dispatchX": 192,
+      "invocations": 64,
+      "threads": 12288,
+      "maxAbsErr": 0.01271134614944458,
+      "maxRelErr": 0.08530458435416222,
+      "mismatches": 0,
+      "outputs": 1536,
+      "maxRef": 4.66650915145874,
+      "vsOrig": 0,
+      "cold": {
+        "median": 60.831,
+        "p10": 59.915,
+        "p90": 63.873,
+        "n": 576
+      },
+      "hot": {
+        "median": 45.998,
+        "p10": 45.373,
+        "p90": 46.79,
+        "n": 24
+      }
+    },
+    "split256-256": {
+      "buf": false,
+      "ks": 256,
+      "wgX": 1,
+      "dispatchX": 384,
+      "invocations": 256,
+      "threads": 98304,
+      "maxAbsErr": 0.005079984664916992,
+      "maxRelErr": 0.05046875216066837,
+      "mismatches": 0,
+      "outputs": 1536,
+      "maxRef": 4.66650915145874,
+      "vsOrig": 0.013671875,
+      "cold": {
+        "median": 36.707,
+        "p10": 36.374,
+        "p90": 38.124,
+        "n": 576
+      },
+      "hot": {
+        "median": 35.624,
+        "p10": 35.249,
+        "p90": 36.166,
+        "n": 24
+      }
+    }
+  },
+  "weightBytes": 4718592,
+  "order": [
+    {
+      "name": "orig",
+      "coldMedian": 61.082,
+      "hotMedian": 46.041
+    },
+    {
+      "name": "split256-256",
+      "coldMedian": 36.79,
+      "hotMedian": 35.624
+    },
+    {
+      "name": "split256-256",
+      "coldMedian": 36.666,
+      "hotMedian": 35.624
+    },
+    {
+      "name": "orig",
+      "coldMedian": 60.748,
+      "hotMedian": 45.998
+    }
+  ],
+  "f32": false,
+  "errorTolerance": 0.05,
+  "relFloor": 0.1,
+  "adapter": {
+    "vendor": "apple",
+    "architecture": "metal-3",
+    "device": "",
+    "description": ""
+  },
+  "baseBytes": 3530,
+  "baseSha256": "7ebdaaaf8e99487910bbe6d11ade59990ebfc7094ae307ca47fc3f6b31fa1ab0",
+  "provenance": {
+    "browser": "Chrome/154.0.8037.92",
+    "adapter": {
+      "vendor": "apple",
+      "architecture": "metal-3",
+      "device": "",
+      "description": ""
+    },
+    "node": "v24.18.0",
+    "os": {
+      "platform": "darwin",
+      "release": "25.5.0",
+      "arch": "arm64"
+    },
+    "package": null,
+    "model": {
+      "file": "www/gemma-4-E2B-it-web.litertlm",
+      "bytes": 2008432640,
+      "sha256": "3a08e8d94e23b814ae5414469c370c503813949acb8ceaa17e4ebf8a35af35b5"
+    },
+    "power": {
+      "source": "AC",
+      "percent": 100,
+      "low_power_mode": false
+    },
+    "thermal": [
+      "Note: No thermal warning level has been recorded",
+      "Note: No performance warning level has been recorded",
+      "Note: No CPU power status has been recorded"
+    ],
+    "harness_commit": "1ad5127779a98e17136f5e812bf59a9a127cda67",
+    "harness_dirty": false,
+    "timestamp": "2026-10-02T09:04:29.568Z"
+  },
+  "manifest_sha256": "abffb5bfeb871d3a5af1ce6bb8990176d8627877a9441582a7ba7cd6d5f3fc2e",
+  "date": "2026-10-02T09:04:29.568Z"
+}
