@@ -1,0 +1,26 @@
+{
+  "item": 12,
+  "slug": "matmul-micro",
+  "status": "done",
+  "detail": "Generic WebGPU f32 matmul (512^3, 3 MiB/dispatch) port of the microbench.mjs pattern: 4 variants (orig 8x8, wg256 16x16 control, ksplit2/ksplit4 K-split depths), timestamp-query per-dispatch timing, forward+reverse pooled (96 cold + 12 hot per variant), JS CPU reference per variant (0 mismatches, max|err| 1.2-3.4e-5), bytes/us roofline + K-search ranking. Best split by cold median: ksplit4 (1151.8 us, 2.7 GB/s). Real local GPU run on Apple M2 Max metal-3, Chrome 146; no model needed.",
+  "evidence": {
+    "record": "engines/matmul/matmul-micro.json (+ dated sibling matmul-micro-2026-10-02T07-03-41-926Z.json, same bytes)",
+    "adapter": { "vendor": "apple", "architecture": "metal-3" },
+    "browser": "Chrome/146.0.7680.153",
+    "shape": { "M": 512, "N": 512, "K": 512 },
+    "bytes_per_dispatch": 3145728,
+    "variants_cold_us": { "orig": 2119.4, "wg256": 1451.4, "ksplit2": 1813.4, "ksplit4": 1151.8 },
+    "correctness": "0 mismatches all variants (tol 1e-3)",
+    "provenance": true,
+    "manifest_sha256": true,
+    "variance_note_R5": "p90-p10 width >25% on all variants (e.g. orig p10 1344 / p90 4975 us); disclosed in record cold/hot stats + per-position order medians, committed as seen with a single run (ranking ksplit4 < wg256 < ksplit2 < orig holds in both forward and reverse positions)"
+  },
+  "gates": {
+    "builds_byte_identical": "space/index.html 372f7553 + colab/kernel-0112-t4.ipynb 075ad56f, stable across retry",
+    "biome": 0,
+    "node_check": 0,
+    "analyze": 0,
+    "gitleaks": 0
+  },
+  "timestamp": "2026-10-02T07:04:15Z"
+}
