@@ -1,0 +1,40 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>ORT-Web WGSL capture</title>
+<pre id="log" style="white-space: pre-wrap; font: 12px monospace"></pre>
+<script src="./hook.js"></script>
+<script type="module">
+  const log = (s) => { document.getElementById('log').append(s + '\n'); console.log('[ort] ' + s) }
+  async function run() {
+    try {
+      const adapter = await navigator.gpu?.requestAdapter()
+      window.__ortCapture.adapter = adapter
+        ? { vendor: adapter.info?.vendor, architecture: adapter.info?.architecture, device: adapter.info?.device, description: adapter.info?.description, features: [...adapter.features] }
+        : null
+      log('adapter: ' + JSON.stringify(window.__ortCapture.adapter))
+      // Model mirror served at /model/ by capture.mjs (see README).
+      // transformers.js is pointed at it via env.localModelPath (documented
+      // path, no patching); device webgpu selects the ORT WebGPU EP.
+      const { AutoModelForCausalLM, AutoTokenizer, env } = await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.2.0/+esm')
+      env.localModelPath = location.origin + '/model/'
+      env.allowRemoteModels = false
+      window.__ortVersion = '@huggingface/transformers 4.2.0 + onnxruntime-web webgpu EP'
+      const model = await AutoModelForCausalLM.from_pretrained('Phi-3-mini-4k-instruct-ONNX', { device: 'webgpu', dtype: 'q4f16' })
+      const tokenizer = await AutoTokenizer.from_pretrained('Phi-3-mini-4k-instruct-ONNX')
+      const prompt = 'Count from one to thirty in English words, separated by commas.'
+      const inputs = tokenizer(prompt, { return_tensors: 'pt' })
+      const t0 = performance.now()
+      const out = await model.generate({ ...inputs, max_new_tokens: 32, do_sample: false })
+      window.__ortWallMs = performance.now() - t0
+      window.__ortOutput = tokenizer.decode(out[0], { skip_special_tokens: true })
+      log('output: ' + window.__ortOutput)
+      log(`wall ${(window.__ortWallMs).toFixed(0)} ms; ${window.__ortCapture.shaders.length} shaders, ${window.__ortCapture.pipelines.length} pipelines`)
+    } catch (e) {
+      window.__ortCapture.error = String(e?.stack ?? e)
+      log('ERROR: ' + window.__ortCapture.error)
+    }
+    await window.__ortSettle()
+    window.__ortDone = true
+  }
+  run()
+</script>

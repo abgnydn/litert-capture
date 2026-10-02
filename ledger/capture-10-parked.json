@@ -1,0 +1,23 @@
+{
+  "item": 10,
+  "slug": "ort-web",
+  "status": "parked",
+  "reason": "model-missing",
+  "detail": "ORT-Web capture needs a multi-GB ONNX q4f16 bundle inside this repo (engines/ort/model/onnx/model_q4f16.onnx + onnx_data). No ONNX bundle is present anywhere under litert-capture (engines/ort/model/ does not exist), and the loop forbids silent multi-GB downloads. WGSL-dump hook + driver + analyze join scaffold are committed under engines/ort/; no synthetic ort-web.json written.",
+  "evidence": {
+    "model_path": "engines/ort/model/onnx/model_q4f16.onnx",
+    "model_present": false,
+    "gap": "ORT WebGPU profiling gives per-operator times only, no WGSL source; hook.js supplies the WGSL half, analyze.mjs joins by dispatch position (root analyze.mjs pattern)",
+    "ort_reference": "~/dev/zero-tvm/src/tjs-bench/main.ts (@huggingface/transformers 4.x on WebGPU EP, env.localModelPath mirror, ?model=phi3|qwen3|qwen35)",
+    "transformers_version": "@huggingface/transformers 4.2.0 (pinned in capture.html CDN import)",
+    "local_mirror_elsewhere": "~/dev/zero-tvm/.weights-local/onnx/Phi-3-mini-4k-instruct-ONNX/onnx (2.1 GB: model_q4f16.onnx 291 KB + onnx_data 2.0 GB + onnx_data_1 188 MB, not copied silently)",
+    "chrome_builds_present": ["131.0.6778.204", "146.0.7680.153", "154.0.8037.92"]
+  },
+  "attempt": "On branch capture/10-ort-web from main @21b006c: wrote prototype-level hook.js (WGSL dump; times intentionally absent, they come from ORT profiling), capture.html (transformers 4.2.0, localModelPath mirror, webgpu EP, 32-token generation), capture.mjs (model gate first, exit 3 when absent), analyze.mjs (ort-web.json x ort-profile.json position join). Verified engines/ort/model/ absent; ran no download, wrote no measurements.",
+  "next_steps": [
+    "hf download onnx-community/Phi-3-mini-4k-instruct-ONNX --include 'onnx/model_q4f16.onnx*' --local-dir engines/ort/model",
+    "node engines/ort/capture.mjs",
+    "node engines/ort/analyze.mjs 400"
+  ],
+  "timestamp": "2026-10-02T06:59:26Z"
+}
