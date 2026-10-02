@@ -1,0 +1,286 @@
+{
+  "date": "2026-10-02T05:12:50.248Z",
+  "runsRequested": 5,
+  "chunks": 40,
+  "failure": null,
+  "summary": {
+    "n": 5,
+    "tokPerSec": {
+      "median": 57.27376868436207,
+      "min": 49.309664763844225,
+      "max": 58.34305722488939
+    },
+    "powerStates": [
+      "AC/86%"
+    ]
+  },
+  "note": "all 5 runs on a single power state (AC/86%); no battery/thermal variance was available to correlate, so the curve is flat by construction. Power source cannot be switched by the harness; a battery-vs-AC curve needs a human to unplug.",
+  "manifest_sha256": "abffb5bfeb871d3a5af1ce6bb8990176d8627877a9441582a7ba7cd6d5f3fc2e",
+  "runs": [
+    {
+      "run": 1,
+      "error": null,
+      "tokPerSec": 58.34305722488939,
+      "gapMs": {
+        "median": 17.139999985694885,
+        "n": 31
+      },
+      "power": {
+        "source": "AC",
+        "percent": 86,
+        "low_power_mode": false
+      },
+      "thermal": [
+        "Note: No thermal warning level has been recorded",
+        "Note: No performance warning level has been recorded",
+        "Note: No CPU power status has been recorded"
+      ],
+      "provenance": {
+        "browser": "Chrome/146.0.7680.153",
+        "adapter": {
+          "vendor": "apple",
+          "architecture": "metal-3",
+          "device": "",
+          "description": ""
+        },
+        "node": "v24.18.0",
+        "os": {
+          "platform": "darwin",
+          "release": "25.5.0",
+          "arch": "arm64"
+        },
+        "package": "0.17.1",
+        "model": {
+          "file": "www/gemma-4-E2B-it-web.litertlm",
+          "bytes": 2008432640,
+          "sha256": "3a08e8d94e23b814ae5414469c370c503813949acb8ceaa17e4ebf8a35af35b5"
+        },
+        "power": {
+          "source": "AC",
+          "percent": 86,
+          "low_power_mode": false
+        },
+        "thermal": [
+          "Note: No thermal warning level has been recorded",
+          "Note: No performance warning level has been recorded",
+          "Note: No CPU power status has been recorded"
+        ],
+        "harness_commit": "c5c025ccaeb730fadd20966df87123f3d0187ab5",
+        "harness_dirty": true,
+        "timestamp": "2026-10-02T05:12:22.958Z"
+      }
+    },
+    {
+      "run": 2,
+      "error": null,
+      "tokPerSec": 56.80204481207537,
+      "gapMs": {
+        "median": 17.605000019073486,
+        "n": 31
+      },
+      "power": {
+        "source": "AC",
+        "percent": 86,
+        "low_power_mode": false
+      },
+      "thermal": [
+        "Note: No thermal warning level has been recorded",
+        "Note: No performance warning level has been recorded",
+        "Note: No CPU power status has been recorded"
+      ],
+      "provenance": {
+        "browser": "Chrome/146.0.7680.153",
+        "adapter": {
+          "vendor": "apple",
+          "architecture": "metal-3",
+          "device": "",
+          "description": ""
+        },
+        "node": "v24.18.0",
+        "os": {
+          "platform": "darwin",
+          "release": "25.5.0",
+          "arch": "arm64"
+        },
+        "package": "0.17.1",
+        "model": {
+          "file": "www/gemma-4-E2B-it-web.litertlm",
+          "bytes": 2008432640,
+          "sha256": "3a08e8d94e23b814ae5414469c370c503813949acb8ceaa17e4ebf8a35af35b5"
+        },
+        "power": {
+          "source": "AC",
+          "percent": 86,
+          "low_power_mode": false
+        },
+        "thermal": [
+          "Note: No thermal warning level has been recorded",
+          "Note: No performance warning level has been recorded",
+          "Note: No CPU power status has been recorded"
+        ],
+        "harness_commit": "c5c025ccaeb730fadd20966df87123f3d0187ab5",
+        "harness_dirty": true,
+        "timestamp": "2026-10-02T05:12:28.883Z"
+      }
+    },
+    {
+      "run": 3,
+      "error": null,
+      "tokPerSec": 58.07200939604576,
+      "gapMs": {
+        "median": 17.219999969005585,
+        "n": 31
+      },
+      "power": {
+        "source": "AC",
+        "percent": 86,
+        "low_power_mode": false
+      },
+      "thermal": [
+        "Note: No thermal warning level has been recorded",
+        "Note: No performance warning level has been recorded",
+        "Note: No CPU power status has been recorded"
+      ],
+      "provenance": {
+        "browser": "Chrome/146.0.7680.153",
+        "adapter": {
+          "vendor": "apple",
+          "architecture": "metal-3",
+          "device": "",
+          "description": ""
+        },
+        "node": "v24.18.0",
+        "os": {
+          "platform": "darwin",
+          "release": "25.5.0",
+          "arch": "arm64"
+        },
+        "package": "0.17.1",
+        "model": {
+          "file": "www/gemma-4-E2B-it-web.litertlm",
+          "bytes": 2008432640,
+          "sha256": "3a08e8d94e23b814ae5414469c370c503813949acb8ceaa17e4ebf8a35af35b5"
+        },
+        "power": {
+          "source": "AC",
+          "percent": 86,
+          "low_power_mode": false
+        },
+        "thermal": [
+          "Note: No thermal warning level has been recorded",
+          "Note: No performance warning level has been recorded",
+          "Note: No CPU power status has been recorded"
+        ],
+        "harness_commit": "c5c025ccaeb730fadd20966df87123f3d0187ab5",
+        "harness_dirty": true,
+        "timestamp": "2026-10-02T05:12:35.015Z"
+      }
+    },
+    {
+      "run": 4,
+      "error": null,
+      "tokPerSec": 57.27376868436207,
+      "gapMs": {
+        "median": 17.459999978542328,
+        "n": 31
+      },
+      "power": {
+        "source": "AC",
+        "percent": 86,
+        "low_power_mode": false
+      },
+      "thermal": [
+        "Note: No thermal warning level has been recorded",
+        "Note: No performance warning level has been recorded",
+        "Note: No CPU power status has been recorded"
+      ],
+      "provenance": {
+        "browser": "Chrome/146.0.7680.153",
+        "adapter": {
+          "vendor": "apple",
+          "architecture": "metal-3",
+          "device": "",
+          "description": ""
+        },
+        "node": "v24.18.0",
+        "os": {
+          "platform": "darwin",
+          "release": "25.5.0",
+          "arch": "arm64"
+        },
+        "package": "0.17.1",
+        "model": {
+          "file": "www/gemma-4-E2B-it-web.litertlm",
+          "bytes": 2008432640,
+          "sha256": "3a08e8d94e23b814ae5414469c370c503813949acb8ceaa17e4ebf8a35af35b5"
+        },
+        "power": {
+          "source": "AC",
+          "percent": 86,
+          "low_power_mode": false
+        },
+        "thermal": [
+          "Note: No thermal warning level has been recorded",
+          "Note: No performance warning level has been recorded",
+          "Note: No CPU power status has been recorded"
+        ],
+        "harness_commit": "c5c025ccaeb730fadd20966df87123f3d0187ab5",
+        "harness_dirty": true,
+        "timestamp": "2026-10-02T05:12:40.922Z"
+      }
+    },
+    {
+      "run": 5,
+      "error": null,
+      "tokPerSec": 49.309664763844225,
+      "gapMs": {
+        "median": 20.27999997138977,
+        "n": 31
+      },
+      "power": {
+        "source": "AC",
+        "percent": 86,
+        "low_power_mode": false
+      },
+      "thermal": [
+        "Note: No thermal warning level has been recorded",
+        "Note: No performance warning level has been recorded",
+        "Note: No CPU power status has been recorded"
+      ],
+      "provenance": {
+        "browser": "Chrome/146.0.7680.153",
+        "adapter": {
+          "vendor": "apple",
+          "architecture": "metal-3",
+          "device": "",
+          "description": ""
+        },
+        "node": "v24.18.0",
+        "os": {
+          "platform": "darwin",
+          "release": "25.5.0",
+          "arch": "arm64"
+        },
+        "package": "0.17.1",
+        "model": {
+          "file": "www/gemma-4-E2B-it-web.litertlm",
+          "bytes": 2008432640,
+          "sha256": "3a08e8d94e23b814ae5414469c370c503813949acb8ceaa17e4ebf8a35af35b5"
+        },
+        "power": {
+          "source": "AC",
+          "percent": 86,
+          "low_power_mode": false
+        },
+        "thermal": [
+          "Note: No thermal warning level has been recorded",
+          "Note: No performance warning level has been recorded",
+          "Note: No CPU power status has been recorded"
+        ],
+        "harness_commit": "c5c025ccaeb730fadd20966df87123f3d0187ab5",
+        "harness_dirty": true,
+        "timestamp": "2026-10-02T05:12:49.800Z"
+      }
+    }
+  ]
+}
