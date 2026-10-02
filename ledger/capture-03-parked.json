@@ -1,0 +1,22 @@
+{
+  "item": 3,
+  "slug": "fakequant-0119",
+  "status": "parked",
+  "reason": "method-inapplicable",
+  "detail": "The patch.mjs in-model patch method rewrites matvec reduction kernels (PLAN ids 99/105/112/113) via K-split anchors. Shader 0119 is an elementwise fake-quant kernel (clamp/quantize/round/dequantize, 1546 bytes, no workgroup memory, no reduction loop), so none of the rewrite anchors apply and www/patch.html fails closed on unlisted ids (missed-check throws). A real 0119 fusion test needs a newly designed WGSL fusion plus token-diff correctness gating, which is kernel development, not a measurement.",
+  "evidence": {
+    "shader": "out/shaders/0119_unlabeled.wgsl",
+    "bytes": 1546,
+    "anchors_absent": ["var<workgroup> temp", "src_s +=", "ystride", "r_sp0 +="],
+    "elementwise": true,
+    "plan_ids": [99, 105, 112, 113],
+    "fail_closed": "www/patch.html:165 missed-check throws for ids outside PLAN"
+  },
+  "attempt": "read out/shaders/0119_unlabeled.wgsl on branch capture/03-fakequant-0119; grepped the four rewrite() anchors from www/patch.html:37-45, all absent; confirmed PLAN covers only 99/105/112/113 and unknown ids error out. No synthetic numbers written; no out/fakequant-0119.json created.",
+  "next_steps": [
+    "Design an 0119-specific fusion (fold dequantize into the consuming matvec prologue) as new WGSL with its own anchors in www/patch.html PLAN",
+    "Validate with token-diff vs baseline (patch.mjs tokenDiff pattern) plus GPU validation-error watch",
+    "Then run none-vs-0119 A/B and node diff-dispatch.mjs on before/after trace tapes into out/fakequant-0119.json"
+  ],
+  "timestamp": "2026-10-02T09:10:00Z"
+}
