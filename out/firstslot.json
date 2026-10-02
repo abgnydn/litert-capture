@@ -1,0 +1,235 @@
+{
+  "date": "2026-10-02T05:13:52.244Z",
+  "runsRequested": 5,
+  "chunks": 16,
+  "failure": null,
+  "summary": {
+    "n": 5,
+    "coldFirstMs": {
+      "median": 174.8299999833107,
+      "min": 143.20500004291534,
+      "max": 343.6050000190735
+    },
+    "warmFirstMs": {
+      "median": 86.48500001430511,
+      "min": 84.91000002622604,
+      "max": 89.19999998807907
+    },
+    "coldOverWarm": {
+      "median": 1.9599775785501732,
+      "min": 1.6558362724082605,
+      "max": 4.002854148695858
+    },
+    "run1ColdMs": 143.20500004291534,
+    "laterColdMedianMs": 210.62999999523163
+  },
+  "note": "cold first-chunk is 1.96x warm first-chunk (median); run 1 cold 143 ms vs later-run cold median 211 ms. Widths committed as seen per R5, not re-run until pretty.",
+  "manifest_sha256": "abffb5bfeb871d3a5af1ce6bb8990176d8627877a9441582a7ba7cd6d5f3fc2e",
+  "runs": [
+    {
+      "run": 1,
+      "error": null,
+      "coldFirstMs": 143.20500004291534,
+      "warmFirstMs": 86.48500001430511,
+      "engineMs": 3292.9950000047684,
+      "provenance": {
+        "browser": "Chrome/146.0.7680.153",
+        "adapter": {
+          "vendor": "apple",
+          "architecture": "metal-3",
+          "device": "",
+          "description": ""
+        },
+        "node": "v24.18.0",
+        "os": {
+          "platform": "darwin",
+          "release": "25.5.0",
+          "arch": "arm64"
+        },
+        "package": "0.17.1",
+        "model": {
+          "file": "www/gemma-4-E2B-it-web.litertlm",
+          "bytes": 2008432640,
+          "sha256": "3a08e8d94e23b814ae5414469c370c503813949acb8ceaa17e4ebf8a35af35b5"
+        },
+        "power": {
+          "source": "AC",
+          "percent": 87,
+          "low_power_mode": false
+        },
+        "thermal": [
+          "Note: No thermal warning level has been recorded",
+          "Note: No performance warning level has been recorded",
+          "Note: No CPU power status has been recorded"
+        ],
+        "harness_commit": "c5c025ccaeb730fadd20966df87123f3d0187ab5",
+        "harness_dirty": true,
+        "timestamp": "2026-10-02T05:13:30.791Z"
+      }
+    },
+    {
+      "run": 2,
+      "error": null,
+      "coldFirstMs": 210.62999999523163,
+      "warmFirstMs": 88.64500004053116,
+      "engineMs": 3104.5550000071526,
+      "provenance": {
+        "browser": "Chrome/146.0.7680.153",
+        "adapter": {
+          "vendor": "apple",
+          "architecture": "metal-3",
+          "device": "",
+          "description": ""
+        },
+        "node": "v24.18.0",
+        "os": {
+          "platform": "darwin",
+          "release": "25.5.0",
+          "arch": "arm64"
+        },
+        "package": "0.17.1",
+        "model": {
+          "file": "www/gemma-4-E2B-it-web.litertlm",
+          "bytes": 2008432640,
+          "sha256": "3a08e8d94e23b814ae5414469c370c503813949acb8ceaa17e4ebf8a35af35b5"
+        },
+        "power": {
+          "source": "AC",
+          "percent": 87,
+          "low_power_mode": false
+        },
+        "thermal": [
+          "Note: No thermal warning level has been recorded",
+          "Note: No performance warning level has been recorded",
+          "Note: No CPU power status has been recorded"
+        ],
+        "harness_commit": "c5c025ccaeb730fadd20966df87123f3d0187ab5",
+        "harness_dirty": true,
+        "timestamp": "2026-10-02T05:13:36.588Z"
+      }
+    },
+    {
+      "run": 3,
+      "error": null,
+      "coldFirstMs": 343.6050000190735,
+      "warmFirstMs": 85.83999997377396,
+      "engineMs": 3065.6549999713898,
+      "provenance": {
+        "browser": "Chrome/146.0.7680.153",
+        "adapter": {
+          "vendor": "apple",
+          "architecture": "metal-3",
+          "device": "",
+          "description": ""
+        },
+        "node": "v24.18.0",
+        "os": {
+          "platform": "darwin",
+          "release": "25.5.0",
+          "arch": "arm64"
+        },
+        "package": "0.17.1",
+        "model": {
+          "file": "www/gemma-4-E2B-it-web.litertlm",
+          "bytes": 2008432640,
+          "sha256": "3a08e8d94e23b814ae5414469c370c503813949acb8ceaa17e4ebf8a35af35b5"
+        },
+        "power": {
+          "source": "AC",
+          "percent": 87,
+          "low_power_mode": false
+        },
+        "thermal": [
+          "Note: No thermal warning level has been recorded",
+          "Note: No performance warning level has been recorded",
+          "Note: No CPU power status has been recorded"
+        ],
+        "harness_commit": "c5c025ccaeb730fadd20966df87123f3d0187ab5",
+        "harness_dirty": true,
+        "timestamp": "2026-10-02T05:13:42.464Z"
+      }
+    },
+    {
+      "run": 4,
+      "error": null,
+      "coldFirstMs": 160.96999996900558,
+      "warmFirstMs": 84.91000002622604,
+      "engineMs": 2812.099999964237,
+      "provenance": {
+        "browser": "Chrome/146.0.7680.153",
+        "adapter": {
+          "vendor": "apple",
+          "architecture": "metal-3",
+          "device": "",
+          "description": ""
+        },
+        "node": "v24.18.0",
+        "os": {
+          "platform": "darwin",
+          "release": "25.5.0",
+          "arch": "arm64"
+        },
+        "package": "0.17.1",
+        "model": {
+          "file": "www/gemma-4-E2B-it-web.litertlm",
+          "bytes": 2008432640,
+          "sha256": "3a08e8d94e23b814ae5414469c370c503813949acb8ceaa17e4ebf8a35af35b5"
+        },
+        "power": {
+          "source": "AC",
+          "percent": 87,
+          "low_power_mode": false
+        },
+        "thermal": [
+          "Note: No thermal warning level has been recorded",
+          "Note: No performance warning level has been recorded",
+          "Note: No CPU power status has been recorded"
+        ],
+        "harness_commit": "c5c025ccaeb730fadd20966df87123f3d0187ab5",
+        "harness_dirty": true,
+        "timestamp": "2026-10-02T05:13:47.257Z"
+      }
+    },
+    {
+      "run": 5,
+      "error": null,
+      "coldFirstMs": 174.8299999833107,
+      "warmFirstMs": 89.19999998807907,
+      "engineMs": 2976.739999949932,
+      "provenance": {
+        "browser": "Chrome/146.0.7680.153",
+        "adapter": {
+          "vendor": "apple",
+          "architecture": "metal-3",
+          "device": "",
+          "description": ""
+        },
+        "node": "v24.18.0",
+        "os": {
+          "platform": "darwin",
+          "release": "25.5.0",
+          "arch": "arm64"
+        },
+        "package": "0.17.1",
+        "model": {
+          "file": "www/gemma-4-E2B-it-web.litertlm",
+          "bytes": 2008432640,
+          "sha256": "3a08e8d94e23b814ae5414469c370c503813949acb8ceaa17e4ebf8a35af35b5"
+        },
+        "power": {
+          "source": "AC",
+          "percent": 87,
+          "low_power_mode": false
+        },
+        "thermal": [
+          "Note: No thermal warning level has been recorded",
+          "Note: No performance warning level has been recorded",
+          "Note: No CPU power status has been recorded"
+        ],
+        "harness_commit": "c5c025ccaeb730fadd20966df87123f3d0187ab5",
+        "harness_dirty": true,
+        "timestamp": "2026-10-02T05:13:52.055Z"
+      }
+    }
+  ]
+}
