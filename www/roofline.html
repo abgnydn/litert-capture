@@ -1,0 +1,61 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>LiteRT-LM decode roofline</title>
+<style>
+  body { font: 13px/1.5 system-ui, sans-serif; max-width: 960px; margin: 2em auto; padding: 0 1em; }
+  table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
+  th, td { border: 1px solid #ccc; padding: 3px 8px; text-align: right; }
+  th:first-child, td:first-child, th:nth-child(3), td:nth-child(3) { text-align: left; }
+  .bar { height: 10px; background: #0F7B83; }
+  .peak { color: #B0562A; }
+  code { font-size: 12px; }
+</style>
+<h1>Decode roofline: bytes/µs per kernel</h1>
+<!-- CAPTURE-ROADMAP 17 (roofline): per-kernel chart for out/roofline.json.
+     Offline viewer: fetch the committed record (no GPU) and render one row
+     per (kernel, shape) with bytes/µs (= GB/s x 1000), plus the linear-fit
+     ridge. Open via a local server, e.g. python3 -m http.server, then
+     www/roofline.html ; data at ../out/roofline.json . -->
+<p id="summary">loading ../out/roofline.json …</p>
+<table id="rows">
+  <thead><tr>
+    <th>kernel</th><th>n</th><th>shape</th><th>bytes/dispatch</th>
+    <th>median µs</th><th>GB/s</th><th>bytes/µs</th><th>share of weight ms</th>
+  </tr></thead>
+  <tbody></tbody>
+</table>
+<h2>GB/s vs peak (bar = corrected GB/s, <span class="peak">red line = 400 GB/s rated</span>)</h2>
+<div id="chart"></div>
+<h2>Method</h2>
+<pre id="method" style="white-space: pre-wrap"></pre>
+<script>
+(async () => {
+  const R = await (await fetch('../out/roofline.json')).json()
+  const peak = R.peak_gbs ?? 400
+  document.getElementById('summary').textContent =
+    `${R.summary.weight_mib_per_token} MiB/token over ${R.summary.weight_dispatches_per_token} dispatches ` +
+    `(${R.summary.weight_kernels.length} kernels): ${R.summary.gbs_corrected} GB/s corrected ` +
+    `(${R.summary.pct_of_peak_corrected}% of ${peak} GB/s rated), ` +
+    `fit µs = ${R.fit.intercept_us} + bytes / ${R.fit.streaming_gbs} GB/s (R² ${R.fit.r2}); ` +
+    `timed roofline is decode only, prefill has no per-kernel timing.`
+  const tb = document.querySelector('#rows tbody')
+  const totalMs = R.rows.reduce((a, r) => a + r.total_ms_raw, 0)
+  for (const r of R.rows) {
+    const tr = document.createElement('tr')
+    const share = (100 * r.total_ms_raw / totalMs).toFixed(1) + '%'
+    tr.innerHTML = `<td>${String(r.kernel).padStart(4, '0')}</td><td>${r.count}</td>` +
+      `<td>${r.shape}</td><td>${(r.bytes_per_dispatch / 1048576).toFixed(1)} MiB</td>` +
+      `<td>${r.median_us.toFixed(1)}</td><td>${r.gbs_corrected}</td>` +
+      `<td>${r.bytes_per_us_corrected}</td><td>${share}</td>`
+    tb.appendChild(tr)
+  }
+  const chart = document.getElementById('chart')
+  for (const r of R.rows) {
+    const row = document.createElement('div')
+    row.innerHTML = `<code>${String(r.kernel).padStart(4, '0')} ${r.shape} — ${r.gbs_corrected} GB/s</code>` +
+      `<div class="bar" style="width:${(100 * r.gbs_corrected / peak).toFixed(1)}%"></div>`
+    chart.appendChild(row)
+  }
+  document.getElementById('method').textContent = R.method + '\n\n' + R.note
+})().catch((e) => { document.getElementById('summary').textContent = 'failed to load ../out/roofline.json: ' + e })
+</script>
