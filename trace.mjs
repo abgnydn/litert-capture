@@ -67,14 +67,30 @@ try {
   const page = await browser.newPage()
   page.on('console', (m) => { const t = m.text(); if (t.startsWith('[trace]')) console.log(t) })
   page.on('pageerror', (e) => console.log(`[pageerror] ${e.message}`))
-  await page.goto(`http://127.0.0.1:${PORT}/trace.html`, { waitUntil: 'load' })
+  // CAPTURE-ROADMAP 02 (kv-layout): query passthrough (e.g. ?prompt=, ?chunks=)
+  // plus --out <name> to write out/<name> instead of out/trace.json.
+  // Default `node trace.mjs` (no args) unchanged.
+  const args = process.argv.slice(2)
+  let outName = 'trace.json'
+  const qParts = []
+  for (let i = 0; i < args.length; i++) {
+    if (args[i] === '--out' && args[i + 1]) { outName = args[i + 1]; i++ }
+    else qParts.push(args[i])
+  }
+  const rawQuery = qParts[0] ?? ''
+  const query = /[?&]v=/.test(rawQuery)
+    ? rawQuery
+    : rawQuery === ''
+      ? `?v=${encodeURIComponent(VERSION)}`
+      : `${rawQuery}&v=${encodeURIComponent(VERSION)}`
+  await page.goto(`http://127.0.0.1:${PORT}/trace.html${query}`, { waitUntil: 'load' })
   await page.waitForFunction('window.__traceDone === true', { timeout: TIMEOUT_MS, polling: 1000 })
   const R = await page.evaluate(() => window.__trace)
   R.provenance = await provenance({ browser, adapter: R.adapter, pkg: R.version })
   // ROADMAP 08: tie this record to the capture manifest it joins against.
   R.manifest_sha256 = manifestSha256(join(OUT, 'manifest.json'))
   mkdirSync(OUT, { recursive: true })
-  writeFileSync(join(OUT, 'trace.json'), JSON.stringify(R))
+  writeFileSync(join(OUT, outName), JSON.stringify(R))
   if (R.error) { console.log(`PAGE ERROR: ${R.error}`); exitCode = 2 }
 
   const texBytes = (t) => t.size[0] * t.size[1] * (t.size[2] ?? 1) * (BPT[t.format] ?? 0)

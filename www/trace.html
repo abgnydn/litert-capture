@@ -143,6 +143,16 @@
   const log = (s) => { document.getElementById('log').append(s + '\n'); console.log('[trace] ' + s) }
   const params = new URLSearchParams(location.search)
   const VERSION = params.get('v') ?? '0.17.1'
+  // CAPTURE-ROADMAP 02 (kv-layout): ?prompt= overrides the short cold prompt
+  // with a long one to fill context toward 2k tokens, ?chunks= overrides the
+  // per-message chunk cap. Defaults keep existing `node trace.mjs` behavior.
+  const COLD_PROMPT = params.get('prompt') ?? 'Count from one to thirty in English words, separated by commas.'
+  const MAX_RUN_CHUNKS = Number(params.get('chunks') ?? 40)
+  // CAPTURE-ROADMAP 02: ?tape=cold arms the dispatch tape on the cold run's
+  // last three chunks, when a long ?prompt= has filled context toward 2k, so
+  // 0094/0095/0096 shapes are watched at long context. Default ?tape=warm
+  // keeps existing behavior (three decode tokens of the short warm message).
+  const TAPE = params.get('tape') ?? 'warm'
   const R = window.__trace
   const ARM_AT = 10, DISARM_AT = 13 // three decode tokens of the warm message
   try {
@@ -152,24 +162,25 @@
     const { Engine } = await import(`https://cdn.jsdelivr.net/npm/@litert-lm/core@${VERSION}/+esm`)
     const engine = await Engine.create({ model: '/gemma-4-E2B-it-web.litertlm' })
     R.phase = 'run'
-    const run = async (label, prompt, arm) => {
+    const run = async (label, prompt, arm, armAt, disarmAt) => {
       const chat = await engine.createConversation()
       let text = '', n = 0
+      if (label === 'cold') R.prompt = prompt
       R.phase = label === 'cold' ? 'prefill' : 'run'
       for await (const chunk of chat.sendMessageStreaming(prompt)) {
         if (R.phase === 'prefill') R.phase = 'run' // first chunk out: prefill is over
         text += chunk?.content?.[0]?.text ?? ''
         R.chunk++
-        if (arm && n === ARM_AT) R.armed = true
-        if (arm && n === DISARM_AT) R.armed = false
-        if (++n >= 40) break
+        if (arm && n === armAt) R.armed = true
+        if (arm && n === disarmAt) R.armed = false
+        if (++n >= MAX_RUN_CHUNKS) break
       }
       R.armed = false
       await chat.delete()
       log(`${label}: ${n} chunks: ${text.slice(0, 100)}`)
     }
-    await run('cold', 'Count from one to thirty in English words, separated by commas.', false)
-    await run('warm', 'Count down from thirty to one in English words, separated by commas.', true)
+    await run('cold', COLD_PROMPT, TAPE === 'cold', MAX_RUN_CHUNKS - 4, MAX_RUN_CHUNKS - 1)
+    await run('warm', 'Count down from thirty to one in English words, separated by commas.', TAPE !== 'cold', ARM_AT, DISARM_AT)
     log(`textures ${R.textures.length}, buffers ${R.buffers.length}, pipelines ${R.pipelines.length}, traced dispatches ${R.dispatches.length}, prefill pipelines ${Object.keys(R.prefillPipelines).length}`)
   } catch (e) {
     R.error = String(e?.stack ?? e)
