@@ -1,0 +1,48 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>WebLLM TVM capture</title>
+<pre id="log" style="white-space: pre-wrap; font: 12px monospace"></pre>
+<script src="./hook.js"></script>
+<script type="module">
+  const log = (s) => { document.getElementById('log').append(s + '\n'); console.log('[webllm] ' + s) }
+  async function run() {
+    try {
+      const adapter = await navigator.gpu?.requestAdapter()
+      window.__webllmCapture.adapter = adapter
+        ? { vendor: adapter.info?.vendor, architecture: adapter.info?.architecture, device: adapter.info?.device, description: adapter.info?.description, features: [...adapter.features] }
+        : null
+      log('adapter: ' + JSON.stringify(window.__webllmCapture.adapter))
+      // Model mirror served at /model/ by capture.mjs (see README). The wasm
+      // model_lib still comes from WebLLM's CDN; version is recorded below.
+      const webllm = await import('https://cdn.jsdelivr.net/npm/@mlc-ai/web-llm@0.2.85/+esm')
+      window.__webllmVersion = '@mlc-ai/web-llm 0.2.85 (cdn +esm)'
+      const engine = await webllm.CreateMLCEngine('Phi-3-mini-4k-instruct-q4f16_1-MLC-local', {
+        appConfig: {
+          cacheBackend: 'indexeddb',
+          model_list: [{
+            model: location.origin + '/model/',
+            model_id: 'Phi-3-mini-4k-instruct-q4f16_1-MLC-local',
+            model_lib: webllm.modelLibURLPrefix + webllm.modelVersion + '/Phi-3-mini-4k-instruct-q4f16_1_cs1k-webgpu.wasm',
+            vram_required_MB: 3672.07,
+            low_resource_required: false,
+            overrides: { context_window_size: 4096 },
+          }],
+        },
+      })
+      const reply = await engine.chat.completions.create({
+        messages: [{ role: 'user', content: 'Count from one to thirty in English words, separated by commas.' }],
+        max_tokens: 64,
+        temperature: 0,
+      })
+      window.__webllmOutput = reply.choices?.[0]?.message?.content ?? ''
+      log('output: ' + window.__webllmOutput)
+      log(`total: ${window.__webllmCapture.shaders.length} shaders, ${window.__webllmCapture.pipelines.length} pipelines`)
+    } catch (e) {
+      window.__webllmCapture.error = String(e?.stack ?? e)
+      log('ERROR: ' + window.__webllmCapture.error)
+    }
+    await window.__wlSettle()
+    window.__webllmDone = true
+  }
+  run()
+</script>
