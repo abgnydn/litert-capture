@@ -1,0 +1,60 @@
+{
+  "item": 18,
+  "slug": "quant-throttle",
+  "status": "parked",
+  "reason": "no-battery-variance",
+  "detail": "Timestamp-quantization x power matrix needs browser flags x power states (AC vs battery, low_power_mode on/off) with a resolution floor per setting. Only one power state is available programmatically on this machine (AC/100%/lpm-off, thermal clean); the harness cannot switch AC<->battery without a human unplug, so the power axis has zero variance and the throttling half of the matrix is unmeasurable here. No synthetic throttling numbers written; no out/quant-throttle.json created.",
+  "evidence": {
+    "power": {
+      "source": "AC",
+      "percent": 100,
+      "low_power_mode": false,
+      "pmset_batt": "Now drawing from 'AC Power' / -InternalBattery-0 (id=6946915) 100%; charged; 0:00 remaining present: true",
+      "pmset_lowpowermode": 0,
+      "thermal": [
+        "Note: No thermal warning level has been recorded",
+        "Note: No performance warning level has been recorded",
+        "Note: No CPU power status has been recorded"
+      ]
+    },
+    "provenance_power_fields": ["source", "percent", "low_power_mode"],
+    "adapter": {
+      "vendor": "apple",
+      "architecture": "metal-3",
+      "device": "",
+      "description": ""
+    },
+    "adapter_source": "served-harness probe (COOP/COEP http://127.0.0.1, crossOriginIsolated true, Chrome/146.0.7680.153); about:blank returns null per capture-08 precedent, so served record is the evidence",
+    "browser": "Chrome/146.0.7680.153",
+    "chrome_builds_present": ["131.0.6778.204", "146.0.7680.153", "154.0.8037.92"],
+    "model_present": {
+      "file": "www/gemma-4-E2B-it-web.litertlm",
+      "bytes": 2008432640,
+      "sha256": "3a08e8d94e23b814ae5414469c370c503813949acb8ceaa17e4ebf8a35af35b5",
+      "matches_out_model_json": true
+    },
+    "flags_probe": {
+      "page": "minimal 4-pass empty-compute timestampWrites probe over served http with --enable-unsafe-webgpu --enable-dawn-features=allow_unsafe_apis,disable_adapter_blocklist",
+      "quant_ON_default": {
+        "args": "no --disable-dawn-features flag (quantization enabled)",
+        "timestamp_query": true,
+        "deltas_ns": [6250, 3375, 79750, 3583],
+        "note": "sub-100us deltas on empty dispatches plus one 79.75us outlier and cross-pass non-monotonicity; no clean 100us quantization step at this workload size"
+      },
+      "quant_OFF": {
+        "args": "--disable-dawn-features=timestamp_quantization (as timing.mjs/power-curve.mjs/microbench.mjs use)",
+        "timestamp_query": true,
+        "deltas_ns": [7916, 6125, 7417, 6250],
+        "note": "consistent ~6-8us empty-dispatch deltas with mild cross-pass overlap; flags axis produces timestamps in both settings but resolution floor needs a heavier workload plus >=2 power states to establish per-setting floor"
+      }
+    },
+    "power_axis_variance": "single state AC/100%/lpm-off across all checks; pmset source cannot be switched by the harness (cf. power-curve.mjs note: battery-vs-AC needs a human to unplug); lowpowermode toggle needs sudo and still would not yield a battery source; thermal has no warnings to correlate"
+  },
+  "attempt": "On branch capture/18-quant from main @eaf88e2: ran pmset -g batt / pmset -g (lowpowermode 0) / pmset -g therm; verified model bytes+sha vs out/model.json and puppeteer chrome builds 131/146/154; launched served-harness WebGPU probe under both flag settings (quantization default vs --disable-dawn-features=timestamp_quantization) on Chrome 146, confirming adapter apple/metal-3 with timestamp-query true in both and recording real empty-dispatch deltas above. Power axis stayed single-state, so full flags-x-power matrix is degenerate (2 flag cells x 1 power cell, throttling axis missing) and parked per CAPTURE-LOOP park policy instead of writing a single-state out/quant-throttle.json.",
+  "next_steps": [
+    "Human unplugs to Battery Power, reruns the same served probe plus a heavier (100-500us) compute workload under both flag settings to establish the 100us quantization floor per setting vs full resolution",
+    "Repeat with lowpowermode 1 (sudo pmset -a lowpowermode 1, then back to 0) to add the lpm power state",
+    "Join flags x power cells with manifest_sha256 + provenance into out/quant-throttle.json (never synthetic), then gates per LOOP.md"
+  ],
+  "timestamp": "2026-10-02T06:44:07Z"
+}
