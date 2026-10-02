@@ -2,6 +2,7 @@
 # Daily watch for google-ai-edge/LiteRT-LM#3775. Appends to user-local log.
 # Installed daily 09:00 via com.litert.issue3775.plist. Manual: sh scripts/check-issue.sh
 set -u
+export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
 LOG="$HOME/.claude/litert-issue-watch.log"
 mkdir -p "$(dirname "$LOG")"
 TS="$(date -u +%FT%TZ)"
