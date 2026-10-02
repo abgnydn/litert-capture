@@ -1,0 +1,20 @@
+{
+  "item": 8,
+  "slug": "nonf16",
+  "status": "parked",
+  "reason": "blocked/colab-needed",
+  "detail": "Local adapter (Apple Metal 3) offers shader-f16, so the engine never takes its non-f16 fallback path on this machine; fallback shaders are unreachable here. Colab-dependent capture is prepared as a ready-to-run notebook (colab/nonf16-t4.ipynb) with copy-back instructions. No synthetic fallback numbers written; no out/nonf16.json created.",
+  "evidence": {
+    "adapter": { "vendor": "apple", "architecture": "metal-3" },
+    "shader_f16_present": true,
+    "source": "out/prefill.json (branch capture/01-prefill) provenance adapter features; local KWAPI probe on about:blank returns null, so the served-harness record is the evidence"
+  },
+  "notebook": {
+    "file": "colab/nonf16-t4.ipynb",
+    "cells": 5,
+    "embeds": ["www/capture.html (stock, short prompt)", "headless-T4 driver asserting shader-f16 absent + per-shader sha256"],
+    "model": "pinned b3ca0d2f bundle from HF with sha256 assert, downloaded Colab-side only",
+    "copyback": "last cell: save JSON as out/nonf16.json + manifest_sha256 join + diff vs out/shaders/*.wgsl, then gates"
+  },
+  "timestamp": "2026-10-02T09:20:00Z"
+}
