@@ -1,6 +1,6 @@
 # capture loop — non-stop plan for CAPTURE-ROADMAP 1-18
 
-Status: `main @ fd7b402`, 18 targets, issue #3775 OPEN. Companion to `LOOP.md`
+Status: `main @ 78ba31f`, 18 targets, issue #3775 OPEN. Companion to `LOOP.md`
 (same gates G0-G6) plus GPU-run rules below. Batches run back-to-back with no
 human stop until every item is done or parked with a logged reason.
 

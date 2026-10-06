@@ -162,7 +162,7 @@ const tokenDiff = (baseText, runText) => {
 const diffLine = (d) => (d.identical ? 'identical' : d.hunks.map((h) => `@${h.baselineIndex} -[${h.removed.join(' ')}] +[${h.added.join(' ')}]`).join('; '))
 
 const once = async ({ condition, patch }) => {
-  const browser = await puppeteer.launch({ headless: false, args: ['--enable-unsafe-webgpu', '--enable-dawn-features=allow_unsafe_apis,disable_adapter_blocklist', '--enable-features=Vulkan'], protocolTimeout: TIMEOUT_MS })
+  const browser = await puppeteer.launch({ headless: false, executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined, args: ['--enable-unsafe-webgpu', '--enable-dawn-features=allow_unsafe_apis,disable_adapter_blocklist', '--enable-features=Vulkan'], protocolTimeout: TIMEOUT_MS })
   try {
     const page = await browser.newPage()
     page.on('pageerror', (e) => console.log(`[pageerror] ${e.message}`))

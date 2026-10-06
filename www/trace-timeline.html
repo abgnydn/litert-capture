@@ -1,0 +1,68 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>LiteRT-LM trace timeline</title>
+<style>
+  body { font: 13px/1.5 system-ui, sans-serif; max-width: 960px; margin: 2em auto; padding: 0 1em; }
+  table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
+  th, td { border: 1px solid #ccc; padding: 3px 8px; text-align: right; }
+  th:first-child, td:first-child, th:nth-child(2), td:nth-child(2) { text-align: left; }
+  .bar { height: 10px; background: #0F7B83; }
+  code { font-size: 12px; }
+</style>
+<h1>Decode timeline: dispatches per chunk and pipeline</h1>
+<!-- Offline viewer: fetch the committed record (no GPU) and render one row
+     per (chunk, pid) with dispatch counts. Open via a local server, e.g.
+     python3 -m http.server, then www/trace-timeline.html ; data at ../out/trace.json . -->
+<p id="summary">loading ../out/trace.json …</p>
+<table id="rows">
+  <thead><tr>
+    <th>chunk</th><th>pid</th><th>count</th><th>share of traced dispatches</th>
+  </tr></thead>
+  <tbody></tbody>
+</table>
+<h2>Dispatches vs max (bar = count, scaled to max count)</h2>
+<div id="chart"></div>
+<h2>Method</h2>
+<pre id="method" style="white-space: pre-wrap"></pre>
+<script>
+(async () => {
+  const R = await (await fetch('../out/trace.json')).json()
+  const byChunk = new Map()
+  for (const d of R.dispatches) {
+    if (!byChunk.has(d.chunk)) byChunk.set(d.chunk, new Map())
+    const byPid = byChunk.get(d.chunk)
+    byPid.set(d.pid, (byPid.get(d.pid) ?? 0) + 1)
+  }
+  const rows = []
+  for (const [chunk, byPid] of [...byChunk.entries()].sort((a, b) => a[0] - b[0])) {
+    for (const [pid, count] of [...byPid.entries()].sort((a, b) => a[0] - b[0])) {
+      rows.push({ chunk, pid, count })
+    }
+  }
+  const maxCount = rows.reduce((a, r) => Math.max(a, r.count), 1)
+  document.getElementById('summary').textContent =
+    `${R.dispatches.length} dispatches over ${byChunk.size} chunks in ${rows.length} (chunk, pid) groups; ` +
+    `max ${maxCount} dispatches in one group. ` +
+    `Each dispatch is {chunk, pid, wg, res}; pid joins to pipelines for shader ids.`
+  const tb = document.querySelector('#rows tbody')
+  const total = R.dispatches.length
+  for (const r of rows) {
+    const tr = document.createElement('tr')
+    const share = (100 * r.count / total).toFixed(1) + '%'
+    tr.innerHTML = `<td>${r.chunk}</td><td>${r.pid}</td>` +
+      `<td>${r.count}</td><td>${share}</td>`
+    tb.appendChild(tr)
+  }
+  const chart = document.getElementById('chart')
+  for (const r of rows) {
+    const row = document.createElement('div')
+    row.innerHTML = `<code>chunk ${r.chunk} pid ${r.pid} — ${r.count} dispatches</code>` +
+      `<div class="bar" style="width:${(100 * r.count / maxCount).toFixed(1)}%"></div>`
+    chart.appendChild(row)
+  }
+  document.getElementById('method').textContent =
+    'Timing is not measured here; join on pid with out/kernel-profile.json for per-pipeline medians. ' +
+    'Shapes come from texture size/format plus uniform (res) and workgroup (wg) values; ' +
+    'prefill counts are separate (prefillPipelines).'
+})().catch((e) => { document.getElementById('summary').textContent = 'failed to load ../out/trace.json: ' + e })
+</script>

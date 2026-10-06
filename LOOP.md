@@ -1,6 +1,6 @@
 # litert-capture loop — non-stop plan for ROADMAP 1-50
 
-Status: `main @ 0a5590a`, `ROADMAP.md` 50 points, `out/shaders/*.wgsl = 153`, issue #3775 OPEN.
+Status: `main @ 78ba31f`, `ROADMAP.md` 50 points, `out/shaders/*.wgsl = 153`, issue #3775 OPEN.
 
 ## 0. One-shot before loop
 - Commit `ROADMAP.md` (currently `??`). Loop fails closed until tracked.

@@ -1,0 +1,48 @@
+{
+  "item": 24,
+  "slug": "chrome-131-inmodel",
+  "status": "parked",
+  "reason": "engine-blocked-on-131",
+  "detail": "In-model 6x5 Chrome-131 repeat (triad leg 1 of 3) cannot run: @litert-lm/core 0.17.1 Engine.create throws TypeError: Cannot read properties of undefined (reading 'subgroupMinSize') at JsGetDeviceMinSubgroupSize on Chrome for Testing 131.0.6778.204 (adapter apple/common-3) before any decode token. Same failure on all 3 attempts, at rep 1 position 1 regardless of condition/order (all-four, no-0099, all-four), so no patched-vs-baseline comparison exists on 131 and no HOLDS/DIMINISHED/GONE/INVERTED verdict can be computed. The isolated single-dispatch kernel still runs on 131 (committed out/microbench-0112-2026-09-24T07-36-06-362Z.json, split 1.19x slower there); only the engine path is blocked. No synthetic 131 numbers written; no out/patch-ab-131-*.json created; out/patch-ab.json restored byte-identical to the committed Chrome-146 sweep.",
+  "evidence": {
+    "chrome_131_binary": "$HOME/.cache/puppeteer/chrome/mac_arm-131.0.6778.204/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing",
+    "chrome_131_version": "Google Chrome for Testing 131.0.6778.204",
+    "chrome_146_binary": "$HOME/.cache/puppeteer/chrome/mac_arm-146.0.7680.153/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing",
+    "provenance_browser_131": "Chrome/131.0.6778.204",
+    "adapter_131": {
+      "vendor": "apple",
+      "architecture": "common-3",
+      "device": "",
+      "description": ""
+    },
+    "adapter_146_baseline": {
+      "vendor": "apple",
+      "architecture": "metal-3",
+      "device": "",
+      "description": ""
+    },
+    "manifest_sha256": "abffb5bfeb871d3a5af1ce6bb8990176d8627877a9441582a7ba7cd6d5f3fc2e",
+    "model": {
+      "file": "www/gemma-4-E2B-it-web.litertlm",
+      "bytes": 2008432640,
+      "sha256": "3a08e8d94e23b814ae5414469c370c503813949acb8ceaa17e4ebf8a35af35b5"
+    },
+    "power_at_attempts": "AC, 85-86% charging (>=30% AC gate passed)",
+    "baseline_146": "out/patch-ab.json 30 runs, shuffleSeed 1381548739, baseline median 17.645 ms/token, all-four 1.25008x, all runs Chrome/146.0.7680.153",
+    "baseline_sha256_after_restore": "e71ca1c79522b2f850cc422274b13622f5817b212bb42d0293eb3ad197cf3fe7",
+    "harness_fix": "patch.mjs once() now passes executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined (same convention as microbench.mjs:122); without it PUPPETEER_EXECUTABLE_PATH is ignored and the 131 sweep would silently run on 146. Verified by provenance.browser Chrome/131.0.6778.204 in the failed-run records.",
+    "attempts": 3
+  },
+  "attempt": "On main @78ba31f with patch.mjs executablePath fix: PUPPETEER_EXECUTABLE_PATH=<131 binary> node patch.mjs 5, three times. Each stopped at rep 1 position 1 with exit 2 and wrote a 1-run out/patch-ab.json (failure field set, no summary); out/patch-ab.json restored from /tmp backup after the third attempt and verified byte-identical (sha256 e71ca1c...).",
+  "logs": [
+    "attempt 1 (order: all-four -> no-0113 -> no-0105 -> no-0099 -> baseline -> no-0112, seed 258990690): == repetition 1 of 5 ... / provenance: browser Chrome/131.0.6778.204 is behind latest tested Chrome 154 / rep 1 position 1 condition all-four (patch=all) FAILED, the run did not complete cleanly: TypeError: Cannot read properties of undefined (reading 'subgroupMinSize') at JsGetDeviceMinSubgroupSize (https://cdn.jsdelivr.net/npm/@litert-lm/core@0.17.1/wasm/litertlm_wasm_asyncify_internal.js:8313:29) at wasm-function[3615]:0x43fca9 at wasm-function[9207]:0xcda069 at wasm-function[20400]:0x1c24a9f at wasm-function[10077]:0x109c1e9 at wasm-function[17140]:0x1883a5e at wasm-function[19715]:0x1bb3292 at wasm-function[19827]:0x1bbc53c at wrapper (litertlm_wasm_asyncify_internal.js:5063:16) at callUserCallback (litertlm_wasm_asyncify_internal.js:457:12) / no summary is comparable: the sweep stopped at the first failed run; out/patch-ab.json holds what was collected / EXIT:2",
+    "attempt 2 (order: no-0099 -> no-0113 -> no-0112 -> all-four -> no-0105 -> baseline): rep 1 position 1 condition no-0099 (patch=105,112,113) FAILED with the identical subgroupMinSize stack (JsGetDeviceMinSubgroupSize 8313:29, same wasm frames); EXIT:2",
+    "attempt 3 (order: all-four -> no-0113 -> no-0112 -> no-0105 -> baseline -> no-0099): rep 1 position 1 condition all-four (patch=all) FAILED with the identical subgroupMinSize stack; EXIT:2"
+  ],
+  "next_steps": [
+    "Retry the 131 in-model sweep only if the engine path works there: e.g. a newer @litert-lm/core that guards JsGetDeviceMinSubgroupSize on common-3 adapters, or a 131 flag set that exposes the subgroup size query the wasm expects",
+    "On success, write the sweep to a dated out/patch-ab-131-<stamp>.json (never overwrite out/patch-ab.json), keep provenance.browser Chrome/131.x + manifest_sha256, and report the one-line verdict HOLDS/DIMINISHED/GONE/INVERTED vs the 146 1.25008x baseline",
+    "Triad legs 2-3 (other Chrome majors) stay independent of this block; the isolated 131 inversion record already stands on its own"
+  ],
+  "timestamp": "2026-10-06T04:19:46Z"
+}

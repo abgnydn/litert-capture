@@ -1,6 +1,6 @@
 # litert-capture roadmap
 
-Status: v0.1.0, 8 scripts (`package.json:9-17`), live at `0a5590a`, Space `abgunaydin/kernel-0112`, upstream issue #3775 OPEN.
+Status: v0.1.0, 8 scripts (`package.json:9-17`), live at `78ba31f`, Space `abgunaydin/kernel-0112`, upstream issue #3775 OPEN.
 
 1. Parameterize VERSION in `analyze.mjs:101` and `trace.mjs:114` instead of hard-coded 0.17.1.
 2. Re-run `capture.mjs` per release to track kernel drift across versions.

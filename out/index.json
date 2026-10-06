@@ -1,0 +1,417 @@
+[
+  {
+    "file": "correctness-gate.json",
+    "sha256": "221ed61e38ace2db3e577174db9b044906d1874ef0211f84f648955295da5241",
+    "has_provenance": true,
+    "browser": "Chrome/146.0.7680.153",
+    "adapter": {
+      "vendor": "apple",
+      "architecture": "metal-3",
+      "device": "",
+      "description": ""
+    },
+    "harness_commit": "eaf88e2b405082f1da649d8e2c71c95ed3f7276a",
+    "date": "2026-10-02T05:41:12.965Z"
+  },
+  {
+    "file": "cpu-attrib.json",
+    "sha256": "02ec45315d210c4200b91e7fc760c55cd0502ce3c0fc7db59c91dd608d08d23a",
+    "has_provenance": true,
+    "browser": "Chrome/146.0.7680.153",
+    "adapter": {
+      "vendor": "apple",
+      "architecture": "metal-3",
+      "device": "",
+      "description": ""
+    },
+    "harness_commit": "eaf88e2b405082f1da649d8e2c71c95ed3f7276a",
+    "date": "2026-10-02T05:27:22.594Z"
+  },
+  {
+    "file": "firstslot.json",
+    "sha256": "8ae6d1560b09478aa5b57f7eb13dfafd0b5a876dfdeeb2007a0188cacc730b22",
+    "has_provenance": false,
+    "browser": null,
+    "adapter": null,
+    "harness_commit": null,
+    "date": "2026-10-02T05:13:52.244Z"
+  },
+  {
+    "file": "kernel-profile.json",
+    "sha256": "122bcb07b30f0f684d961ca41cbfb6cd644deea879c6937abe3b658d5e7f8988",
+    "has_provenance": false,
+    "browser": null,
+    "adapter": null,
+    "harness_commit": null,
+    "date": null
+  },
+  {
+    "file": "kv-layout.json",
+    "sha256": "df421891c976866c06decb4c27082a030d6d29ce2d84899261423ac8734741a8",
+    "has_provenance": true,
+    "browser": "Chrome/146.0.7680.153",
+    "adapter": {
+      "vendor": "apple",
+      "architecture": "metal-3",
+      "device": "",
+      "description": ""
+    },
+    "harness_commit": "c5c025ccaeb730fadd20966df87123f3d0187ab5",
+    "date": null
+  },
+  {
+    "file": "load-path.json",
+    "sha256": "8c73a22e6165b2ce504e0f2a09e9960901c97e4c4e105f431e471c9a1da60a88",
+    "has_provenance": false,
+    "browser": null,
+    "adapter": null,
+    "harness_commit": null,
+    "date": "2026-10-02T05:11:41.884Z"
+  },
+  {
+    "file": "manifest.json",
+    "sha256": "abffb5bfeb871d3a5af1ce6bb8990176d8627877a9441582a7ba7cd6d5f3fc2e",
+    "has_provenance": false,
+    "browser": null,
+    "adapter": {
+      "vendor": "apple",
+      "architecture": "metal-3",
+      "device": "",
+      "description": "",
+      "features": [
+        "depth32float-stencil8",
+        "chromium-experimental-subgroup-matrix",
+        "rg11b10ufloat-renderable",
+        "texture-formats-tier1",
+        "bgra8unorm-storage",
+        "texture-compression-bc",
+        "dual-source-blending",
+        "core-features-and-limits",
+        "float32-filterable",
+        "indirect-first-instance",
+        "texture-compression-astc-sliced-3d",
+        "float32-blendable",
+        "texture-compression-astc",
+        "texture-compression-etc2",
+        "depth-clip-control",
+        "texture-compression-bc-sliced-3d",
+        "clip-distances",
+        "timestamp-query",
+        "texture-formats-tier2",
+        "shader-f16",
+        "primitive-index",
+        "texture-component-swizzle",
+        "subgroups"
+      ]
+    },
+    "harness_commit": null,
+    "date": null
+  },
+  {
+    "file": "memory-residency.json",
+    "sha256": "8622bd229c8fb50427c4f4261164de52430bef1d96a91c30225713d33614d308",
+    "has_provenance": true,
+    "browser": "Chrome/146.0.7680.153",
+    "adapter": {
+      "vendor": "apple",
+      "architecture": "metal-3",
+      "device": "",
+      "description": ""
+    },
+    "harness_commit": "eaf88e2b405082f1da649d8e2c71c95ed3f7276a",
+    "date": "2026-10-02T05:29:35.434Z"
+  },
+  {
+    "file": "microbench-0099-2026-09-22T05-39-24-280Z.json",
+    "sha256": "58c50bc82dd89a249d94d885092ec09b0717fa834b8fddbaf7a9e07f4a1cc1f3",
+    "has_provenance": false,
+    "browser": null,
+    "adapter": {
+      "vendor": "apple",
+      "architecture": "metal-3"
+    },
+    "harness_commit": null,
+    "date": "2026-09-22T05:39:24.280Z"
+  },
+  {
+    "file": "microbench-0105-2026-09-22T05-39-22-096Z.json",
+    "sha256": "a0d8d55e7a22ce0d277b587763d129c34d2f627986870bec892752897514ba08",
+    "has_provenance": false,
+    "browser": null,
+    "adapter": {
+      "vendor": "apple",
+      "architecture": "metal-3"
+    },
+    "harness_commit": null,
+    "date": "2026-09-22T05:39:22.096Z"
+  },
+  {
+    "file": "microbench-0112-2026-09-24T07-36-06-362Z.json",
+    "sha256": "b3201e03a023fa347bcd873365ef40fd1a7e1c54b669d6d95395a1d75a76b13b",
+    "has_provenance": true,
+    "browser": "Chrome/131.0.6778.204",
+    "adapter": {
+      "vendor": "apple",
+      "architecture": "common-3",
+      "device": "",
+      "description": ""
+    },
+    "harness_commit": "c3575e1bc2cdc43d891f08cae3890ded1e2345e1",
+    "date": "2026-09-24T07:36:06.362Z"
+  },
+  {
+    "file": "microbench-0112-2026-09-24T07-36-19-655Z.json",
+    "sha256": "b9826f211312ef85b318512a5f744aa6e14a44af3a378b5561924d1c0eb7c609",
+    "has_provenance": true,
+    "browser": "Chrome/146.0.7680.153",
+    "adapter": {
+      "vendor": "apple",
+      "architecture": "metal-3",
+      "device": "",
+      "description": ""
+    },
+    "harness_commit": "c3575e1bc2cdc43d891f08cae3890ded1e2345e1",
+    "date": "2026-09-24T07:36:19.655Z"
+  },
+  {
+    "file": "microbench-0112-2026-10-02T09-04-17-448Z.json",
+    "sha256": "e2a7d5de76486eafd9b51c6985ffa84884470aa05ee9662bae2084b51b29c1e2",
+    "has_provenance": true,
+    "browser": "Chrome/154.0.8037.92",
+    "adapter": {
+      "vendor": "apple",
+      "architecture": "metal-3",
+      "device": "",
+      "description": ""
+    },
+    "harness_commit": "1ad5127779a98e17136f5e812bf59a9a127cda67",
+    "date": "2026-10-02T09:04:17.448Z"
+  },
+  {
+    "file": "microbench-0113-2026-09-24T07-36-44-034Z.json",
+    "sha256": "1390b89b07a926e8ea67da7a95e4170afa1100b553b0abec854de9e46fe6f190",
+    "has_provenance": true,
+    "browser": "Chrome/146.0.7680.153",
+    "adapter": {
+      "vendor": "apple",
+      "architecture": "metal-3",
+      "device": "",
+      "description": ""
+    },
+    "harness_commit": "c3575e1bc2cdc43d891f08cae3890ded1e2345e1",
+    "date": "2026-09-24T07:36:44.034Z"
+  },
+  {
+    "file": "microbench-0113-2026-10-02T09-04-29-568Z.json",
+    "sha256": "ab44a1200c72a914f93a2b35085d75f9c62e5e2dd082d1bfe1c014949d79b9d5",
+    "has_provenance": true,
+    "browser": "Chrome/154.0.8037.92",
+    "adapter": {
+      "vendor": "apple",
+      "architecture": "metal-3",
+      "device": "",
+      "description": ""
+    },
+    "harness_commit": "1ad5127779a98e17136f5e812bf59a9a127cda67",
+    "date": "2026-10-02T09:04:29.568Z"
+  },
+  {
+    "file": "microbench-2026-09-22T03-06-35-136Z.json",
+    "sha256": "02b0ac38da19fc88018fa8864a0a061cc3f0418862d27a68d15ad464039a69b4",
+    "has_provenance": false,
+    "browser": null,
+    "adapter": {
+      "vendor": "apple",
+      "architecture": "metal-3"
+    },
+    "harness_commit": null,
+    "date": "2026-09-22T03:06:35.136Z"
+  },
+  {
+    "file": "microbench-2026-09-22T03-06-37-804Z.json",
+    "sha256": "5782be14f82e01f723a0c1d3c521a2797f29c29dcdd2c3ff9e4a854e6af8ac6b",
+    "has_provenance": false,
+    "browser": null,
+    "adapter": {
+      "vendor": "apple",
+      "architecture": "metal-3"
+    },
+    "harness_commit": null,
+    "date": "2026-09-22T03:06:37.804Z"
+  },
+  {
+    "file": "microbench-colab-t4-f32.json",
+    "sha256": "f9f1389f09dc582f388a67a626ab546ac2ea05b1bb940451ad383f8211ee87c5",
+    "has_provenance": false,
+    "browser": null,
+    "adapter": {
+      "vendor": "nvidia",
+      "architecture": "turing",
+      "device": "",
+      "description": ""
+    },
+    "harness_commit": null,
+    "date": "2026-09-28T08:19:36.930Z"
+  },
+  {
+    "file": "microbench-run3.json",
+    "sha256": "fd82d7f6412bc50cb40666384e30605db5068dee7ea549c70cc3c55e710a6ad0",
+    "has_provenance": false,
+    "browser": null,
+    "adapter": {
+      "vendor": "apple",
+      "architecture": "metal-3"
+    },
+    "harness_commit": null,
+    "date": null
+  },
+  {
+    "file": "model.json",
+    "sha256": "e64f94753bd1035843509406945c835ae8fa1bc69afe64f1df8bd49f5833b3b9",
+    "has_provenance": false,
+    "browser": null,
+    "adapter": null,
+    "harness_commit": null,
+    "date": null
+  },
+  {
+    "file": "patch-ab.json",
+    "sha256": "e71ca1c79522b2f850cc422274b13622f5817b212bb42d0293eb3ad197cf3fe7",
+    "has_provenance": false,
+    "browser": null,
+    "adapter": null,
+    "harness_commit": null,
+    "date": "2026-09-24T07:46:59.995Z"
+  },
+  {
+    "file": "patch.json",
+    "sha256": "a0e6eee18b122444067a814e72cab7ae74c85baf44a981e1b29ed3ee5c533d7c",
+    "has_provenance": false,
+    "browser": null,
+    "adapter": null,
+    "harness_commit": null,
+    "date": null
+  },
+  {
+    "file": "power-curve.json",
+    "sha256": "24120983a37f5ec19bb918e49dcce7e66b75a0bdbb775783701698579fd61cac",
+    "has_provenance": false,
+    "browser": null,
+    "adapter": null,
+    "harness_commit": null,
+    "date": "2026-10-02T05:12:50.248Z"
+  },
+  {
+    "file": "prefill.json",
+    "sha256": "e6bb7eb03dbebf213766503b65b74090b0eccce9b1c96d74b0a650c8f67d861d",
+    "has_provenance": true,
+    "browser": "Chrome/146.0.7680.153",
+    "adapter": {
+      "vendor": "apple",
+      "architecture": "metal-3",
+      "device": "",
+      "description": "",
+      "features": [
+        "depth32float-stencil8",
+        "chromium-experimental-subgroup-matrix",
+        "rg11b10ufloat-renderable",
+        "bgra8unorm-storage",
+        "texture-formats-tier1",
+        "texture-compression-bc",
+        "dual-source-blending",
+        "core-features-and-limits",
+        "float32-filterable",
+        "indirect-first-instance",
+        "texture-compression-astc-sliced-3d",
+        "float32-blendable",
+        "texture-compression-astc",
+        "texture-compression-etc2",
+        "depth-clip-control",
+        "texture-compression-bc-sliced-3d",
+        "clip-distances",
+        "shader-f16",
+        "timestamp-query",
+        "texture-formats-tier2",
+        "primitive-index",
+        "texture-component-swizzle",
+        "subgroups"
+      ]
+    },
+    "harness_commit": "c5c025ccaeb730fadd20966df87123f3d0187ab5",
+    "date": null
+  },
+  {
+    "file": "roofline.json",
+    "sha256": "91edb39a6ac6642ce4c3cbd7bdc29078481c57d66c938d975ec4a0558336861f",
+    "has_provenance": true,
+    "browser": null,
+    "adapter": {
+      "vendor": "apple",
+      "architecture": "metal-3"
+    },
+    "harness_commit": "eaf88e2b405082f1da649d8e2c71c95ed3f7276a",
+    "date": "2026-10-02T06:47:51.051Z"
+  },
+  {
+    "file": "timing-bare.json",
+    "sha256": "96be9b94df52a2788d4db368481972233dbfbd0bef9a2392876b82ab10ac714d",
+    "has_provenance": false,
+    "browser": null,
+    "adapter": {
+      "vendor": "apple",
+      "architecture": "metal-3"
+    },
+    "harness_commit": null,
+    "date": null
+  },
+  {
+    "file": "timing-gpu.json",
+    "sha256": "cca172c722a4801d4cf9a7f63692813c7f52f9da3977770fee0b3f753b5bc34f",
+    "has_provenance": false,
+    "browser": null,
+    "adapter": {
+      "vendor": "apple",
+      "architecture": "metal-3"
+    },
+    "harness_commit": null,
+    "date": null
+  },
+  {
+    "file": "timing-kernel.json",
+    "sha256": "b88374d7ae16220e814a307db48e16c19cd7a2ed14518955a12596fee20d2bc0",
+    "has_provenance": false,
+    "browser": null,
+    "adapter": {
+      "vendor": "apple",
+      "architecture": "metal-3"
+    },
+    "harness_commit": null,
+    "date": null
+  },
+  {
+    "file": "trace.json",
+    "sha256": "a7068254c53539810a146c97ef2752bc042c0fce5c3ea9047ed4846492abbc3a",
+    "has_provenance": false,
+    "browser": null,
+    "adapter": {
+      "vendor": "apple",
+      "architecture": "metal-3"
+    },
+    "harness_commit": null,
+    "date": null
+  },
+  {
+    "file": "vendor-matrix.json",
+    "sha256": "ff8c010226b6772c1ae5f595628c00677b9b3d5fc4f08c7d1a7b3e9c1208fa77",
+    "has_provenance": true,
+    "browser": "Chrome/146.0.7680.153",
+    "adapter": {
+      "vendor": "apple",
+      "architecture": "metal-3",
+      "device": "",
+      "description": ""
+    },
+    "harness_commit": "eaf88e2b405082f1da649d8e2c71c95ed3f7276a",
+    "date": "2026-10-02T05:31:35.138Z"
+  }
+]
